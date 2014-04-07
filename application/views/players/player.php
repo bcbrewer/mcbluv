@@ -76,15 +76,16 @@ foreach($select_by_year as $select) {
 	$years = array(
 	                  '2011'  	=> '2011',
 	                  '2012'    => '2012',
-					  '2013'	=> '2013'
+					  '2013'	=> '2013',
+                      '2014'    => '2014'
 	                );
 	
-	$year_dd = array('year', '2013');
+	$year_dd = array('year', '2014');
 	
 	if(isset($_POST['year'])) {
 		$post_year = $_POST['year'];
 	} else {
-		$post_year = "2013";
+		$post_year = "2014";
 	}
 
 	echo "<div style=\"text-align: center;\">";
