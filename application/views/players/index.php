@@ -20,7 +20,7 @@
 ?>
 
 <br />
-<h1 align="center">McBluv wind first game.</h1>
+<h1 align="center">McBluv looks poised for another great season after 12-3 win over the Diamond Pigs.</h1>
 <br />
 <!-- <h1 align="center">The Game tomorrow against the Rangers has been CANCELLED.</h1> --!>
 <?php
@@ -95,22 +95,9 @@
 	</tr>
 	<tr class="standings_data">
 	<?php
-		$first="-";
-		$w="-";
-		$l="-";
-		$t="-";
-			echo "<td>McBluv</td>";
-			echo "<td>$w</td>";
-			echo "<td>$l</td>";
-			echo "<td>$t</td>";
-			echo "<td>"; echo win_percentage($w,$l); echo"</td>";
-			echo "<td>"; echo games_back($first, $w); echo "</td>";
-	?>
-	</tr>
-	<tr class="standings_data">
-	<?php
-		$w="-";
-		$l="-";
+		$first="2";
+		$w="2";
+		$l="0";
 		$t="-";
 			echo "<td>Titans</td>";
 			echo "<td>$w</td>";
@@ -122,8 +109,8 @@
 	</tr>
 	<tr class="standings_data">
 	<?php
-		$w="-";
-		$l="-";
+		$w="2";
+		$l="0";
 		$t="-";
 			echo "<td>Raw Dawgs</td>";
 			echo "<td>$w</td>";
@@ -135,8 +122,21 @@
 	</tr>
 	<tr class="standings_data">
 	<?php
-		$w="-";
-		$l="-";
+		$w="1";
+		$l="0";
+		$t="-";
+			echo "<td>McBluv</td>";
+			echo "<td>$w</td>";
+			echo "<td>$l</td>";
+			echo "<td>$t</td>";
+			echo "<td>"; echo win_percentage($w,$l); echo"</td>";
+			echo "<td>"; echo games_back($first, $w); echo "</td>";
+	?>
+	</tr>
+	<tr class="standings_data">
+	<?php
+		$w="0";
+		$l="1";
 		$t="-";
 			echo "<td>Athletics</td>";
 			echo "<td>$w</td>";
@@ -148,8 +148,8 @@
 	</tr>
 	<tr class="standings_data">
 	<?php
-		$w="-";
-		$l="-";
+		$w="0";
+		$l="1";
 		$t="-";
 			echo "<td>Bears</td>";
 			echo "<td>$w</td>";
@@ -161,8 +161,8 @@
 	</tr>
 	<tr class="standings_data">
 	<?php
-		$w="-";
-		$l="-";
+		$w="0";
+		$l="1";
 		$t="-";
 			echo "<td>Rangers</td>";
 			echo "<td>$w</td>";
@@ -197,9 +197,23 @@
 	</tr>
 	<tr class="standings_data">
 	<?php
-		$first="-";
-		$w="-";
-		$l="-";
+		$first="2";
+		$w="2";
+		$l="0";
+		$t="-";
+			echo "<td>Black Sox</td>";
+			echo "<td>$w</td>";
+			echo "<td>$l</td>";
+			echo "<td>$t</td>";
+			echo "<td>"; echo win_percentage($w,$l); echo"</td>";
+			echo "<td>"; echo games_back($first, $w); echo "</td>";
+	?>
+	</tr>
+	
+	<tr class="standings_data">
+	<?php
+		$w="1";
+		$l="1";
 		$t="-";
 			echo "<td>Red Bandits</td>";
 			echo "<td>$w</td>";
@@ -212,22 +226,8 @@
 	
 	<tr class="standings_data">
 	<?php
-		$w="-";
-		$l="-";
-		$t="-";
-			echo "<td>Wolf Pack</td>";
-			echo "<td>$w</td>";
-			echo "<td>$l</td>";
-			echo "<td>$t</td>";
-			echo "<td>"; echo win_percentage($w,$l); echo"</td>";
-			echo "<td>"; echo games_back($first, $w); echo "</td>";
-	?>
-	</tr>
-	
-	<tr class="standings_data">
-	<?php
-		$w="-";
-		$l="-";
+		$w="1";
+		$l="1";
 		$t="-";
 			echo "<td>Angels</td>";
 			echo "<td>$w</td>";
@@ -239,8 +239,8 @@
 	</tr>
 	<tr class="standings_data">
 	<?php
-		$w="-";
-		$l="-";
+		$w="0";
+		$l="1";
 		$t="-";
 			echo "<td>Diamond Pigs</td>";
 			echo "<td>$w</td>";
@@ -252,8 +252,8 @@
 	</tr>
 	<tr class="standings_data">
 	<?php
-		$w="-";
-		$l="-";
+		$w="0";
+		$l="1";
 		$t="-";
 			echo "<td>Cobb Red Sox</td>";
 			echo "<td>$w</td>";
@@ -266,10 +266,10 @@
 	
 	<tr class="standings_data">
 	<?php
-		$w="-";
-		$l="-";
+		$w="0";
+		$l="2";
 		$t="-";
-			echo "<td>Black Sox</td>";
+			echo "<td>Wolf Pack</td>";
 			echo "<td>$w</td>";
 			echo "<td>$l</td>";
 			echo "<td>$t</td>";
