@@ -20,7 +20,7 @@
 ?>
 
 <br />
-<h1 align="center">McBluv ready to start 2014 season!</h1>
+<h1 align="center">McBluv wind first game.</h1>
 <br />
 <!-- <h1 align="center">The Game tomorrow against the Rangers has been CANCELLED.</h1> --!>
 <?php
