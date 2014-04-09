@@ -115,14 +115,14 @@ class Upload extends CI_Controller {
 				$image_config['source_image'] = $data['upload_data']['full_path'];
 				$image_config['create_thumb'] = FALSE;
 				$image_config['maintain_ratio'] = TRUE;
-				$image_config['new_image'] = $data['upload_data']['file_path'].$data['upload_data']['file_name'];
+				$image_config['new_image'] = $data['upload_data']['file_path'].strtolower($data['upload_data']['file_name']);
 				$image_config['quality'] = "100%";
 				$width;	// Resize image width to variable
 				$height; // Resize image height to variable
 				$dim = (intval($data['upload_data']['image_width']) / intval($data['upload_data']['image_height'])) - ($image_config['width'] / $image_config['height']);
 				$image_config['master_dim'] = ($dim > 0)? "height" : "width";
-			
-				$this->load->library('image_lib');	// Load image_lib
+
+                $this->load->library('image_lib');	// Load image_lib
 				$this->image_lib->initialize($image_config);	// Start image library with config
 			
 				if(!$this->image_lib->resize()){ //Resize image
@@ -135,8 +135,8 @@ class Upload extends CI_Controller {
 				
 				} else {
 					$image_config['image_library'] = 'gd2';
-					$image_config['source_image'] = $data['upload_data']['file_path'].$data['upload_data']['file_name'];
-					$image_config['new_image'] = $data['upload_data']['file_path'].$data['upload_data']['file_name'];
+					$image_config['source_image'] = $data['upload_data']['file_path'].strtolower($data['upload_data']['file_name']);
+					$image_config['new_image'] = $data['upload_data']['file_path'].strtolower($data['upload_data']['file_name']);
 					$image_config['quality'] = "100%";
 					$image_config['maintain_ratio'] = FALSE;
 					$width;
@@ -170,7 +170,7 @@ class Upload extends CI_Controller {
 						} else {
 							$file_path = "../../images/".strtolower($data['upload_data']['file_name']);
 						}
-						$raw = $data['upload_data']['raw_name'];
+						$raw = strtolower($data['upload_data']['raw_name']);
 						$mime_type = strtolower($data['upload_data']['image_type']);
 						$size = $data['upload_data']['file_size']." KB";
 						$orig_width = $data['upload_data']['image_width'];

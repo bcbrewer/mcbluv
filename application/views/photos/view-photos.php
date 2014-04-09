@@ -102,7 +102,7 @@
 						echo form_close();
 					echo "</div>";
 					echo "<div style=\"text-align:right\">
-							<a style=\"text-decoration: underline;\" href=\"?c=photo&amp;m=edit_delete\">Edit/Delete Photos</a>
+							<a style=\"text-decoration: underline;\" href=\"?c=photo&amp;m=edit_delete\" target=\"_blank\">Edit/Delete Photos</a>
 						 </div>";
 				}
 			?>

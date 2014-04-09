@@ -1,8 +1,8 @@
 <?php
-	$max_rows = 2;
-	$photo_count = 0;
-	echo "<table>";
-	echo form_open_multipart('c=update&amp;m=edit_delete'); // Method new_image from controller upload
+$max_rows = 2;
+$photo_count = 0;
+echo "<table>";
+    echo form_open_multipart('c=photo&amp;m=update');
 	echo form_submit('submit', 'Update/Delete');
 	echo "<tr>";
 	foreach ($get_photos as $photo) {
@@ -42,17 +42,19 @@
 		echo "<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>";
 		echo "<td>";
 			$delete = array(
-				'name' 	  => 'delete_photo',
+				'name' 	  => 'chosen',
+                'value'   => $photo['id'],
 				'checked' => FALSE
 			);
 			echo form_checkbox($delete);
+
 		echo "<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>";
 	    $photo_count++;
 	}
 	echo "</tr>";
-	echo "</table>";
-	echo form_submit('submit', 'Update/Delete');
-	echo "<br />";
-	echo form_close();
+echo "</table>";
+echo form_submit('submit', 'Update/Delete');
+echo "<br />";
+echo form_close();
 
 ?>
