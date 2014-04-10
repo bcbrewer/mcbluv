@@ -5,7 +5,7 @@
 					<strong>&copy; McBluv <?php echo date('Y'); ?></strong> <!-- &copy makes the copyright sign -->
 				</div>
 				<div style="float:right;">
-					<a href="?c=user&m=login">Login</a>
+					<a style="color: black;" href="?c=user&m=login">Login</a>
 				</div>
 			</div> <!-- end div footer -->
 	</div> <!-- end div Content -->
