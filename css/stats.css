@@ -10,6 +10,7 @@ body {
 	margin: 0; 
 	padding: 0; 
 	background-image: url('../images/mcbluv_background.png');
+    background-attachment:fixed;
 	background-size: 100% 100%;
 	background-repeat: no-repeat;
 	background-color: black;
@@ -26,6 +27,18 @@ table, th, td {
 img { 
 	height: 100%; 
 	width:auto;
+}
+
+ @font-face {
+    font-family: 'Promesh-regular';
+    src: url('../sytem/fonts/PROMESH-Regular.ttf');
+    src: local('Promesh Regular'), local('Promesh-regular'), url('fonts/PROMESH-Regular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Promesh-mesh';
+    src: url('../sytem/fonts/PROMESHMesh-Regular.ttf');
+    src: local('Promesh Mesh'), local('Promesh-mesh'), url('fonts/PROMESHMesh-Regular.ttf') format('truetype');
 }
 
 /****Classes***********************************************************Classes**************************Classes********************************************/
@@ -99,6 +112,14 @@ img {
 	background-color: black; 
 	color:yellow; 
 	width:90px; 
+}
+
+.homeTitle {
+    width: relative;
+    line-height: 40px;
+    font-size: 35px;
+    padding: 0 100px 0 100px;
+    font-family: 'Promesh-mesh', Arial, sans-serif;
 }
 
 .individual_stats  {
@@ -453,7 +474,6 @@ tr.white {
 	margin-top: auto;
 	margin-left: auto;
 	margin-right: auto;
-/*	background-image: url('../images/yellow.jpg'); */
     background-color: #ffea00;
 	background-size: 100%;
 	border-collapse: collapse;

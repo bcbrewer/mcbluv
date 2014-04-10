@@ -20,7 +20,7 @@
 ?>
 
 <br />
-<h1 align="center">McBluv looks poised for another great season after 12-3 win over the Diamond Pigs.</h1>
+<h1 class="homeTitle"; align="center">McBluv looks poised for another great season after 12-3 win over the Diamond Pigs.</h1>
 <br />
 <!-- <h1 align="center">The Game tomorrow against the Rangers has been CANCELLED.</h1> --!>
 <?php
