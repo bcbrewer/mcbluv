@@ -5,9 +5,9 @@ $categories = array('Name', 'PA', 'AB', 'Hits', 'HR', 'RBI', 'BB', 'Runs', 'HBP'
 ?>
 <br />
 <div id="mcbluv_logoWrapper">
-	<img  class="mcbluv_logo" src="images/smiley_yellow.jpg" alt="" />
+	<img  class="mcbluv_logo" src="images/smiley.png" alt="" />
 </div> <!-- end div mcbluv_logoWrapper -->
-<img class="vs" src="images/versus_pink.jpg" alt="" />
+<img class="vs" src="images/versus_pink.png" alt="" />
 <div id="opponent_logoWrapper">
 <?php
 	if ( !empty($sel_logo_id) ) {

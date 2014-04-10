@@ -453,7 +453,8 @@ tr.white {
 	margin-top: auto;
 	margin-left: auto;
 	margin-right: auto;
-	background-image: url('../images/yellow.jpg');
+/*	background-image: url('../images/yellow.jpg'); */
+    background-color: #ffea00;
 	background-size: 100%;
 	border-collapse: collapse;
 }
