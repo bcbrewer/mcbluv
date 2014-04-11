@@ -45,9 +45,9 @@
 		echo "<th>$profile</th>";
 	}
 ?>
-</tr>
+    </tr>
 
-<tr>
+    <tr>
 <?php
 	foreach($sel_player_name as $sel_player) {
 		echo "<td>$sel_player[first] $sel_player[last]</td>
@@ -59,49 +59,43 @@
 	}
 ?>
 	
-</tr>
-</table>
+    </tr>
+    </table>
 </div> <!-- end div profileWrapper -->
 <br />
 
-<h2 align="center">Batting</h2>
-<div id="filterWrapper">
 <?php
-foreach($select_by_year as $select) {
-	$query_string = '&player_id=' .urlencode($select['player_id']) . '&season_id=' .urlencode($select['season_id']);
+if($select_by_year) {
+echo "<h2 align=\"center\">Batting</h2>";
+    echo "<div id=\"filterWrapper\">";
 
-	echo form_open('c=players&m=player'.htmlentities($query_string));
-}
-	
-	$years = array(
-	                  '2011'  	=> '2011',
-	                  '2012'    => '2012',
-					  '2013'	=> '2013',
-                      '2014'    => '2014'
-	                );
-	
-	$year_dd = array('year', '2014');
-	
+    foreach($select_by_year as $select) {
+	    $query_string = '&player_id=' .urlencode($select['player_id']) . '&season_id=' .urlencode($select['season_id']);
+
+	    echo form_open('c=players&m=player'.htmlentities($query_string));
+    }
+
+    $current_season = $this->mcbluv_model->all_seasons();
+
+    foreach($current_season as $seasons) {
+        $years[$seasons['year']] = $seasons['year'];
+        $season[$seasons['season']] = ucwords($seasons['season']);
+    }
+
 	if(isset($_POST['year'])) {
 		$post_year = $_POST['year'];
 	} else {
-		$post_year = "2014";
+		$post_year = $current_season[0]['year'];
 	}
 
 	echo "<div style=\"text-align: center;\">";
+
 		echo form_dropdown('year', $years, $post_year);
-	
-		$season = array(
-						'Fall'   => 'Fall',
-						'Summer' => 'Summer'
-		);
-	
-		$season_dd = array('season', 'Summer');
 	
 		if(isset($_POST['season'])) {
 			$post_season = $_POST['season'];
 		} else {
-			$post_season = "Summer";
+			$post_season = $current_season[0]['season'];;
 		}
 	
 		echo form_dropdown('season', $season, $post_season);
@@ -123,28 +117,32 @@ foreach($select_by_year as $select) {
 	
 		echo form_submit('mysubmit', 'Search'); 
 		echo form_close();
-	echo "</div>";
 
+	echo "</div>";
+echo "</div>"; // <!-- end div filterWrapper -->
+}
+    
 ?>
-</div><!-- end div filterWrapper -->
 
 
 <div id="battingWrapper">
 <table class="hitting">
 <tr>
-<?php 
-	foreach($categories as $category) {
-		echo "<th>$category</th>";
-	}
-	
-	$i = 1;
+<?php
+    foreach($categories as $category) {
+        echo "<th>$category</th>";
+    }
+
+    if ( $select_by_year ) {
+	    $i = 1;
 		foreach($select_by_year as $sel_player) {
 			if ($i % 2 != 0) { # An odd row
 			    $rowColor = "#D0D0D0";
 			 } else { # An even row
 			    $rowColor = "";
 			}
-			$opp = array_pop($sel_player);
+
+            $opp = array_pop($sel_player);
 			
 			$query_string = '&opp_id=' .urlencode($sel_player['opponent_id']) . '&gm=' .urlencode($sel_player['game_id']) . '&season_id=' .urlencode($sel_player['season_id']);
 			
@@ -163,44 +161,27 @@ foreach($select_by_year as $select) {
 			echo "</tr>"; 
 		}
 		echo "<tr>";
-		echo "<td class=\"last_row\"><strong>Total</strong></td>";
-		foreach($select_batting_sum_year as $sel_sum_batting) {
-					echo "<td class=\"last_row\">{$sel_sum_batting['pa']}</td>
-						  <td class=\"last_row\">{$sel_sum_batting['ab']}</td>
-						  <td class=\"last_row\">{$sel_sum_batting['hits']}</td>
-						  <td class=\"last_row\">{$sel_sum_batting['hr']}</td>
-						  <td class=\"last_row\">{$sel_sum_batting['rbi']}</td>
-						  <td class=\"last_row\">{$sel_sum_batting['bb']}</td>
-						  <td class=\"last_row\">{$sel_sum_batting['runs']}</td>
-						  <td class=\"last_row\">{$sel_sum_batting['hbp']}</td>
-						  <td class=\"last_row\">{$sel_sum_batting['sac']}</td>
-						  <td class=\"last_row\">{$sel_sum_batting['roe']}</td>
-						  <td class=\"last_row\">{$sel_sum_batting['single']}</td>
-						  <td class=\"last_row\">{$sel_sum_batting['double']}</td>
-						  <td class=\"last_row\">{$sel_sum_batting['triple']}</td>
-						  <td class=\"last_row\">{$sel_sum_batting['tb']}</td>
-						  <td class=\"last_row\">{$sel_sum_batting['so']}</td>
-						  <td class=\"last_row\">{$sel_sum_batting['gidp']}</td>
-						  <td class=\"last_row\">{$sel_sum_batting['sb']}</td>
-						  <td class=\"last_row\">{$sel_sum_batting['cs']}</td>";
-					echo "<td class=\"last_row\">"; echo $this->mcbluv_model->batting_avg($sel_sum_batting['hits'], $sel_sum_batting['ab']); 
-							echo "</td>";
-							echo "<td class=\"last_row\">"; echo $this->mcbluv_model->obp($sel_sum_batting['hits'], $sel_sum_batting['bb'], $sel_sum_batting['hbp'], $sel_sum_batting['pa']);
-							echo "</td>";
-							echo "<td class=\"last_row\">"; echo $this->mcbluv_model->slg($sel_sum_batting['tb'], $sel_sum_batting['ab']);
-							echo "</td>";
-							echo "<td class=\"last_row\">"; echo $this->mcbluv_model->ops($sel_sum_batting['hits'], $sel_sum_batting['bb'], $sel_sum_batting['hbp'], $sel_sum_batting['pa'], $sel_sum_batting['tb'], $sel_sum_batting['ab']);
-							echo "</td>";
-						echo "</tr>";
-						}
-			
+		    echo "<td class=\"last_row\"><strong>Total</strong></td>";
+		    foreach($select_batting_sum_year as $batting) {
+                foreach($batting as $key => $value) {
+                    if(in_array(($key), array_keys($categories))) {
+                        echo "<td class=\"last_row\">{$value}</td>";
+                    }
+                }
+				echo "<td class=\"last_row\">" . $this->mcbluv_model->batting_avg($batting['hits'], $batting['ab']) . "</td>";
+				echo "<td class=\"last_row\">" . $this->mcbluv_model->obp($batting['hits'], $batting['bb'], $batting['hbp'], $batting['pa']) . "</td>";
+				echo "<td class=\"last_row\">" . $this->mcbluv_model->slg($batting['tb'], $batting['ab']) . "</td>";
+				echo "<td class=\"last_row\">" . $this->mcbluv_model->ops($batting['hits'], $batting['bb'], $batting['hbp'], $batting['pa'], $batting['tb'], $batting['ab']) . "</td>";
+			}
+        echo "</tr>";
+	}
 ?>
 </table>
 </div><!-- div battingWrapper -->
 <br />
 
 <?php
-	if ( !empty($select_pitching_year) ) {
+	if ( $select_pitching_year ) {
 		$pitch_categories = array( 'Opponent', 'Record', 'ERA', 'SV', 'BS', 'IP', 'H', 'R', 'ER', 'BB',
 							   	   'SO', 'QS', 'AVG', 'WHIP', 'CG', 'HB', 'PA', 'AB', 'K/9', 'K/BB'	
 								 );
@@ -291,7 +272,7 @@ foreach($select_by_year as $select) {
 <br />
 
 <?php
-	if ( !empty($select_fielding_year)) {
+	if ( $select_fielding_year ) {
 		$field_categories = array( 'Opponent', 'TC', 'PO', 'A', 'E', 'FLD%' );
 		echo "
 		<h2 align=\"center\">Fielding</h2>
@@ -468,7 +449,7 @@ foreach($select_by_year as $select) {
 		?>
 	</table>
 	</div>
-</div> <!---END DIV careerToggle---!>
+</div> <!--END DIV careerToggle--!>
 
 <?php
 	if(empty($get_photos)) {

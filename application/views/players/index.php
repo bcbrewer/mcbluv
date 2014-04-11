@@ -61,7 +61,8 @@
 	</tr>
 		<?php
 			foreach($last_three_games as $last_three) {
-				echo "<tr><td><h4 align=left>{$last_three['opponent']}: {$last_three['result']}</h4></td></tr>";
+                $query_string = '&opp_id=' .urlencode($last_three['opponent_id']) . '&gm=' .urlencode($last_three['game_id']) . '&season_id=' .urlencode($last_three['season_id']);
+				echo "<tr><td><h4 align=left><a href=\"?c=opponents&amp;m=opponent" .htmlentities($query_string) ."\">{$last_three['opponent']}</a>: {$last_three['result']}</h4></td></tr>";
 			}
 		?>
 

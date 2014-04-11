@@ -308,246 +308,275 @@ public function find_selected_player() {
 public function select_year_sum_batting() {
     $player_id = $_REQUEST['player_id'];
     $last_active_year = $this->last_active_year();
-    foreach($last_active_year as $lay) {
-        if(isset($_POST['year'])) {
-            $year = $_POST['year'];
-        } else {
-            $year = $lay['year'];
-        }
-        if(isset($_POST['season'])) {
-            $season = $_POST['season'];
-        } else {
-            $season = $lay['season'];
-        }
-        if(isset($_POST['playoffs'])) {
-            $playoffs = $_POST['playoffs'];
-        } else {
-            $playoffs = "Regular Season";
-        }
-   }
-    $query = $this->db->query("
-        select sum(pa) as pa, sum(ab) as ab, sum(hits) as hits,
-            sum(hr) as hr, sum(rbi) as rbi, sum(bb) as bb,
-            sum(runs) as runs, sum(hbp) as hbp, sum(sac) as sac,
-            sum(roe) as roe, sum(single) as single, sum(`double`) as `double`,
-            sum(triple) as triple, sum(tb) as tb, sum(so) as so,
-            sum(gidp) as gidp, sum(sb) as sb, sum(cs) as cs,
-            b.player_id, b.game_id, b.season_id,
-            s.year, s.season, o.opponent_id, o.opponent
-        from batting b
-            join season s on (s.season_id = b.season_id)
-            join game g on (g.game_id = b.game_id)
-            join opponent o on (o.opponent_id = g.opponent_id)
-        where b.player_id = ?
-        and s.year = ?
-        and s.season = ?
-        and b.playoff = ?
-    ", array($player_id, $year, $season, $playoffs));
 
-    return $query->result_array();
+    if($last_active_year) {
+        foreach($last_active_year as $lay) {
+            if(isset($_POST['year'])) {
+                $year = $_POST['year'];
+            } else {
+                $year = $lay['year'];
+            }
+            if(isset($_POST['season'])) {
+                $season = $_POST['season'];
+            } else {
+                $season = $lay['season'];
+            }
+            if(isset($_POST['playoffs'])) {
+                $playoffs = $_POST['playoffs'];
+            } else {
+                $playoffs = "Regular Season";
+            }
+        }
+        $query = $this->db->query("
+            select sum(pa) as pa, sum(ab) as ab, sum(hits) as hits,
+                sum(hr) as hr, sum(rbi) as rbi, sum(bb) as bb,
+                sum(runs) as runs, sum(hbp) as hbp, sum(sac) as sac,
+                sum(roe) as roe, sum(single) as single, sum(`double`) as `double`,
+                sum(triple) as triple, sum(tb) as tb, sum(so) as so,
+                sum(gidp) as gidp, sum(sb) as sb, sum(cs) as cs,
+                b.player_id, b.game_id, b.season_id,
+                s.year, s.season
+            from batting b
+                join season s on (s.season_id = b.season_id)
+                join game g on (g.game_id = b.game_id)
+            where b.player_id = ?
+            and s.year = ?
+            and s.season = ?
+            and b.playoff = ?
+        ", array($player_id, $year, $season, $playoffs));
+
+        return $query->result_array();
+    } else {
+        return null;
+    }
 }
 
 public function select_year_sum_pitching() {
     $player_id = $_REQUEST['player_id'];
     $last_active_year = $this->last_active_year();
-    foreach($last_active_year as $lay) {
-        if(isset($_POST['year'])) {
-            $year = $_POST['year'];
-        } else {
-            $year = $lay['year'];
-        }
 
-        if(isset($_POST['season'])) {
-            $season = $_POST['season'];
-        } else {
-            $season = $lay['season'];
-        }
+    if($last_active_year) {
+        foreach($last_active_year as $lay) {
+            if(isset($_POST['year'])) {
+                $year = $_POST['year'];
+            } else {
+                $year = $lay['year'];
+            }
 
-        if(isset($_POST['playoffs'])) {
-            $playoffs = $_POST['playoffs'];
-        } else {
-            $playoffs = "Regular Season";
+            if(isset($_POST['season'])) {
+                $season = $_POST['season'];
+            } else {
+                $season = $lay['season'];
+            }
+
+            if(isset($_POST['playoffs'])) {
+                $playoffs = $_POST['playoffs'];
+            } else {
+                $playoffs = "Regular Season";
+            }
         }
+        $query = $this->db->query("
+            select sum(wins) as wins, sum(loss) as loss, sum(save) as save, 
+                sum(bs) as bs, sum(ip) as ip, sum(hits) as hits,
+                sum(runs) as runs, sum(er) as er, sum(walks) as walks, 
+                sum(so) as so, sum(qs) as qs, sum(cg) as cg, sum(hbp) as hbp, 
+                sum(opp_pa) as opp_pa, sum(opp_ab) as opp_ab,
+                p.player_id, p.game_id, p.season_id,
+                s.year, s.season, o.opponent_id, o.opponent
+            from pitching p
+                join season s on (s.season_id = p.season_id)
+                join game g on (g.game_id = p.game_id)
+                join opponent o on (o.opponent_id = g.opponent_id)
+            where p.player_id = ?
+            and s.year = ?
+            and s.season = ?
+            and p.playoff = ?
+        ", array($player_id, $year, $season, $playoffs));
+
+        return $query->result_array();
+    } else {
+        return null;
     }
-    $query = $this->db->query("
-        select sum(wins) as wins, sum(loss) as loss, sum(save) as save, 
-            sum(bs) as bs, sum(ip) as ip, sum(hits) as hits,
-            sum(runs) as runs, sum(er) as er, sum(walks) as walks, 
-            sum(so) as so, sum(qs) as qs, sum(cg) as cg, sum(hbp) as hbp, 
-            sum(opp_pa) as opp_pa, sum(opp_ab) as opp_ab,
-            p.player_id, p.game_id, p.season_id,
-            s.year, s.season, o.opponent_id, o.opponent
-        from pitching p
-            join season s on (s.season_id = p.season_id)
-            join game g on (g.game_id = p.game_id)
-            join opponent o on (o.opponent_id = g.opponent_id)
-        where p.player_id = ?
-        and s.year = ?
-        and s.season = ?
-        and p.playoff = ?
-    ", array($player_id, $year, $season, $playoffs));
-
-    return $query->result_array();
 }
 
 public function select_year_sum_fielding() {
     $player_id = $_REQUEST['player_id'];
     $last_active_year = $this->last_active_year();
-    foreach($last_active_year as $lay) {
-        if(isset($_POST['year'])) {
-            $year = $_POST['year'];
-        } else {
-            $year = $lay['year'];
-        }
-        if(isset($_POST['season'])) {
-            $season = $_POST['season'];
-        } else {
-            $season = $lay['season'];
-        }
-        if(isset($_POST['playoffs'])) {
-            $playoffs = $_POST['playoffs'];
-        } else {
-            $playoffs = "Regular Season";
-        }
-    }
-    $query = $this->db->query("
-        select sum(tc) as tc, sum(po) as po, sum(a) as a,
-            sum(errors) as errors,
-            f.player_id, f.game_id, f.season_id,
-            s.season, o.opponent_id, o.opponent
-        from fielding f
-            join season s on (s.season_id = f.season_id)
-            join game g on (g.game_id = f.game_id)
-            join opponent o on (o.opponent_id = g.opponent_id)
-        where f.player_id = ?
-        and s.year = ?
-        and s.season = ?
-        and f.playoff = ?
-    ", array($player_id, $year, $season, $playoffs));
 
-    return $query->result_array();
+    if($last_active_year) {
+        foreach($last_active_year as $lay) {
+            if(isset($_POST['year'])) {
+                $year = $_POST['year'];
+            } else {
+                $year = $lay['year'];
+            }
+            if(isset($_POST['season'])) {
+                $season = $_POST['season'];
+            } else {
+                $season = $lay['season'];
+            }
+            if(isset($_POST['playoffs'])) {
+                $playoffs = $_POST['playoffs'];
+            } else {
+                $playoffs = "Regular Season";
+            }
+        }
+        $query = $this->db->query("
+            select sum(tc) as tc, sum(po) as po, sum(a) as a,
+                sum(errors) as errors,
+                f.player_id, f.game_id, f.season_id,
+                s.season, o.opponent_id, o.opponent
+            from fielding f
+                join season s on (s.season_id = f.season_id)
+                join game g on (g.game_id = f.game_id)
+                join opponent o on (o.opponent_id = g.opponent_id)
+            where f.player_id = ?
+            and s.year = ?
+            and s.season = ?
+            and f.playoff = ?
+        ", array($player_id, $year, $season, $playoffs));
+
+        return $query->result_array();
+    } else {
+        return null;
+   }
 }
 
 public function select_fielding_year() {
     $player_id = $_REQUEST['player_id'];
     $last_active_year = $this->last_active_year();
-    foreach($last_active_year as $lay) {
-        if(isset($_POST['year'])) {
-            $year = $_POST['year'];
-        } else {
-            $year = $lay['year'];
-        }
 
-        if(isset($_POST['season'])) {
-            $season = $_POST['season'];
-        } else {
-            $season = $lay['season'];
-        }
+    if($last_active_year) {
+        foreach($last_active_year as $lay) {
+            if(isset($_POST['year'])) {
+                $year = $_POST['year'];
+            } else {
+                $year = $lay['year'];
+            }
 
-        if(isset($_POST['playoffs'])) {
-            $playoffs = $_POST['playoffs'];
-        } else {
-            $playoffs = "Regular Season";
+            if(isset($_POST['season'])) {
+                $season = $_POST['season'];
+            } else {
+                $season = $lay['season'];
+            }
+
+            if(isset($_POST['playoffs'])) {
+                $playoffs = $_POST['playoffs'];
+            } else {
+                $playoffs = "Regular Season";
+            }
         }
+        $query = $this->db->query("
+            select f.tc, f.po, f.a, f.errors,
+                f.player_id, f.game_id, f.season_id,
+                s.season, o.opponent_id, o.opponent
+            from fielding f
+                join season s on (s.season_id = f.season_id)
+                join game g on (g.game_id = f.game_id)
+                join opponent o on (o.opponent_id = g.opponent_id)
+            where f.player_id = ?
+            and s.year = ?
+            and s.season = ?
+            and f.playoff = ?
+        ", array($player_id, $year, $season, $playoffs));
+
+        return $query->result_array();
+    } else {
+        return null;
     }
-    $query = $this->db->query("
-        select f.tc, f.po, f.a, f.errors,
-            f.player_id, f.game_id, f.season_id,
-            s.season, o.opponent_id, o.opponent
-        from fielding f
-            join season s on (s.season_id = f.season_id)
-            join game g on (g.game_id = f.game_id)
-            join opponent o on (o.opponent_id = g.opponent_id)
-        where f.player_id = ?
-        and s.year = ?
-        and s.season = ?
-        and f.playoff = ?
-    ", array($player_id, $year, $season, $playoffs));
-
-    return $query->result_array();
 }
 
 public function select_pitching_year() {
     $player_id = $_REQUEST['player_id'];
     $last_active_year = $this->last_active_year();
-    foreach($last_active_year as $lay) {
-        if(isset($_POST['year'])) {
-            $year = $_POST['year'];
-        } else {
-            $year = $lay['year'];
-        }
 
-        if(isset($_POST['season'])) {
-            $season = $_POST['season'];
-        } else {
-            $season = $lay['season'];
-        }
+    if($last_active_year) {
+        foreach($last_active_year as $lay) {
+            if(isset($_POST['year'])) {
+                $year = $_POST['year'];
+            } else {
+                $year = $lay['year'];
+            }
 
-        if(isset($_POST['playoffs'])) {
-            $playoffs = $_POST['playoffs'];
-        } else {
-            $playoffs = "Regular Season";
+            if(isset($_POST['season'])) {
+                $season = $_POST['season'];
+            } else {
+                $season = $lay['season'];
+            }
+
+            if(isset($_POST['playoffs'])) {
+                $playoffs = $_POST['playoffs'];
+            } else {
+                $playoffs = "Regular Season";
+            }
         }
+        $query = $this->db->query("
+            select p.record, p.loss, p.save, p.bs, p.ip,
+                p.hits, p.runs, p.er, p.walks, p.so,
+                p.qs, p.cg, p.hbp, p.opp_pa, p.opp_ab,
+                p.player_id, p.game_id, p.season_id,
+                s.season, o.opponent_id, o.opponent
+            from pitching p
+                join season s on (s.season_id = p.season_id)
+                join game g on (g.game_id = p.game_id)
+                join opponent o on (o.opponent_id = g.opponent_id)
+            where p.player_id = ?
+            and s.year = ?
+            and s.season = ?
+            and p.playoff = ?
+        ", array($player_id, $year, $season, $playoffs));
+
+        return $query->result_array();
+    } else {
+        return null;
     }
-    $query = $this->db->query("
-        select p.record, p.loss, p.save, p.bs, p.ip,
-            p.hits, p.runs, p.er, p.walks, p.so,
-            p.qs, p.cg, p.hbp, p.opp_pa, p.opp_ab,
-            p.player_id, p.game_id, p.season_id,
-            s.season, o.opponent_id, o.opponent
-        from pitching p
-            join season s on (s.season_id = p.season_id)
-            join game g on (g.game_id = p.game_id)
-            join opponent o on (o.opponent_id = g.opponent_id)
-        where p.player_id = ?
-        and s.year = ?
-        and s.season = ?
-        and p.playoff = ?
-    ", array($player_id, $year, $season, $playoffs));
-
-    return $query->result_array();
 }
 
 public function select_batting_year() {
     $player_id = $_REQUEST['player_id'];
     $last_active_year = $this->last_active_year();
-    foreach($last_active_year as $lay) {
-        if(isset($_POST['year'])) {
-            $year = $_POST['year'];
-        } else {
-            $year = $lay['year'];
-        }
 
-        if(isset($_POST['season'])) {
-            $season = $_POST['season'];
-        } else {
-            $season = $lay['season'];
-        }
+    if ( $last_active_year) {
+        foreach($last_active_year as $lay) {
+            if(isset($_POST['year'])) {
+                $year = $_POST['year'];
+            } else {
+                $year = $lay['year'];
+            }
 
-        if(isset($_POST['playoffs'])) {
-            $playoffs = $_POST['playoffs'];
-        } else {
-            $playoffs = "Regular Season";
+            if(isset($_POST['season'])) {
+                $season = $_POST['season'];
+            } else {
+                $season = $lay['season'];
+            }
+
+            if(isset($_POST['playoffs'])) {
+                $playoffs = $_POST['playoffs'];
+            } else {
+                $playoffs = "Regular Season";
+            }
         }
+        $query = $this->db->query("
+            select b.pa, b.ab, b.hits, b.hr, b.rbi,
+                b.bb, b.runs, b.hbp, b.sac, b.roe,
+                b.single, b.double, b.triple, b.tb,
+                b.so, b.gidp, b.sb, b.cs, b.player_id,
+                b.game_id, b.season_id, s.season,
+                o.opponent_id, o.opponent
+            from batting b
+                join season s on (s.season_id = b.season_id)
+                join game g on (g.game_id = b.game_id)
+                join opponent o on (o.opponent_id = g.opponent_id)
+            where b.player_id = ?
+            and s.year = ?
+            and s.season = ?
+            and b.playoff = ?
+        ", array($player_id, $year, $season, $playoffs));
+
+        return $query->result_array();
+    } else {
+        return null;
     }
-    $query = $this->db->query("
-        select b.pa, b.ab, b.hits, b.hr, b.rbi,
-            b.bb, b.runs, b.hbp, b.sac, b.roe,
-            b.single, b.double, b.triple, b.tb,
-            b.so, b.gidp, b.sb, b.cs, b.player_id,
-            b.game_id, b.season_id, s.season,
-            o.opponent_id, o.opponent
-        from batting b
-            join season s on (s.season_id = b.season_id)
-            join game g on (g.game_id = b.game_id)
-            join opponent o on (o.opponent_id = g.opponent_id)
-        where b.player_id = ?
-        and s.year = ?
-        and s.season = ?
-        and b.playoff = ?
-    ", array($player_id, $year, $season, $playoffs));
-
-    return $query->result_array();
 }
 
 public function select() {
@@ -687,7 +716,8 @@ public function select_fielding() {
 
 public function last_three_games() {
     $query = $this->db->query("
-        select o.opponent, g.result
+        select o.opponent, o.opponent_id,
+            g.result, g.game_id, g.season_id
         from opponent o
             join game g on (g.opponent_id = o.opponent_id)
         where g.result <> ''
@@ -745,7 +775,7 @@ function fld($po, $a, $tc) {
 
 function opp_avg($hits, $opp_ab) {
     if (!isset($opp_ab)) {
-        $opp_avg = NULL;
+        $opp_avg = "0.000";
     } else {
         $opp_avg = number_format(($hits/$opp_ab),3);
     }
