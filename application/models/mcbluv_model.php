@@ -608,7 +608,7 @@ public function select() {
     }
 
     $query = $this->db->query("
-        select sum(b.player_id) as player_id, sum(b.season_id) as season_id,
+        select b.player_id as player_id, sum(b.season_id) as season_id,
             sum(b.pa) as pa, sum(b.ab) as ab, sum(b.hits) as hits, sum(b.hr) as hr,
             sum(b.rbi) as rbi, sum(b.bb) as bb, sum(b.runs) as runs,
             sum(b.hbp) as hbp, sum(b.sac) as sac, sum(b.roe) as roe,
@@ -655,7 +655,7 @@ public function select_pitching() {
     }
 
     $query = $this->db->query("
-        select sum(p.runs) as runs, sum(p.er) as er, sum(p.walks) as walks,
+        select p.player_id as player_id, sum(p.runs) as runs, sum(p.er) as er, sum(p.walks) as walks,
             sum(p.hbp) as hbp, sum(p.hits) as hits, sum(p.ip) as ip,
             sum(p.so) as so, sum(p.qs) as qs, sum(p.cg) as cg,
             sum(p.opp_pa) as opp_pa, sum(p.opp_ab) as opp_ab,
@@ -701,7 +701,7 @@ public function select_fielding() {
     }
 
     $query = $this->db->query("
-                select sum(f.tc) as tc, sum(f.po) as po,
+                select f.player_id as player_id, sum(f.tc) as tc, sum(f.po) as po,
                     sum(f.a) as a, sum(f.errors) as errors,
                     p.first, p.last
                 from fielding f

@@ -65,8 +65,6 @@
 <br />
 
 <?php
-if($select_by_year) {
-echo "<h2 align=\"center\">Batting</h2>";
     echo "<div id=\"filterWrapper\">";
 
     foreach($select_by_year as $select) {
@@ -119,11 +117,9 @@ echo "<h2 align=\"center\">Batting</h2>";
 		echo form_close();
 
 	echo "</div>";
+    echo "<h2 align=\"center\">Batting</h2>";
 echo "</div>"; // <!-- end div filterWrapper -->
-}
-    
 ?>
-
 
 <div id="battingWrapper">
 <table class="hitting">

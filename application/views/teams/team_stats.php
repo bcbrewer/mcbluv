@@ -40,8 +40,9 @@
 						echo "<th class=\"individual_header\">$category</th>";
 					}
 					foreach($selects as $select) {
+                    $query_string = '&player_id=' .urlencode($select['player_id']);
 						echo "<tr>";
-						echo "<td class=\"individual_name\">{$select['first']} {$select['last']}</td>
+						echo "<td class=\"individual_name\"><a href=\"?c=players&m=player". htmlentities($query_string) . "\">{$select['first']} {$select['last']}</a></td>
 							  <td class=\"individual_stats\">{$select['pa']}</td>
 							  <td class=\"individual_stats\">{$select['ab']}</td>
 							  <td class=\"individual_stats\">{$select['hits']}</td>
@@ -78,8 +79,9 @@
 					echo "<th class=\"individual_header\">$pitch_category</th>";
 				}
 				foreach($selects_pitching as $select_pitching) {
+                    $query_string = '&player_id=' .urlencode($select_pitching['player_id']);
 					echo "<tr>";
-					echo" <td class=\"individual_name\">{$select_pitching['first']} {$select_pitching['last']}</td>
+					echo" <td class=\"individual_name\"><a href=\"?c=players&m=player". htmlentities($query_string) . "\">{$select_pitching['first']} {$select_pitching['last']}</a></td>
 						  <td class=\"individual_pitching_stats\">{$select_pitching['wins']}-{$select_pitching['loss']}</td>";
 					echo "<td class=\"individual_pitching_stats\">"; echo $this->mcbluv_model->era($select_pitching['er'], $select_pitching['ip']); echo "</td>";
 					echo "<td class=\"individual_pitching_stats\">{$select_pitching['save']}</td>
@@ -113,8 +115,9 @@
 			}
 
 			foreach($selects_fielding as $select_fielding) {
+                $query_string = '&player_id=' .urlencode($select_fielding['player_id']);
 				echo "<tr>";
-					echo "<td class=\"individual_name\">{$select_fielding['first']} {$select_fielding['last']}</td>
+					echo "<td class=\"individual_name\"><a href=\"?c=players&m=player". htmlentities($query_string) . "\">{$select_fielding['first']} {$select_fielding['last']}</a></td>
 						  <td class=\"individual_fielding_stats\">{$select_fielding['tc']}</td>
 						  <td class=\"individual_fielding_stats\">{$select_fielding['po']}</td>
 						  <td class=\"individual_fielding_stats\">{$select_fielding['a']}</td>
@@ -149,7 +152,7 @@
 							} else {
 								$rowColor = "";
 							}
-							$query_string = '&opp_id=' .urlencode($sum_team_stats_batting['opponent_id']) . '&gm=' .urlencode($sum_team_stats_batting['game_id']) . '&season_id=' .urlencode($sum_team_stats_batting['season_id']);
+							$query_string = '&opp_id=' .urlencode($sum_team_stats_batting['opponent_id']) . '&gm=' .urlencode($sum_team_stats_batting['game_id']);
 							echo "</tr>";
 							echo "<tr bgcolor=\"$rowColor\">";
 							echo "<td class=\"align_left\"><a href=\"?c=opponents&amp;m=opponent" .htmlentities($query_string) ."\">$sum_team_stats_batting[opponent]</a></td>";
@@ -225,7 +228,7 @@
 								} else {
 									$rowColor = "";
 								}
-									$query_string = '&opp_id=' .urlencode($sum_team_stats_pitching['opponent_id']) . '&gm=' .urlencode($sum_team_stats_pitching['game_id']) . '&season_id=' .urlencode($sum_team_stats_pitching['season_id']);
+									$query_string = '&opp_id=' .urlencode($sum_team_stats_pitching['opponent_id']) . '&gm=' .urlencode($sum_team_stats_pitching['game_id']);
 									echo "<tr bgcolor=\"$rowColor\">";
 									echo "<td class=\"align_left\"><a href=\"?c=opponents&amp;m=opponent" .htmlentities($query_string) ."\">$sum_team_stats_pitching[opponent]</a></td>";
 									echo "<td>{$sum_team_stats_pitching['record']}</td>";
@@ -297,7 +300,7 @@
 						} else {
 							$rowColor = "";
 						}
-						$query_string = '&opp_id=' .urlencode($sum_team_game_fielding['opponent_id']) . '&gm=' .urlencode($sum_team_game_fielding['game_id']) . '&season_id=' .urlencode($sum_team_game_fielding['season_id']);
+						$query_string = '&opp_id=' .urlencode($sum_team_game_fielding['opponent_id']) . '&gm=' .urlencode($sum_team_game_fielding['game_id']);
 						echo "<tr bgcolor=\"$rowColor\"><td class=\"align_left\"><a href=\"?c=opponents&amp;m=opponent" .htmlentities($query_string) ."\">$sum_team_game_fielding[opponent]</a></td>";
 							echo "<td>{$sum_team_game_fielding['tc']}</td>
 								  <td>{$sum_team_game_fielding['po']}</td>
