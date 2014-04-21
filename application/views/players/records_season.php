@@ -10,7 +10,7 @@
 	foreach($avg_leaders as $avg_leader) {
 		if($avg_leader['pa'] >= 44) {
 		// if($avg_leader['hits']/$avg_leader['ab'] >= 0.300) {
-		$query_string = '&player_id=' .urlencode($avg_leader['player_id']) . '&season_id=' .urlencode($avg_leader['season_id']);
+		$query_string = '&player_id=' .urlencode($avg_leader['player_id']);
 				echo "<tr class=white><td class=team_leaders><a href=\"?c=players&m=player" .htmlentities($query_string) ."\">{$avg_leader['first']} {$avg_leader['last']}</a></td> "; echo "<td>"; echo $this->mcbluv_model->batting_avg($avg_leader['hits'], $avg_leader['ab']); echo "</td></tr>";
 		// }
 		}
@@ -27,7 +27,7 @@
 	<h3>Hits Leaders</h3>
 <?php
 	foreach($hits_leaders as $hit_leader) {
-		$query_string = '&player_id=' .urlencode($hit_leader['player_id']) . '&season_id=' .urlencode($hit_leader['season_id']);
+		$query_string = '&player_id=' .urlencode($hit_leader['player_id']);
 		echo "<tr class=white><td class=team_leaders><a href=\"?c=players&m=player" .htmlentities($query_string) ."\">{$hit_leader['first']} {$hit_leader['last']}</a></td><td>{$hit_leader['hits']}</td></tr>";
 	}
 ?>
@@ -41,12 +41,8 @@
 	<h3>Homerun Leaders</h3>
 <?php
 	foreach($hr_leaders as $hr_leader) {
-		$query_string = '&player_id=' .urlencode($hr_leader['player_id']) . '&season_id=' .urlencode($hr_leader['season_id']);
-		// if($hr_leader['hr'] == 0) {
-		// 			echo "";
-		// 		} else {
+		$query_string = '&player_id=' .urlencode($hr_leader['player_id']);
 			echo "<tr class=white><td class=team_leaders><a href=\"?c=players&m=player" .htmlentities($query_string) ."\">{$hr_leader['first']} {$hr_leader['last']}</a></td><td>{$hr_leader['hr']}</td></tr>";
-		// }
 	}
 ?>
 </table>
@@ -59,7 +55,7 @@
 	<h3>Runs Leaders</h3>
 <?php
 	foreach($runs_leaders as $runs_leader) {
-		$query_string = '&player_id=' .urlencode($runs_leader['player_id']) . '&season_id=' .urlencode($runs_leader['season_id']);
+		$query_string = '&player_id=' .urlencode($runs_leader['player_id']);
 		echo "<tr class=white><td class=team_leaders><a href=\"?c=players&m=player" .htmlentities($query_string) ."\">{$runs_leader['first']} {$runs_leader['last']}</a></td><td>{$runs_leader['runs']}</td></tr>";
 	}
 ?>
@@ -73,7 +69,7 @@
 	<h3>RBI Leaders</h3>
 <?php
 	foreach($rbi_leaders as $rbi_leader) {
-		$query_string = '&player_id=' .urlencode($rbi_leader['player_id']) . '&season_id=' .urlencode($rbi_leader['season_id']);
+		$query_string = '&player_id=' .urlencode($rbi_leader['player_id']);
 		echo "<tr class=white><td class=team_leaders><a href=\"?c=players&m=player" .htmlentities($query_string) ."\">{$rbi_leader['first']} {$rbi_leader['last']}</a></td><td>{$rbi_leader['rbi']}</td></tr>";
 	}
 ?>
@@ -87,7 +83,7 @@
 	<h3>SB Leaders</h3>
 <?php
 	foreach($sb_leaders as $sb_leader) {
-		$query_string = '&player_id=' .urlencode($sb_leader['player_id']) . '&season_id=' .urlencode($sb_leader['season_id']);
+		$query_string = '&player_id=' .urlencode($sb_leader['player_id']);
 		echo "<tr class=white><td class=team_leaders><a href=\"?c=players&m=player" .htmlentities($query_string) ."\">{$sb_leader['first']} {$sb_leader['last']}</a></td><td>{$sb_leader['sb']}</td></tr>";
 	}
 ?>
@@ -108,7 +104,7 @@
 	<h3>Wins Leaders</h3>
 <?php
 	foreach($wins_leaders as $wins_leader) {
-		$query_string = '&player_id=' .urlencode($wins_leader['player_id']) . '&season_id=' .urlencode($wins_leader['season_id']);
+		$query_string = '&player_id=' .urlencode($wins_leader['player_id']);
 		echo "<tr class=white><td class=team_leaders><a href=\"?c=players&m=player" .htmlentities($query_string) ."\">{$wins_leader['first']} {$wins_leader['last']}</a></td><td>{$wins_leader['wins']}</td></tr>";
 	}
 ?>
@@ -122,7 +118,7 @@
 	<h3>Quality Starts Leaders</h3>
 <?php
 	foreach($qs_leaders as $qs_leader) {
-		$query_string = '&player_id=' .urlencode($qs_leader['player_id']) . '&season_id=' .urlencode($qs_leader['season_id']);
+		$query_string = '&player_id=' .urlencode($qs_leader['player_id']);
 		echo "<tr class=white><td class=team_leaders><a href=\"?c=players&m=player" .htmlentities($query_string) ."\">{$qs_leader['first']} {$qs_leader['last']}</a></td><td>{$qs_leader['qs']}</td></tr>";
 	}
 ?>
@@ -136,7 +132,7 @@
 	<h3>Saves Leaders</h3>
 <?php
 	foreach($saves_leaders as $saves_leader) {
-		$query_string = '&player_id=' .urlencode($saves_leader['player_id']) . '&season_id=' .urlencode($saves_leader['season_id']);
+		$query_string = '&player_id=' .urlencode($saves_leader['player_id']);
 		echo "<tr class=white><td class=team_leaders><a href=\"?c=players&m=player" .htmlentities($query_string) ."\">{$saves_leader['first']} {$saves_leader['last']}</a></td><td>{$saves_leader['save']}</td></tr>";
 	}
 ?>
@@ -150,7 +146,7 @@
 	<h3>Strikeout Leaders</h3>
 <?php
 	foreach($strikeouts_leaders as $strikeout_leader) {
-		$query_string = '&player_id=' .urlencode($strikeout_leader['player_id']) . '&season_id=' .urlencode($strikeout_leader['season_id']);
+		$query_string = '&player_id=' .urlencode($strikeout_leader['player_id']);
 		echo "<tr class=white><td class=team_leaders><a href=\"?c=players&m=player" .htmlentities($query_string) ."\">{$strikeout_leader['first']} {$strikeout_leader['last']}</a></td><td>{$strikeout_leader['so']}</td></tr>";
 	}
 ?>
@@ -165,7 +161,7 @@
 <?php
 	foreach($era_leaders as $era_leader) {
 		if ($era_leader['ip'] > 12) {
-		$query_string = '&player_id=' .urlencode($era_leader['player_id']) . '&season_id=' .urlencode($era_leader['season_id']);
+		$query_string = '&player_id=' .urlencode($era_leader['player_id']);
 		echo "<tr class=white><td class=team_leaders><a href=\"?c=players&m=player" .htmlentities($query_string) ."\">{$era_leader['first']} {$era_leader['last']}</a></td> "; echo "<td>"; echo $this->mcbluv_model->era($era_leader['er'], $era_leader['ip']); echo "</td></tr>";
 	}
 }
@@ -181,7 +177,7 @@
 <?php
 	foreach($whip_leaders as $whip_leader) {
 		if ($whip_leader['ip'] > 12) {
-		$query_string = '&player_id=' .urlencode($whip_leader['player_id']) . '&season_id=' .urlencode($whip_leader['season_id']);
+		$query_string = '&player_id=' .urlencode($whip_leader['player_id']);
 		echo "<tr class=white><td class=team_leaders><a href=\"?c=players&m=player" .htmlentities($query_string) ."\">{$whip_leader['first']} {$whip_leader['last']}</a></td> "; echo "<td>"; echo $this->mcbluv_model->whip($whip_leader['walks'], $whip_leader['hits'], $whip_leader['ip']); echo "</td></tr>";
 	}
 }

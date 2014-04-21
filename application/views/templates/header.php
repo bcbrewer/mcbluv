@@ -44,22 +44,6 @@
 			<div id="content">
 				<div id="header">
 				<!--	<img class="header" src="images/smiley.jpg" alt="" /> --!>
-						<?php
-							// if(!empty($sel_game_id)) {
-							// 								echo "<div style=\"margin-left: 80px;\">";
-							// 									foreach($sel_game_id as $sel_game) {
-							// 										$date = date('n/j/Y', strtotime($sel_game['date']));
-							// 										echo "<h1>$sel_game[opponent]</h1><h3>{$date}</h3>";
-							// 									} 
-							// 								echo "</div>";
-							// 							} else {
-							// 								echo "<div id=\"titleWrapper\">";
-							// 									if(isset($title)) { 
-							// 										echo $title; 
-							// 									}
-							// 								echo "</div>"; // End Div titleWrapper
-							// 							}
-						?>
 				</div> <!-- end div header -->
 					<div id="navWrapper">
 						<div id="menuTop">	
@@ -67,7 +51,7 @@
 							<ul id="menuOne" class="menuHoriz">
 								<li><a href="index.php">Home</a></li>
 								<li><a href="?c=team&amp;m=roster" onmouseover="setMenu('menuSubOne')" onmouseout="clearMenu('menuSubOne')">Roster</a></li>
-								<li><a href="?c=team&amp;m=schedule&amp;season_id=6" onmouseover="setMenu('menuSubTwo')" onmouseout="clearMenu('menuSubTwo')">Schedule</a></li>
+								<li><a href="?c=team&amp;m=schedule" onmouseover="setMenu('menuSubTwo')" onmouseout="clearMenu('menuSubTwo')">Schedule</a></li>
 								<li><a href="?c=team&amp;m=team_stats" onmouseover="setMenu('menuSubThree')" onmouseout="clearMenu('menuSubThree')">Team Stats</a></li>
 								<li><a href="?c=team&amp;m=team_leaders" onmouseover="setMenu('menuSubFour')" onmouseout="clearMenu('menuSubFour')">Team Leaders</a></li>
 								<li><a href="#" onmouseover="setMenu('menuSubFive')" onmouseout="clearMenu('menuSubFive')">Records</a></li>
@@ -79,7 +63,8 @@
 								<?php
 									foreach($rosters as $roster) {
 										if ($roster['active_p']) {
-											echo "<li><a href=\"?c=players&amp;m=player&amp;player_id={$roster['player_id']}&amp;season_id=6\">{$roster['first']} {$roster['last']}</a></li>";
+                                            $query_string = '&player_id=' . urlencode($roster['player_id']);
+											echo "<li><a href=\"?c=players&amp;m=player" .htmlentities($query_string) ."\">{$roster['first']} {$roster['last']}</a></li>";
 										} else {
 											echo "";
 										}	
@@ -89,7 +74,8 @@
 							<ul id="menuSubTwo" class="menuVert" onmouseover="setMenu('menuSubTwo')" onmouseout="clearMenu('menuSubTwo')">
 								<?php
 									foreach($opponents as $opponent) {
-										echo "<li><a href=\"?c=opponents&amp;m=opponent&amp;opp_id={$opponent['opponent_id']}&amp;gm={$opponent['game_id']} \">{$opponent['opponent']}</a></li>";
+                                        $query_string = '&opp_id=' . urlencode($opponent['opponent_id']) . '&gm=' . urlencode($opponent['game_id']);
+										echo "<li><a href=\"?c=opponents&amp;m=opponent" .htmlentities($query_string) ."\">{$opponent['opponent']}</a></li>";
 									}
 								?>
 							</ul>
@@ -97,13 +83,14 @@
 							<ul id="menuSubThree" class="menuVert" onmouseover="setMenu('menuSubThree')" onmouseout="clearMenu('menuSubThree')">
 								<?php	
 									foreach($all_seasons as $current) {
-								   		echo"<li><a href=\"?c=team&amp;m=team_stats&amp;season_id={$current['season_id']}\">"; echo ucfirst($current['season'])." ".$current['year']; echo"</a></li>";
+                                        $query_string = '&season_id=' . urlencode($current['season_id']);
+								   		echo"<li><a href=\"?c=team&amp;m=team_stats" .htmlentities($query_string) ."\">"; echo ucfirst($current['season'])." ".$current['year']; echo"</a></li>";
 									}
 								?>		
 							</ul>
 				
 							<ul id="menuSubFive" class="menuVert" onmouseover="setMenu('menuSubFive')" onmouseout="clearMenu('menuSubFive')">
-								<li><a href="?c=players&amp;m=records_season&amp;season_id=1">2011</a></li>
+                                <li><a href="?c=players&amp;m=records_season&amp;season_id=1">2011</a></li>
 								<li><a href="?c=players&amp;m=records_season&amp;season_id=3">2012</a></li>
 								<li><a href="?c=players&amp;m=records_season&amp;season_id=5">2013</a></li>
 								<li><a href="?c=players&amp;m=records_season&amp;season_id=6">2014</a></li>
