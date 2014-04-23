@@ -152,11 +152,12 @@
 							} else {
 								$rowColor = "";
 							}
-							$query_string = '&opp_id=' .urlencode($sum_team_stats_batting['opponent_id']) . '&gm=' .urlencode($sum_team_stats_batting['game_id']);
+							$opp_string = '&opp_id=' .urlencode($sum_team_stats_batting['opponent_id']);
+							$game_string = '&gm=' .urlencode($sum_team_stats_batting['game_id']);
 							echo "</tr>";
 							echo "<tr bgcolor=\"$rowColor\">";
-							echo "<td class=\"align_left\"><a href=\"?c=opponents&amp;m=opponent" .htmlentities($query_string) ."\">$sum_team_stats_batting[opponent]</a></td>";
-								echo "<td>{$sum_team_stats_batting['result']}</td>
+							echo "<td class=\"align_left\"><a href=\"?c=opponents&amp;m=opponent" . htmlentities($opp_string) . "\">$sum_team_stats_batting[opponent]</a></td>";
+								echo "<td><a href=\"?c=opponents&amp;m=game" . htmlentities($game_string) . "\">{$sum_team_stats_batting['result']}</a></td>
 									  <td>{$sum_team_stats_batting['pa']}</td>
 								 	  <td>{$sum_team_stats_batting['ab']}</td>
 								 	  <td>{$sum_team_stats_batting['runs']}</td>
@@ -228,7 +229,7 @@
 								} else {
 									$rowColor = "";
 								}
-									$query_string = '&opp_id=' .urlencode($sum_team_stats_pitching['opponent_id']) . '&gm=' .urlencode($sum_team_stats_pitching['game_id']);
+									$query_string = '&opp_id=' .urlencode($sum_team_stats_pitching['opponent_id']);
 									echo "<tr bgcolor=\"$rowColor\">";
 									echo "<td class=\"align_left\"><a href=\"?c=opponents&amp;m=opponent" .htmlentities($query_string) ."\">$sum_team_stats_pitching[opponent]</a></td>";
 									echo "<td>{$sum_team_stats_pitching['record']}</td>";
@@ -300,7 +301,7 @@
 						} else {
 							$rowColor = "";
 						}
-						$query_string = '&opp_id=' .urlencode($sum_team_game_fielding['opponent_id']) . '&gm=' .urlencode($sum_team_game_fielding['game_id']);
+						$query_string = '&opp_id=' .urlencode($sum_team_game_fielding['opponent_id']);
 						echo "<tr bgcolor=\"$rowColor\"><td class=\"align_left\"><a href=\"?c=opponents&amp;m=opponent" .htmlentities($query_string) ."\">$sum_team_game_fielding[opponent]</a></td>";
 							echo "<td>{$sum_team_game_fielding['tc']}</td>
 								  <td>{$sum_team_game_fielding['po']}</td>

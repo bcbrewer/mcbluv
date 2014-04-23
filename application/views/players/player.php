@@ -68,7 +68,7 @@
     echo "<div id=\"filterWrapper\">";
 
     foreach($select_by_year as $select) {
-	    $query_string = '&player_id=' .urlencode($select['player_id']) . '&season_id=' .urlencode($select['season_id']);
+	    $query_string = '&player_id=' .urlencode($select['player_id']);
 
 	    echo form_open('c=players&m=player'.htmlentities($query_string));
     }
@@ -140,10 +140,10 @@ echo "</div>"; // <!-- end div filterWrapper -->
 
             $opp = array_pop($sel_player);
 			
-			$query_string = '&opp_id=' .urlencode($sel_player['opponent_id']) . '&gm=' .urlencode($sel_player['game_id']) . '&season_id=' .urlencode($sel_player['season_id']);
+			$query_string = '&gm=' .urlencode($sel_player['game_id']);
 			
 			echo "<tr bgcolor=\"{$rowColor}\">";
-					echo "<td class=\"opp_column\"><a href=\"?c=opponents&amp;m=opponent" .htmlentities($query_string) ."\">$opp</a></td>";
+					echo "<td class=\"opp_column\"><a href=\"?c=opponents&amp;m=game" .htmlentities($query_string) ."\">$opp</a></td>";
 					foreach($sel_player as $key => $value) {
 						if(in_array(($key), array_keys($categories))) {
 							echo "<td>{$value}</td>";		
@@ -198,13 +198,13 @@ echo "</div>"; // <!-- end div filterWrapper -->
 			} else { # An even row
 				$rowColor = "";
 			}
-			$query_string = '&opp_id=' .urlencode($sel_pitch['opponent_id']) . '&gm=' .urlencode($sel_pitch['game_id']);
+			$query_string = '&gm=' .urlencode($sel_pitch['game_id']);
 			if( $sel_pitch['opp_ab'] > 0 ) {
 				$opp_avg = $this->mcbluv_model->opp_avg($sel_pitch['hits'], $sel_pitch['opp_ab']);
 			} else {
 				$opp_avg = "0.000";
 			}
-			echo "<tr bgcolor=" . $rowColor . "><td class=\"player_column\"><a href=\"?c=opponents&amp;m=opponent" .htmlentities($query_string) ."\">$sel_pitch[opponent]</a></td>
+			echo "<tr bgcolor=" . $rowColor . "><td class=\"player_column\"><a href=\"?c=opponents&amp;m=game" . htmlentities($query_string) . "\">$sel_pitch[opponent]</a></td>
 				  <td class=\"border\">{$sel_pitch['record']}</td>";
 			echo "<td class=\"border\">"; echo $this->mcbluv_model->era($sel_pitch['er'], $sel_pitch['ip']);
 			echo "</td>";
@@ -287,9 +287,9 @@ echo "</div>"; // <!-- end div filterWrapper -->
 			} else { # An even row
 			    $rowColor = "";
 			}
-			$query_string = '&opp_id=' .urlencode($sel_field['opponent_id']) . '&gm=' .urlencode($sel_field['game_id']);
+			$query_string = '&gm=' .urlencode($sel_field['game_id']);
 			echo "
-			<tr bgcolor=" . $rowColor . "><td class=\"player_column\"><a href=\"?c=opponents&amp;m=opponent" .htmlentities($query_string) ."\">$sel_field[opponent]</a></td>
+			<tr bgcolor=" . $rowColor . "><td class=\"player_column\"><a href=\"?c=opponents&amp;m=game" . htmlentities($query_string) . "\">$sel_field[opponent]</a></td>
 		 	<td class=\"border\">{$sel_field['tc']}</td>
 	  	 	<td class=\"border\">{$sel_field['po']}</td>
 			<td class=\"border\">{$sel_field['a']}</td>

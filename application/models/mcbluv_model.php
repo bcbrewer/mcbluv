@@ -111,36 +111,47 @@ public function get_all_players() {
 	return $query->result_array();
 }
 	
-public function get_photos() {
+public function get_photos($id = null) {
 		$backgrounds = "../../images/backgrounds%";
 		$headshots = "../../images/headshots%";
 		$logos = "../../images/logos%";
 		$no_format = "../../images/no_format%";
 		
 	if($this->get_type() == 4) { // Photos
-		$where = " where i.file_path NOT LIKE ?
-					and i.file_path NOT LIKE ?
-					and i.file_path NOT LIKE ?
-					and i.file_path NOT LIKE ?";
+        $join = "";
+		$where = " where i.file_path NOT LIKE ?";
+		$and = " and i.file_path NOT LIKE ?
+				and i.file_path NOT LIKE ?
+				and i.file_path NOT LIKE ?";
 		$params = array($backgrounds, $headshots, $logos, $no_format);
-	} elseif($this->get_type() == 3) { // Opponents
-		$game_id = $_REQUEST['gm'];
-		$where = " where im.game_id = ?
-					and i.file_path NOT LIKE ?
-					and i.file_path NOT LIKE ?
-					and i.file_path NOT LIKE ?
-					and i.file_path NOT LIKE ?";
-		$params = array($game_id, $backgrounds, $headshots, $logos, $no_format);
+	} elseif($this->get_type() == 3 || $this->get_type() == 12) { // Opponents or Game
+		if (isset($_REQUEST['gm'])) {
+            $id = $_REQUEST['gm'];
+            $join = "";
+            $where = " where im.game_id = ?";
+        } else {
+            $id = $_REQUEST['opp_id'];
+            $join = " join game g on (g.game_id = im.game_id)";
+            $where = " where g.opponent_id = ?";
+        }
+		$and = " and i.file_path NOT LIKE ?
+				and i.file_path NOT LIKE ?
+				and i.file_path NOT LIKE ?
+				and i.file_path NOT LIKE ?";
+		$params = array($id, $backgrounds, $headshots, $logos, $no_format);
 	} elseif($this->get_type() == 2) { // Players
-		$player_id = $_REQUEST['player_id'];
-		$where = " where im.player_id = ?
-					and i.file_path NOT LIKE ?
-					and i.file_path NOT LIKE ?
-					and i.file_path NOT LIKE ?
-					and i.file_path NOT LIKE ?";
-		$params = array($player_id, $backgrounds, $headshots, $logos, $no_format);
+		$id = $_REQUEST['player_id'];
+        $join = "";
+        $where = " where im.player_id = ?";
+		$and = " and i.file_path NOT LIKE ?
+				and i.file_path NOT LIKE ?
+				and i.file_path NOT LIKE ?
+				and i.file_path NOT LIKE ?";
+		$params = array($id, $backgrounds, $headshots, $logos, $no_format);
 	} else {
+        $join = "";
 		$where = "";
+        $and = "";
 		$params = "";
 	}
 		
@@ -150,7 +161,9 @@ public function get_photos() {
 			im.opponent_id, im.season_id, im.caption
 		from images i
     		join image_map im on (im.image_id = i.id)
+            $join
 		$where
+        $and
 	", $params);
 			
 	return $query->result_array();
@@ -171,19 +184,26 @@ public function get_pictures_for_game() {
 	return $query->result_array();
 }
 
-public function get_opponent_logo() {
-    $opponent_id = $_REQUEST['opp_id'];
+public function get_opponent_logo($id) {
+    if (isset($_REQUEST['opp_id'])) {
+        $param = $_REQUEST['opp_id'];
+        $where = "where o.opponent_id = ?";
+    } else {
+        $where = "where g.game_id = ?";
+        $param = $id;
+    }
     $query = $this->db->query("
         select o.opponent, i.id, i.file_path, i.raw, i.width, i.height,
             im.id as image_map_id, im.type_id, im.player_id, im.game_id,
             im.opponent_id, im.season_id, im.caption
-        from images i
-            join image_map im on (im.image_id = i.id)
-            join opponent o on (o.opponent_id = im.opponent_id)
-        where im.opponent_id = ?
+        from game g
+            join opponent o on (o.opponent_id = g.opponent_id)
+            join image_map im on (im.opponent_id = o.opponent_id)
+            join images i on (i.id = im.image_id)
+        $where
         and im.game_id is null
         limit 1
-    ", array($opponent_id));
+    ", array($param));
 
     return $query->result_array();
 }	
@@ -227,14 +247,13 @@ public function get_fielding_by_id() {
    return $query->result_array();
 }
 
-public function get_opponent_by_id() {
-   $game_id = $_REQUEST['gm'];
+public function get_opponent_by_id($id = null) {
    $query = $this->db->query("
        select g.*, o.*
        from game g
            join opponent o on (o.opponent_id = g.opponent_id)
        where g.game_id = ?
-   ", array($game_id));
+   ", array($id));
 
    return $query->result_array();
 }

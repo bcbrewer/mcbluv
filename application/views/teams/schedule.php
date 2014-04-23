@@ -113,8 +113,15 @@
 			echo "<td class=\"position\"></td>";
 			echo "<td class=\"position\"></td></tr>";
 		}
-		$query_string = '&opp_id=' .urlencode($schedule['opponent_id']) . '&gm=' .urlencode($schedule['game_id']);
-		echo "<tr><td class=\"column1\"><a href=\"?c=opponents&amp;m=opponent" .htmlentities($query_string) . "\">{$schedule['opponent']}</a></td><td class=\"column1\">{$dow}, {$date}</td><td class=\"column1\">{$time}</td><td class=\"column1\">{$schedule['field_name']}</td><td class=\"column1\">{$schedule['result']}</td><td class=\"column1\">{$schedule['location']}</td></tr>";
+		$query_string = '&gm=' .urlencode($schedule['game_id']);
+		echo "<tr>
+                <td class=\"column1\"><a href=\"?c=opponents&amp;m=game" . htmlentities($query_string) . "\">{$schedule['opponent']}</a></td>
+                <td class=\"column1\">{$dow}, {$date}</td>
+                <td class=\"column1\">{$time}</td>
+                <td class=\"column1\">{$schedule['field_name']}</td>
+                <td class=\"column1\">{$schedule['result']}</td>
+                <td class=\"column1\">{$schedule['location']}</td>
+            </tr>";
 	}
 
 	?>

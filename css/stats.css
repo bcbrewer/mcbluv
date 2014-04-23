@@ -116,7 +116,7 @@ img {
 
 .homeTitle {
     width: relative;
-    line-height: 40px;
+    line-height: 50px;
     font-size: 35px;
     padding: 0 100px 0 100px;
     font-family: 'Promesh-mesh', Arial, sans-serif;
@@ -367,6 +367,16 @@ tr.white {
 	
 #last_three {
 	margin-left: 20px;
+    font-size: 15px;
+    font-family: 'Promesh-mesh', Arial, sans-serif;
+}
+
+#last_three a:link, #last_three a:visited {
+    color: black;
+}
+
+#last_three a:hover {
+    color: #FF1493;
 }
 
 #battingWrapper {

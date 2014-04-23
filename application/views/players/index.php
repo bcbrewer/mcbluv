@@ -53,16 +53,26 @@
 ?>
 
 <div id="last_three">
-<table height="320px" width="200px">
-	<tr height="5px">
-		<td style="border-bottom: solid 2px;">
-			<h2 align="left">Last Three Games:</h2>
-		</td>
+<table style="height: 320px;">
+	<tr style="border-bottom: solid 2px;">
+	    <h2 align="left">Last Three Games:</h2>
 	</tr>
 		<?php
 			foreach($last_three_games as $last_three) {
-                $query_string = '&opp_id=' .urlencode($last_three['opponent_id']) . '&gm=' .urlencode($last_three['game_id']);
-				echo "<tr><td><h4 align=left><a href=\"?c=opponents&amp;m=opponent" .htmlentities($query_string) ."\">{$last_three['opponent']}</a>: {$last_three['result']}</h4></td></tr>";
+                $game_string = '&gm=' .urlencode($last_three['game_id']);
+                $opp_string = '&opp_id=' .urlencode($last_three['opponent_id']);
+				echo "<tr>
+                        <td style=\"padding-left: 10px; \">
+                            <h4 align=left>
+                                <a href=\"?c=opponents&amp;m=opponent" . htmlentities($opp_string) . "\">{$last_three['opponent']}</a>
+                            </h4>
+                        </td>
+                        <td style=\"padding-left: 10px; padding-right: 30px;\">
+                            <h5 align=left>
+                                <a href=\"?c=opponents&amp;m=game" . htmlentities($game_string) . "\">{$last_three['result']}</a>
+                            </h5>
+                        </td>
+                    </tr>";
 			}
 		?>
 

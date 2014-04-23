@@ -74,8 +74,8 @@
 							<ul id="menuSubTwo" class="menuVert" onmouseover="setMenu('menuSubTwo')" onmouseout="clearMenu('menuSubTwo')">
 								<?php
 									foreach($opponents as $opponent) {
-                                        $query_string = '&opp_id=' . urlencode($opponent['opponent_id']) . '&gm=' . urlencode($opponent['game_id']);
-										echo "<li><a href=\"?c=opponents&amp;m=opponent" .htmlentities($query_string) ."\">{$opponent['opponent']}</a></li>";
+                                        $query_string = '&gm=' . urlencode($opponent['game_id']);
+										echo "<li><a href=\"?c=opponents&amp;m=game" .htmlentities($query_string) ."\">{$opponent['opponent']}</a></li>";
 									}
 								?>
 							</ul>
