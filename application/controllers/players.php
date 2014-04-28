@@ -5,6 +5,7 @@ class Players extends CI_Controller {
 	public function __construct() {
 		parent::__construct();
 		$this->load->model('mcbluv_model');
+        $this->load->model('update_model');
 	}
 	
 	public function index() {
@@ -14,6 +15,7 @@ class Players extends CI_Controller {
 		$data['next_games'] = $this->mcbluv_model->next_game();
 		$data['sel_player_name'] = $this->mcbluv_model->find_selected_player();
 		$data['last_three_games'] = $this->mcbluv_model->last_three_games();
+        $data['get_headlines'] = $this->update_model->get_headline();
 		$data['title'] = 'McBluv Baseball'; // Refers to $title on the header
 		$this->load->view('templates/header', $data);
 		$this->load->view('players/index', $data);

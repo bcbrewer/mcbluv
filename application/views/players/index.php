@@ -20,7 +20,43 @@
 ?>
 
 <br />
-<h1 class="homeTitle"; align="center">McBluv looks poised for another great season after 12-3 win over the Diamond Pigs.</h1>
+<?php
+    if ($this->session->userdata('id') != 1) {
+        if ( ! empty($get_headlines) ) {
+            foreach($get_headlines as $headline) {
+                echo "<h1 class=\"homeTitle\"; align=\"center\">{$headline['headline']}</h1>";
+            }
+        } else {
+             echo "<h1 class=\"homeTitle\"; align=\"center\">Welcome to the McBluv Team Website!</h1>";
+        }
+    } else {
+        if ( empty($get_headlines) ) {
+            echo "<div id=\"headline\"; style=\"text-align: center; color: red;\">";
+                echo "<h1>You do not have a headline present in the database</h1>";
+            echo "</div>";
+            $get_headline = "";
+            $headline_id = "";
+        } else {
+            $get_headline = $get_headlines[0]['headline'];
+            $headline_id = $get_headlines[0]['id'];
+        }
+        echo "<h1 class=\"homeTitle\"; align=\"center\">{$get_headline}</h1>";
+        echo form_open_multipart('c=update&amp;m=headline');
+            $headline = array(
+                'name'  => 'headline',
+                'value' => $get_headline,
+                'rows'  => '1',
+                'cols'  => '70'
+            );
+            echo "<div id=\"headline\"; style=\"text-align: center;\">";
+                echo form_textarea($headline);
+                echo form_hidden('headline_id', $headline_id);
+                echo "<br />";
+                echo form_submit('submit', 'Change Headline');
+            echo "</div>";
+        echo form_close();
+    } 
+?>
 <br />
 <!-- <h1 align="center">The Game tomorrow against the Rangers has been CANCELLED.</h1> --!>
 <?php
