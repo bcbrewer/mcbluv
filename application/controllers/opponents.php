@@ -9,6 +9,7 @@ class Opponents extends CI_Controller {
 	
 	public function opponent() {
         $opp_id = $_REQUEST['opp_id'];
+        $data['admin_p'] = $this->mcbluv_model->permissions();
         // Header
 		$data['sel_game_id'] = $this->mcbluv_model->get_opponent_by_id($opp_id);
 		$data['rosters'] = $this->mcbluv_model->get_all_players();
@@ -25,6 +26,7 @@ class Opponents extends CI_Controller {
 
     public function game() {
         $game_id = $_REQUEST['gm'];
+        $data['admin_p'] = $this->mcbluv_model->permissions();;
         // Header
         $data['sel_game_id'] = $this->mcbluv_model->get_opponent_by_id($game_id);
         $data['rosters'] = $this->mcbluv_model->get_all_players();

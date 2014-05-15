@@ -277,7 +277,7 @@ echo "</table>";
             </div>";
     }
 
-    if ($this->session->userdata('id') == 1) {
+    if ( $admin_p ) {
         $type_id = $this->mcbluv_model->get_type();
         $gm_id = $_REQUEST['gm'];
         $opp_id = $sel_logo_id[0]['opponent_id'];

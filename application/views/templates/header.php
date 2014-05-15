@@ -10,17 +10,19 @@
 						echo "$sel_player[first]  $sel_player[last]";
 					}
 				} elseif (!empty($sel_game_id)) {
-					foreach($sel_game_id as $sel_game) {
-						echo "$sel_game[opponent]"; 
-					}
+				    echo "{$sel_game_id[0]['opponent']}"; 
 				} else {
 					echo $title;
 				} 
 			?> - Mcbluv</title>
         <link rel="shortcut icon" type="image/x-icon" href="images/mcbluv_icon.ico" />
         <link rel="stylesheet" href="css/stats.css">
+        <link rel="stylesheet" href="css/mcbluv-theme/jquery-ui-1.10.4.custom.css" />
 		<link rel="stylesheet" href="css/video-js.css" >
-	    <script type="text/javascript" src="javascript/jquery_v1.9.1.js"></script>
+
+        <script type="text/javascript" src="javascript/jquery-1.10.2.js"></script>
+        <script type="text/javascript" src="javascript/jquery-ui-1.10.4.custom.min.js"></script>
+        <script type="text/javascript" src="javascript/jquery-ui-1.10.4.custom.js"></script>
 		<script type="text/javascript" src="javascript/bw-menu.js"></script>
 		<script type="text/javascript" src="javascript/sorttable.js"></script>
 		<script type="text/javascript" src="javascript/swipe_captions.js"></script>
@@ -36,7 +38,14 @@
 			   	$("#careerStats").click(function() {
 			       	$("#careerToggle").toggle();
 			    });
-			});
+			})
+             $(document).ready(function() { // All datepickers have the same class, but a different id
+                $( ".dob" ).datepicker({
+                    dateFormat: "yy-mm-dd",
+                    changeMonth: true,
+                    changeYear: true
+                }); // to change date format add {dateFormat: "mm-dd-yy"}
+            });
 		</script>
         </head>
 

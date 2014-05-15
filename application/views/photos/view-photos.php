@@ -39,7 +39,7 @@
 						</div>";
 					
 				}
-				if ($this->session->userdata('id') == 1) {
+				if ( $admin_p ) {
 					echo "<div style= \"text-align: center;\">"; 
 						echo form_open_multipart('c=upload&amp;m=new_image'); // Method new_image from controller upload
 						echo form_hidden('type_id', $type_id);

@@ -23,6 +23,16 @@ public function get_type() {
 		return $type_id['id'];
 	}
 }
+
+public function permissions() {
+    if ( $this->session->userdata('id') == 1 ) {
+        $admin_p = TRUE;
+    } else {
+        $admin_p = FALSE;
+    }
+
+    return $admin_p;
+}
 	
 public function insert_next_val($id, $table) {
 	$query = $this->db->query("
@@ -32,7 +42,19 @@ public function insert_next_val($id, $table) {
 	");
 	return $query->result_array();
 }
-	
+
+public function get_headline() {
+    $query = $this->db->query("
+        select *
+        from headlines
+        order by id desc
+        limit 1;
+    ");
+
+    return $query->result_array();
+}
+
+
 public function next_game() {
 	$game_day = date('Y-m-d', strtotime('+7 days'));
 	
@@ -101,10 +123,16 @@ public function get_all_games() {
     }
 }
 	
-public function get_all_players() {
+public function get_all_players($active = FALSE) {
+    if ( $active ) {
+        $where = "where active_p = 1";
+    } else {
+        $where = "";
+    }
     $query = $this->db->query("
 		select *
 		from player
+        $where
 		order by player_id
 	");
 	
@@ -248,11 +276,16 @@ public function get_fielding_by_id() {
 }
 
 public function get_opponent_by_id($id = null) {
-   $query = $this->db->query("
+    if ( $this->get_type() == 3 ) {
+        $where = "where o.opponent_id = ?";
+    } else {
+        $where = "where g.game_id = ?";
+    }
+    $query = $this->db->query("
        select g.*, o.*
        from game g
            join opponent o on (o.opponent_id = g.opponent_id)
-       where g.game_id = ?
+       $where
    ", array($id));
 
    return $query->result_array();

@@ -1,99 +1,79 @@
 <br />
+<?php
+    $categories = array(
+        'jersey_num' => '#',
+        'pos' => array(
+                    'P'   => 'Pitchers',
+                    'C'   => 'Catchers',
+                    'INF' => 'Infielders',
+                    'OF'  => 'Outfielders'
+                ),
+        'batsthrows' => 'B/T',
+        'ht' => 'Ht',
+        'wt' => 'Wt',
+        'dob' => 'DOB'
+    );
+?>
 <h3 align="center">Active Roster</h3>
 <div id="rosterWrapper">
 <table>
-	<tr class="roster_category">
-		<td class="roster_num"><strong>#</strong></td>
-		<td class="roster_player"><strong>Pitchers</strong></td>
-		<td><strong>B/T</strong></td>
-		<td><strong>Ht</strong></td>
-		<td><strong>Wt</strong></td>
-		<td style="border-right: none;"><strong>DOB</strong></td>
-	</tr>
-	<?php
-		foreach($rosters as $roster) {
-			$query_string = '&player_id=' .urlencode($roster['player_id']);
-			if ($roster['pos'] == 'P' && $roster['active_p']) {
-				echo "<tr>
-						<td class=\"roster_num\">{$roster['jersey_num']}</td>
-						<td class=\"roster_player\"><a href=\"?c=players&amp;m=player" .htmlentities($query_string) . "\">{$roster['first']} {$roster['last']}</a></td>
-						<td class=\"roster_info\">{$roster['batsthrows']}</td>
-					  	<td class=\"roster_info\">{$roster['ht']}</td>
-					  	<td class=\"roster_info\">{$roster['wt']}</td>
-					  	<td style=\"border-right: none;\">{$roster['dob']}</td>
-					</tr>";
-			}
-		}
-	?>
-	<tr class="roster_category">
-		<td class="roster_num"><strong>#</strong></td>
-		<td class="roster_player"><strong>Catchers</strong></td>
-		<td><strong>B/T</strong></td>
-		<td><strong>Ht</strong></td>
-		<td><strong>Wt</strong></td>
-		<td style="border-right: none;"><strong>DOB</strong></td>
-	</tr>
-	<?php
-		foreach($rosters as $roster) {
-			$query_string = '&player_id=' .urlencode($roster['player_id']);
-			if ($roster['pos'] == 'C' && $roster['active_p']) {
-				echo "<tr>
-						<td class=\"roster_num\">{$roster['jersey_num']}</td>
-						<td class=\"roster_player\"><a href=\"?c=players&amp;m=player" .htmlentities($query_string) . "\">{$roster['first']} {$roster['last']}</a></td>
-						<td class=\"roster_info\">{$roster['batsthrows']}</td>
-					  	<td class=\"roster_info\">{$roster['ht']}</td>
-					  	<td class=\"roster_info\">{$roster['wt']}</td>
-					  	<td style=\"border-right: none;\">{$roster['dob']}</td>
-					</tr>";
-			}
-		}
-	?>
-	<tr class="roster_category">
-		<td class="roster_num"><strong>#</strong></td>
-		<td class="roster_player"><strong>Infielders</strong></td>
-		<td><strong>B/T</strong></td>
-		<td><strong>Ht</strong></td>
-		<td><strong>Wt</strong></td>
-		<td style="border-right: none;"><strong>DOB</strong></td>
-	</tr>
-	<?php
-		foreach($rosters as $roster) {
-			$query_string = '&player_id=' .urlencode($roster['player_id']);
-			if ($roster['pos'] == 'INF' && $roster['active_p']) {
-				echo "<tr>
-						<td class=\"roster_num\">{$roster['jersey_num']}</td>
-						<td class=\"roster_player\"><a href=\"?c=players&amp;m=player" .htmlentities($query_string) . "\">{$roster['first']} {$roster['last']}</a></td>
-						<td class=\"roster_info\">{$roster['batsthrows']}</td>
-					  	<td class=\"roster_info\">{$roster['ht']}</td>
-					  	<td class=\"roster_info\">{$roster['wt']}</td>
-					  	<td style=\"border-right: none;\">{$roster['dob']}</td>
-					</tr>";
-			}
-		}
-	?>
-	<tr class="roster_category">
-		<td class="roster_num"><strong>#</strong></td>
-		<td class="roster_player"><strong>Outfielders</strong></td>
-		<td><strong>B/T</strong></td>
-		<td><strong>Ht</strong></td>
-		<td><strong>Wt</strong></td>
-		<td style="border-right: none;"><strong>DOB</strong></td>
-	</tr>
-	<?php
-		foreach($rosters as $roster) {
-			$query_string = '&player_id=' .urlencode($roster['player_id']);
-			if ($roster['pos'] == 'OF' && $roster['active_p']) {
-				echo "<tr>
-						<td class=\"roster_num\">{$roster['jersey_num']}</td>
-						<td class=\"roster_player\"><a href=\"?c=players&amp;m=player" .htmlentities($query_string) . "\">{$roster['first']} {$roster['last']}</a></td>
-						<td class=\"roster_info\">{$roster['batsthrows']}</td>
-					  	<td class=\"roster_info\">{$roster['ht']}</td>
-					  	<td class=\"roster_info\">{$roster['wt']}</td>
-					  	<td style=\"border-right: none;\">{$roster['dob']}</td>
-					</tr>";
-			}
-		}
-	?>
+ <?php 
+    // Create a new array $pos_group and make its keys equal one occurence of each position type
+    // In this case there are 4 position types (P, C, INF, OF) and there are "n" amount of players
+    // Says: array ( P[n] => array ('player_id', 'first', 'last', etc..) )
+    foreach ($active_roster as $pos_key => &$pos_value) {
+        $pos_group[$pos_value['pos']][$pos_key] = $pos_value;
+    }
+
+    // Set arrays to null if there are no active players
+    if ( empty($pos_group['P']) ) {
+        $pos_group['P'] = array(null);
+    }
+    if ( empty($pos_group['C']) ) {
+        $pos_group['C'] = array(null);
+    }
+     if ( empty($pos_group['INF']) ) {
+        $pos_group['INF'] = array(null);
+    }
+     if ( empty($pos_group['OF']) ) {
+        $pos_group['OF'] = array(null);
+    }
+
+    // Now lets order the array according to the pos array within the categories array
+    $group = array_merge($categories['pos'], $pos_group);
+
+    // Next we want to change  P => array, C => array, INF => array, OF => array
+    // to the values of the corresponding keys in the pos array withthin the categories array
+    // Result: Pitchers => array, Catchers => array, Infielders => array, Outfielders => array
+    foreach( $group as $origKey => $value ) {
+        $grouped_players[$categories['pos'][$origKey]] = $value;
+    }
+
+    foreach($grouped_players as $position => $players) {
+        echo "<tr class=\"roster_category\" style=\"font-weight: bold;\">
+                <td class=\"roster_num\">#</td>
+                <td class=\"roster_player\">{$position}</td>
+                <td>B/T</td>
+                <td>Ht</td>
+                <td>Wt</td>
+                <td style=\"border-right: none;\">DOB</td>
+            </tr>";
+
+        foreach($players as $player) {
+            $query_string = '&player_id=' .urlencode($player['player_id']);
+            $player_dob = $this->convert->format_date($player['dob']);
+            $ht = $this->convert->measurements($player['ht']);
+            echo "<tr>
+                    <td class=\"roster_num\">{$player['jersey_num']}</td>
+                    <td class=\"roster_player\"><a href=\"?c=players&amp;m=player" .htmlentities($query_string) . "\">{$player['first']} {$player['last']}</a></td>
+                    <td class=\"roster_info\">{$player['batsthrows']}</td>
+                    <td class=\"roster_info\">{$ht}</td>
+                    <td class=\"roster_info\">{$player['wt']}</td>
+                    <td style=\"border-right: none;\">{$player_dob}</td>
+                </tr>";
+        }
+    }
+?>
 </table>
 </div> <!-- end div rosterWrapper -->
 
@@ -102,97 +82,116 @@
 <h3 align="center">Past/Present Roster</h3>
 <div id="career_rosterWrapper">
 <table>
-	<tr class="roster_category">
-		<td class="roster_num"><strong>#</strong></td>
-		<td class="roster_player"><strong>Pitchers</strong></td>
-		<td><strong>B/T</strong></td>
-		<td><strong>Ht</strong></td>
-		<td><strong>Wt</strong></td>
-		<td style="border-right: none;"><strong>DOB</strong></td>
-	</tr>
-	<?php
-		foreach($rosters as $roster) {
-			$query_string = '&player_id=' .urlencode($roster['player_id']);
-			if ($roster['pos'] == 'P') {
-				echo "<tr>
-						<td class=\"roster_num\">{$roster['jersey_num']}</td>
-						<td class=\"roster_player\"><a href=\"?c=players&amp;m=player" .htmlentities($query_string) . "\">{$roster['first']} {$roster['last']}</a></td>
-						<td class=\"roster_info\">{$roster['batsthrows']}</td>
-					  	<td class=\"roster_info\">{$roster['ht']}</td>
-					  	<td class=\"roster_info\">{$roster['wt']}</td>
-					  	<td style=\"border-right: none;\">{$roster['dob']}</td>
-					</tr>";
-			}
-		}
-	?>
-	<tr class="roster_category">
-		<td class="roster_num"><strong>#</strong></td>
-		<td class="roster_player"><strong>Catchers</strong></td>
-		<td><strong>B/T</strong></td>
-		<td><strong>Ht</strong></td>
-		<td><strong>Wt</strong></td>
-		<td style="border-right: none;"><strong>DOB</strong></td>
-	</tr>
-	<?php
-		foreach($rosters as $roster) {
-			$query_string = '&player_id=' .urlencode($roster['player_id']);
-			if ($roster['pos'] == 'C') {
-				echo "<tr>
-						<td class=\"roster_num\">{$roster['jersey_num']}</td>
-						<td class=\"roster_player\"><a href=\"?c=players&amp;m=player" .htmlentities($query_string) . "\">{$roster['first']} {$roster['last']}</a></td>
-						<td class=\"roster_info\">{$roster['batsthrows']}</td>
-					  	<td class=\"roster_info\">{$roster['ht']}</td>
-					  	<td class=\"roster_info\">{$roster['wt']}</td>
-					  	<td style=\"border-right: none;\">{$roster['dob']}</td>
-					</tr>";
-			}
-		}
-	?>
-	<tr class="roster_category">
-		<td class="roster_num"><strong>#</strong></td>
-		<td class="roster_player"><strong>Infielders</strong></td>
-		<td><strong>B/T</strong></td>
-		<td><strong>Ht</strong></td>
-		<td><strong>Wt</strong></td>
-		<td style="border-right: none;"><strong>DOB</strong></td>
-	</tr>
-	<?php
-		foreach($rosters as $roster) {
-			$query_string = '&player_id=' .urlencode($roster['player_id']);
-			if ($roster['pos'] == 'INF') {
-				echo "<tr>
-						<td class=\"roster_num\">{$roster['jersey_num']}</td>
-						<td class=\"roster_player\"><a href=\"?c=players&amp;m=player" .htmlentities($query_string) . "\">{$roster['first']} {$roster['last']}</a></td>
-						<td class=\"roster_info\">{$roster['batsthrows']}</td>
-					  	<td class=\"roster_info\">{$roster['ht']}</td>
-					  	<td class=\"roster_info\">{$roster['wt']}</td>
-					  	<td style=\"border-right: none;\">{$roster['dob']}</td>
-					</tr>";
-			}
-		}
-	?>
-	<tr class="roster_category">
-		<td class="roster_num"><strong>#</strong></td>
-		<td class="roster_player"><strong>Outfielders</strong></td>
-		<td><strong>B/T</strong></td>
-		<td><strong>Ht</strong></td>
-		<td><strong>Wt</strong></td>
-		<td style="border-right: none;"><strong>DOB</strong></td>
-	</tr>
-	<?php
-		foreach($rosters as $roster) {
-			$query_string = '&player_id=' .urlencode($roster['player_id']);
-			if ($roster['pos'] == 'OF') {
-				echo "<tr>
-						<td class=\"roster_num\">{$roster['jersey_num']}</td>
-						<td class=\"roster_player\"><a href=\"?c=players&amp;m=player" .htmlentities($query_string) . "\">{$roster['first']} {$roster['last']}</a></td>
-						<td class=\"roster_info\">{$roster['batsthrows']}</td>
-					  	<td class=\"roster_info\">{$roster['ht']}</td>
-					  	<td class=\"roster_info\">{$roster['wt']}</td>
-					  	<td style=\"border-right: none;\">{$roster['dob']}</td>
-					</tr>";
-			}
-		}
-	?>
+<?php
+    foreach ($rosters as $pos_key => &$pos_value) {
+        $pos_group_na[$pos_value['pos']][$pos_key] = $pos_value;
+    }
+
+    $group = array_merge($categories['pos'], $pos_group_na);
+
+    foreach( $group as $origKey => $value ) {
+        $grouped_players[$categories['pos'][$origKey]] = $value;
+    }
+
+     if ( $admin_p ) {
+        echo "<div style=\"color:red; font-weight:bold\">" . validation_errors(); "</div>";
+        $attributes = array('name' => 'player_update', 'id' => 'player_update');
+        echo form_open('c=team&amp;m=roster', $attributes);
+        echo form_submit('submit', 'Edit Player');
+    }
+
+    foreach($grouped_players as $position => $players) {
+        echo "<tr class=\"roster_category\" style=\"font-weight: bold;\">
+                <td class=\"roster_num\">#</td>
+                <td class=\"roster_player\">{$position}</td>
+                <td>B/T</td>
+                <td>Ht</td>
+                <td>Wt</td>";
+            if ( $admin_p ) {
+                echo "<td>DOB</td>
+                      <td style=\"border-right: none;\">Active</td>";
+            } else {
+                echo "<td style=\"border-right: none;\">DOB</td>";
+            }
+        echo "</tr>";
+        foreach($players as $player) {
+            $query_string = '&player_id=' .urlencode($player['player_id']);
+            $player_dob = $this->convert->format_date($player['dob']);
+            $ht = $this->convert->measurements($player['ht']);
+            if ( $admin_p ) {
+                $bats_throws = array(
+                    $player['batsthrows'] => $player['batsthrows'],
+                    'R-R' => 'R-R',
+                    'L-L' => 'L-L',
+                    'R-L' => 'R-L',
+                    'L-R' => 'L-R',
+                    'S-R' => 'S-R',
+                    'S-L' => 'S-L'
+                );
+
+                $feet = floor($player['ht']/12);
+                $inch = $player['ht'] % 12;
+
+                $height = array (
+                    $feet => $feet,
+                    '5'   => '5',
+                    '6'   => '6'
+                );
+                $height_in = array (
+                    $inch   => $inch,
+                    'inch'  => range(0,11)
+                );
+                $weight = array (
+                    $player['wt'] => $player['wt'],
+                    'lbs' => array_combine(range(150, 350, 5), range(150, 350, 5))
+                );
+                if ( $player['active_p'] ) {
+                    $active_p = "Y";
+                } else {
+                    $active_p = "N";
+                }
+                $active = array (
+                    $player['active_p'] => $active_p,
+                    '0'  => 'N',
+                    '1' => 'Y'
+                );
+
+                echo form_hidden('player_id[]', $player['player_id']);
+                echo "<tr>";
+                  echo "<td class=\"roster_num\">" . form_input(array('id' => 'jersey_num', 'name' => 'jersey_num[]', 'value' => $player['jersey_num'], 'size' => '2')) . "</td>";
+                  echo "<td class=\"roster_player\">
+                            <a href=\"?c=players&amp;m=player" .htmlentities($query_string) . "\">{$player['first']} {$player['last']}</a><br />"
+                            . form_input(array('id' => 'edit_player', 'name' => 'first_name[]', 'value' => $player['first'], 'size' => '10'))
+                            . form_input(array('id' => 'edit_player', 'name' => 'last_name[]', 'value' => $player['last'], 'size' => '10')) .
+                       "</td>";
+                  echo "<td class=\"roster_info\">" . form_dropdown('batsthrows[]', $bats_throws, $player['batsthrows']) . "</td>";
+                  echo "<td class=\"roster_info\">" . form_dropdown('height_ft[]', $height, $height[$feet], 'style="width: 40px;"') .
+                                                      form_dropdown('height_in[]', $height_in, $height_in[$inch], 'style="width: 45px;"') .
+                       "</td>";
+                  echo "<td class=\"roster_info\">"; echo form_dropdown('weight[]', $weight, $weight[$player['wt']], 'style="width: 60px;"'); echo "</td>";
+                  echo "<td class=\"roster_info\">" . 
+                            form_input(array('id' => 'dob_'.$player['player_id'], 'name' => 'dob[]', 'value' => $player['dob'], 'class' => 'dob', 'size' => '10', 'type' => 'date')) . 
+                        "</td>";
+                  echo "<td class=\"roster_info\">"; echo form_dropdown('active_p[]', $active); echo "</td>";
+                echo "</tr>";
+            } else {
+                echo "<tr>
+                        <td class=\"roster_num\">{$player['jersey_num']}</td>
+                        <td class=\"roster_player\"><a href=\"?c=players&amp;m=player" .htmlentities($query_string) . "\">{$player['first']} {$player['last']}</a></td>
+                        <td class=\"roster_info\">{$player['batsthrows']}</td>
+                        <td class=\"roster_info\">{$ht}</td>
+                        <td class=\"roster_info\">{$player['wt']}</td>
+                        <td class=\"roster_info\">{$player_dob}</td>
+                    </tr>";
+            }
+        }
+    }
+?>
 </table>
+<?php
+    if ( $admin_p ) {
+        echo form_submit('submit', 'Edit Player');
+        echo form_close();
+    }
+?>
 </div> <!-- end div career_rosterWrapper -->

@@ -50,9 +50,11 @@
     <tr>
 <?php
 	foreach($sel_player_name as $sel_player) {
+        $ht = $this->convert->measurements($sel_player['ht']);
+        $player_dob = $this->convert->format_date($sel_player['dob']);
 		echo "<td>$sel_player[first] $sel_player[last]</td>
-				<td>$sel_player[dob]</td>
-				<td>$sel_player[ht]</td>
+				<td>$player_dob</td>
+				<td>$ht</td>
 				<td>$sel_player[wt]</td>
 				<td>$sel_player[batsthrows]</td>
 				<td>$sel_player[primary_pos]</td>";
@@ -485,7 +487,7 @@ echo "</div>"; // <!-- end div filterWrapper -->
 			</div>";
 	}
 	
-	if ($this->session->userdata('id') == 1) {
+	if ( $admin_p ) {
 		$type_id = $this->mcbluv_model->get_type();
 		$player_id = $_REQUEST['player_id'];
 		echo "<div style= \"text-align: center;\">"; 

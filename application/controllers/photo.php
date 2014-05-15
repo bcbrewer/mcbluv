@@ -8,6 +8,7 @@ class Photo extends CI_Controller {
 	}
 
 	public function photos() {
+        $data['admin_p'] = $this->mcbluv_model->permissions();
 		$data['get_photos'] = $this->mcbluv_model->get_photos();
 		$data['opponents'] = $this->mcbluv_model->get_all_games();
 		$data['rosters'] = $this->mcbluv_model->get_all_players();
@@ -19,7 +20,7 @@ class Photo extends CI_Controller {
 	}
 
 	public function edit_delete() {
-		if($this->session->userdata('id') != 1) {
+		if($this->session->userdata('id') != 1) { //  same as $this->mcbluv_model->permissions();
 			echo "You are not authorized edit files!";
 			die;
 		} else {

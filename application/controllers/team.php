@@ -9,6 +9,7 @@ class Team extends CI_Controller {
 	}
 	
 	public function schedule() {
+        $data['admin_p'] = $this->mcbluv_model->permissions();
 		$data['schedules'] = $this->mcbluv_model->get_all_games();
 		$data['rosters'] = $this->mcbluv_model->get_all_players();
 		$data['opponents'] = $this->mcbluv_model->get_all_games();
@@ -21,14 +22,39 @@ class Team extends CI_Controller {
 	}
 
 	public function roster() {
+        $this->load->library('convert');
+
+        $data['admin_p'] = $this->mcbluv_model->permissions();
+        $data['active_roster'] = $this->mcbluv_model->get_all_players(true);
 		$data['rosters'] = $this->mcbluv_model->get_all_players();
 		$data['opponents'] = $this->mcbluv_model->get_all_games();
 		$data['all_seasons'] = $this->mcbluv_model->all_seasons();
-		$data['sel_player_name'] = $this->mcbluv_model->find_selected_player();
 		$data['title'] = 'Roster';
-		$this->load->view('templates/header', $data);
-		$this->load->view('teams/roster', $data);
-		$this->load->view('templates/footer');
+
+        if ( $data['admin_p'] ) {
+            $this->load->view('templates/header', $data);
+
+            $this->load->helper(array('form', 'url'));
+            $this->load->library('form_validation');
+            $this->form_validation->set_rules('jersey_num[]', 'Jersey Number', 'required|trim|max_length[3]|xss_clean');
+            $this->form_validation->set_rules('first_name[]', 'First Name', 'required|trim|max_length[25]|xss_clean');
+            $this->form_validation->set_rules('last_name[]', 'Last Name', 'required|trim|max_length[25]|xss_clean');
+
+            $this->load->library('update');
+
+            if ($this->form_validation->run() == FALSE) {
+                $this->load->view('teams/roster', $data);
+            } else {
+                $this->load->view('teams/roster', $data);
+                $this->update->player_update();
+            }
+
+            $this->load->view('templates/footer');
+        } else {
+		    $this->load->view('templates/header', $data);
+		    $this->load->view('teams/roster', $data);
+		    $this->load->view('templates/footer');
+        }
 	}
 
 	public function team_leaders() {
