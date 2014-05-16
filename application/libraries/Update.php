@@ -95,4 +95,3 @@ class Update extends CI_Model {
 }
 
 ?>
-
