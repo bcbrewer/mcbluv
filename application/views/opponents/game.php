@@ -20,7 +20,13 @@ $categories = array('Name', 'PA', 'AB', 'Hits', 'HR', 'RBI', 'BB', 'Runs', 'HBP'
 ?>
 </div> <!-- end div opponent_photoWrapper -->
 
-<?php echo "<h1 class=\"homeTitle\"; align=\"center\">{$sel_game_id[0]['result']}</h1>"; ?>
+<?php
+    if ( empty($sel_batting_game_id) && empty($sel_pitching_game_id) && empty($sel_fielding_game_id) ) {
+        echo "<span style=\"text-align: center\"><h1> Stats Not Available </h1></span>";
+    }
+    echo "<h1 class=\"homeTitle\"; align=\"center\">{$sel_game_id[0]['result']}</h1>"; 
+    if ( ! empty($sel_batting_game_id) ) { // Check for batting stats
+?>
 
 <h2 align="center">Hitting</h2>
 
@@ -35,12 +41,14 @@ $categories = array('Name', 'PA', 'AB', 'Hits', 'HR', 'RBI', 'BB', 'Runs', 'HBP'
 
     $i = 1;
     foreach($sel_batting_game_id as $sel_batting_game) {
-        if ($i % 2 != 0) # An odd row
+        if ($i % 2 != 0) { # An odd row
             $rowColor = "#D0D0D0";
-          else # An even row
+        } else { # An even row
             $rowColor = "";
+        }
         $query_string = '&player_id=' .urlencode($sel_batting_game['player_id']);
-        echo "<tr bgcolor={$rowColor}><td class=\"player_column\"><a href=\"?c=players&amp;m=player" .htmlentities($query_string) . "\">{$sel_batting_game['first']} {$sel_batting_game['last']}</a></td>
+        echo "<tr bgcolor={$rowColor}>
+                <td class=\"player_column\"><a href=\"?c=players&amp;m=player" .htmlentities($query_string) . "\">{$sel_batting_game['first']} {$sel_batting_game['last']}</a></td>
                 <td class=\"border\">$sel_batting_game[pa]</td>
                 <td class=\"border\">$sel_batting_game[ab]</td>
                 <td class=\"border\">$sel_batting_game[hits]</td>
@@ -58,17 +66,13 @@ $categories = array('Name', 'PA', 'AB', 'Hits', 'HR', 'RBI', 'BB', 'Runs', 'HBP'
                 <td class=\"border\">$sel_batting_game[so]</td>
                 <td class=\"border\">$sel_batting_game[gidp]</td>
                 <td class=\"border\">$sel_batting_game[sb]</td>
-                <td class=\"border\">$sel_batting_game[cs]</td>";
-                echo "<td class=\"border\">"; echo $this->mcbluv_model->batting_avg($sel_batting_game['hits'], $sel_batting_game['ab']);
-                echo "</td>";
-                echo "<td class=\"border\">"; echo $this->mcbluv_model->obp($sel_batting_game['hits'], $sel_batting_game['bb'], $sel_batting_game['hbp'], $sel_batting_game['pa']);
-                echo "</td>";
-                echo "<td class=\"border\">"; echo $this->mcbluv_model->slg($sel_batting_game['tb'], $sel_batting_game['ab']);
-                echo "</td>";
-                echo "<td class=\"border\">"; echo $this->mcbluv_model->ops($sel_batting_game['hits'], $sel_batting_game['bb'], $sel_batting_game['hbp'], $sel_batting_game['pa'], $sel_batting_game['tb'], $sel_batting_game['ab']);
-                echo "</td>";
+                <td class=\"border\">$sel_batting_game[cs]</td>
+                <td class=\"border\">" . $this->convert->batting_avg($sel_batting_game['hits'], $sel_batting_game['ab']) . "</td>
+                <td class=\"border\">" . $this->convert->obp($sel_batting_game['hits'], $sel_batting_game['bb'], $sel_batting_game['hbp'], $sel_batting_game['pa']) . "</td>
+                <td class=\"border\">" . $this->convert->slg($sel_batting_game['tb'], $sel_batting_game['ab']) . "</td>
+                <td class=\"border\">" . $this->convert->ops($sel_batting_game['hits'], $sel_batting_game['bb'], $sel_batting_game['hbp'], $sel_batting_game['pa'], $sel_batting_game['tb'], $sel_batting_game['ab']) . "</td>";
                 $i++;
-    echo "</tr>";
+        echo "</tr>";
     }
     echo "<tr>";
         echo "<td class=\"last_row\"><strong>Total</strong></td>";
@@ -90,24 +94,25 @@ $categories = array('Name', 'PA', 'AB', 'Hits', 'HR', 'RBI', 'BB', 'Runs', 'HBP'
                   <td class=\"last_row\">{$sel_sum_team_batting['so']}</td>
                   <td class=\"last_row\">{$sel_sum_team_batting['gidp']}</td>       
                   <td class=\"last_row\">{$sel_sum_team_batting['sb']}</td>
-                  <td class=\"last_row\">{$sel_sum_team_batting['cs']}</td>";
-            echo "<td class=\"last_row\">"; echo $this->mcbluv_model->batting_avg($sel_sum_team_batting['hits'], $sel_sum_team_batting['ab']);
-            echo "<td class=\"last_row\">"; echo $this->mcbluv_model->obp($sel_sum_team_batting['hits'], $sel_sum_team_batting['bb'], $sel_sum_team_batting['hbp'], $sel_sum_team_batting['pa']);
-            echo "</td>";
-            echo "<td class=\"last_row\">"; echo $this->mcbluv_model->slg($sel_sum_team_batting['tb'], $sel_sum_team_batting['ab']);
-            echo "</td>";
-            echo "<td class=\"last_row\">"; echo $this->mcbluv_model->ops($sel_sum_team_batting['hits'], $sel_sum_team_batting['bb'], $sel_sum_team_batting['hbp'], $sel_sum_team_batting['pa'], $sel_sum_team_batting['tb'], $sel_sum_team_batting['ab']);
-            echo "</td>";
+                  <td class=\"last_row\">{$sel_sum_team_batting['cs']}</td>
+                  <td class=\"last_row\">" . $this->convert->batting_avg($sel_sum_team_batting['hits'], $sel_sum_team_batting['ab']) . "</td>
+                  <td class=\"last_row\">" . $this->convert->obp($sel_sum_team_batting['hits'], $sel_sum_team_batting['bb'], $sel_sum_team_batting['hbp'], $sel_sum_team_batting['pa']) . "</td>
+                  <td class=\"last_row\">" . $this->convert->slg($sel_sum_team_batting['tb'], $sel_sum_team_batting['ab']) . "</td>
+                  <td class=\"last_row\">" . $this->convert->ops($sel_sum_team_batting['hits'], $sel_sum_team_batting['bb'], $sel_sum_team_batting['hbp'], $sel_sum_team_batting['pa'], $sel_sum_team_batting['tb'], $sel_sum_team_batting['ab']) . "</td>";
         }
     echo "</tr>";
 echo "</table>";
 ?>
 </div> <!-- end div battingWrapper -->
+
 <br />
+
 <?php
-    $pitch_categories = array( 'Name', 'ERA', 'SV', 'BS', 'IP', 'H', 'R', 'ER', 'BB', 'SO',
-                                'QS', 'AVG', 'WHIP', 'CG', 'HB', 'PA', 'AB', 'K/9', 'K/BB'
-                             );
+    } // End check for batting stats
+    if ( ! empty($sel_pitching_game_id) ) {  // Start check for pitching stats
+        $pitch_categories = array( 'Name', 'ERA', 'SV', 'BS', 'IP', 'H', 'R', 'ER', 'BB', 'SO',
+                                    'QS', 'AVG', 'WHIP', 'CG', 'HB', 'PA', 'AB', 'K/9', 'K/BB'
+                                );
 ?>
 <br />
 
@@ -123,49 +128,45 @@ echo "</table>";
 
     $i =1 ;
         foreach($sel_pitching_game_id as $sel_pitching_game) {
-            if ($i % 2 != 0) # An odd row
+            if ($i % 2 != 0) { # An odd row
                 $rowColor = "#D0D0D0";
-              else # An even row
+            } else { # An even row
                 $rowColor = "";
+            }
             $query_string = '&player_id=' .urlencode($sel_pitching_game['player_id']);
             if($sel_pitching_game['opp_ab'] > 0) {
-                $opp_avg = $this->mcbluv_model->opp_avg($sel_pitching_game['hits'], $sel_pitching_game['opp_ab']);
+                $opp_avg = $this->convert->opp_avg($sel_pitching_game['hits'], $sel_pitching_game['opp_ab']);
             } else {
                 $opp_avg = "0.000";
             }
-            echo "<tr bgcolor=" . $rowColor . "><td class=\"player_column\"><a href=\"?c=players&amp;m=player" .htmlentities($query_string) . "\">{$sel_pitching_game['first']} {$sel_pitching_game['last']}</a></td>";
-        echo "<td class=\"border\">"; echo $this->mcbluv_model->era($sel_pitching_game['er'], $sel_pitching_game['ip']);
-        echo "</td>";
-        echo "<td class=\"border\">$sel_pitching_game[save]</td>
-              <td class=\"border\">$sel_pitching_game[bs]</td>
-              <td class=\"border\">$sel_pitching_game[ip]</td>
-              <td class=\"border\">$sel_pitching_game[hits]</td>
-              <td class=\"border\">$sel_pitching_game[runs]</td>
-              <td class=\"border\">$sel_pitching_game[er]</td>
-              <td class=\"border\">$sel_pitching_game[walks]</td>
-              <td class=\"border\">$sel_pitching_game[so]</td>
-              <td class=\"border\">{$sel_pitching_game['qs']}</td>";
-        echo "<td class=\"border\">"; echo $opp_avg;
-        echo "</td class=\"border\">";
-        echo "<td class=\"border\">"; echo $this->mcbluv_model->whip($sel_pitching_game['walks'], $sel_pitching_game['hits'], $sel_pitching_game['ip']);
-        echo "</td>";
-        echo "<td class=\"border\">$sel_pitching_game[cg]</td>
-              <td class=\"border\">$sel_pitching_game[hbp]</td>
-              <td class=\"border\">$sel_pitching_game[opp_pa]</td>
-              <td class=\"border\">$sel_pitching_game[opp_ab]</td>";
-        echo "<td class=\"border\">"; echo $this->mcbluv_model->k_per_nine($sel_pitching_game['so'], $sel_pitching_game['ip']);
-        echo "</td>";
-        echo "<td class=\"border\">"; echo $this->mcbluv_model->k_per_walk($sel_pitching_game['so'], $sel_pitching_game['walks']);
-        echo "</td>";
-        $i++;
-    echo "</tr>";
+            echo "<tr bgcolor=" . $rowColor . ">
+                <td class=\"player_column\"><a href=\"?c=players&amp;m=player" .htmlentities($query_string) . "\">{$sel_pitching_game['first']} {$sel_pitching_game['last']}</a></td>
+                <td class=\"border\">" . $this->convert->era($sel_pitching_game['er'], $sel_pitching_game['ip']) . "</td>
+                <td class=\"border\">{$sel_pitching_game['save']}</td>
+                <td class=\"border\">{$sel_pitching_game['bs']}</td>
+                <td class=\"border\">{$sel_pitching_game['ip']}</td>
+                <td class=\"border\">{$sel_pitching_game['hits']}</td>
+                <td class=\"border\">{$sel_pitching_game['runs']}</td>
+                <td class=\"border\">{$sel_pitching_game['er']}</td>
+                <td class=\"border\">{$sel_pitching_game['walks']}</td>
+                <td class=\"border\">{$sel_pitching_game['so']}</td>
+                <td class=\"border\">{$sel_pitching_game['qs']}</td>
+                <td class=\"border\"> {$opp_avg}</td>
+                <td class=\"border\">" . $this->convert->whip($sel_pitching_game['walks'], $sel_pitching_game['hits'], $sel_pitching_game['ip']) . "</td>
+                <td class=\"border\">{$sel_pitching_game['cg']}</td>
+                <td class=\"border\">{$sel_pitching_game['hbp']}</td>
+                <td class=\"border\">{$sel_pitching_game['opp_pa']}</td>
+                <td class=\"border\">{$sel_pitching_game['opp_ab']}</td>
+                <td class=\"border\">" . $this->convert->k_per_nine($sel_pitching_game['so'], $sel_pitching_game['ip']) . "</td>
+                <td class=\"border\">" . $this->convert->k_per_walk($sel_pitching_game['so'], $sel_pitching_game['walks']) . "</td>";
+            $i++;
+            echo "</tr>";
         }
     echo "<tr>";
         echo "<td class=\"last_row\"><strong>Total</strong></td>";
         foreach($sel_sum_team_pitching_id as $sel_team_pitching) {
-            echo "<td class=\"last_row\">"; echo $this->mcbluv_model->era($sel_team_pitching['er'], $sel_team_pitching['ip']);
-            echo "</td>";
-            echo "<td class=\"last_row\">{$sel_team_pitching['save']}</td>
+            echo "<td class=\"last_row\">" . $this->convert->era($sel_team_pitching['er'], $sel_team_pitching['ip']) . "</td>
+                  <td class=\"last_row\">{$sel_team_pitching['save']}</td>
                   <td class=\"last_row\">{$sel_team_pitching['bs']}</td>
                   <td class=\"last_row\">{$sel_team_pitching['ip']}</td>
                   <td class=\"last_row\">{$sel_team_pitching['hits']}</td>
@@ -173,27 +174,25 @@ echo "</table>";
                   <td class=\"last_row\">{$sel_team_pitching['er']}</td>
                   <td class=\"last_row\">{$sel_team_pitching['walks']}</td>
                   <td class=\"last_row\">{$sel_team_pitching['so']}</td>
-                  <td class=\"last_row\">{$sel_team_pitching['qs']}</td>";
-            echo "<td class=\"last_row\">"; echo $this->mcbluv_model->opp_avg($sel_team_pitching['hits'], $sel_team_pitching['opp_ab']);
-            echo "</td>";
-            echo "<td class=\"last_row\">"; echo $this->mcbluv_model->whip($sel_team_pitching['walks'], $sel_team_pitching['hits'], $sel_team_pitching['ip']);
-            echo "</td>";
-            echo "<td class=\"last_row\">{$sel_team_pitching['cg']}</td>
+                  <td class=\"last_row\">{$sel_team_pitching['qs']}</td>
+                  <td class=\"last_row\">" . $this->convert->opp_avg($sel_team_pitching['hits'], $sel_team_pitching['opp_ab']) . "</td>
+                  <td class=\"last_row\">" . $this->convert->whip($sel_team_pitching['walks'], $sel_team_pitching['hits'], $sel_team_pitching['ip']) . "</td>
+                  <td class=\"last_row\">{$sel_team_pitching['cg']}</td>
                   <td class=\"last_row\">{$sel_team_pitching['hbp']}</td>
                   <td class=\"last_row\">{$sel_team_pitching['opp_pa']}</td>
-                  <td class=\"last_row\">{$sel_team_pitching['opp_ab']}</td>";
-            echo "<td class=\"last_row\">"; echo $this->mcbluv_model->k_per_nine($sel_team_pitching['so'], $sel_team_pitching['ip']);
-            echo "</td>";
-            echo "<td class=\"last_row\">"; echo $this->mcbluv_model->k_per_walk($sel_team_pitching['so'], $sel_team_pitching['walks']);
-            echo "</td>";
-    echo "<tr/>";
+                  <td class=\"last_row\">{$sel_team_pitching['opp_ab']}</td>
+                  <td class=\"last_row\">" . $this->convert->k_per_nine($sel_team_pitching['so'], $sel_team_pitching['ip']) . "</td>
+                  <td class=\"last_row\">" . $this->convert->k_per_walk($sel_team_pitching['so'], $sel_team_pitching['walks']) . "</td>";
         }
+    echo "<tr/>";
 ?>
 </table>
 </div> <!-- end div pitchingWrapper -->
 <br />
 <?php
-    $field_categories = array('Name', 'TC', 'PO', 'A', 'E', 'FLD%');
+    } // End check for pitching stats
+    if ( ! empty($sel_fielding_game_id) ) { // Begin check for fielding stats
+        $field_categories = array('Name', 'TC', 'PO', 'A', 'E', 'FLD%');
 ?>
 <br />
 
@@ -209,19 +208,20 @@ echo "</table>";
 
         $i = 1;
         foreach($sel_fielding_game_id as $sel_fielding_game) {
-            if ($i % 2 != 0) # An odd row
+            if ($i % 2 != 0) { # An odd row
                 $rowColor = "#D0D0D0";
-              else # An even row
+            } else { # An even row
                 $rowColor = "";
+            }
                 $query_string = '&player_id=' .urlencode($sel_fielding_game['player_id']);
-                echo "<tr bgcolor=" . $rowColor . "><td class=\"player_column\"><a href=\"?c=players&amp;m=player" .htmlentities($query_string) . "\">{$sel_fielding_game['first']} {$sel_fielding_game['last']}</a></td>";
-            echo "<td class=\"border\">$sel_fielding_game[tc]</td>
-                  <td class=\"border\">$sel_fielding_game[po]</td>
-                  <td class=\"border\">$sel_fielding_game[a]</td>
-                  <td class=\"border\">$sel_fielding_game[errors]</td>";
-            echo "<td class=\"border\">"; echo $this->mcbluv_model->fld($sel_fielding_game['po'], $sel_fielding_game['a'], $sel_fielding_game['tc']);
-            echo "</td>";
-            echo "</tr>";
+                echo "<tr bgcolor=" . $rowColor . ">
+                        <td class=\"player_column\"><a href=\"?c=players&amp;m=player" .htmlentities($query_string) . "\">{$sel_fielding_game['first']} {$sel_fielding_game['last']}</a></td>
+                        <td class=\"border\">$sel_fielding_game[tc]</td>
+                        <td class=\"border\">$sel_fielding_game[po]</td>
+                        <td class=\"border\">$sel_fielding_game[a]</td>
+                        <td class=\"border\">$sel_fielding_game[errors]</td>
+                        <td class=\"border\">" . $this->convert->fld($sel_fielding_game['po'], $sel_fielding_game['a'], $sel_fielding_game['tc']) . "</td>
+                </tr>";
             $i++;
         }
         echo "<tr>";
@@ -230,14 +230,15 @@ echo "</table>";
                 echo "<td class=\"last_row\">{$sel_sum_team_fielding['tc']}</td>
                       <td class=\"last_row\">{$sel_sum_team_fielding['po']}</td>
                       <td class=\"last_row\">{$sel_sum_team_fielding['a']}</td>
-                      <td class=\"last_row\">{$sel_sum_team_fielding['errors']}";
-                echo "<td class=\"last_row\">"; echo $this->mcbluv_model->fld($sel_sum_team_fielding['po'], $sel_sum_team_fielding['a'], $sel_sum_team_fielding['tc']);
-                echo "</td>";
+                      <td class=\"last_row\">{$sel_sum_team_fielding['errors']}
+                      <td class=\"last_row\">" . $this->convert->fld($sel_sum_team_fielding['po'], $sel_sum_team_fielding['a'], $sel_sum_team_fielding['tc']) . "</td>";
             }
         echo "</tr>";
     ?>
 </table>
 </div> <!-- div fieldingWrapper -->
+
+<?php } // End check for fielding stats ?>
 
 <?php
     if(empty($get_photos)) {

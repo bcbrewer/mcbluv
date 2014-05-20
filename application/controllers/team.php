@@ -58,6 +58,8 @@ class Team extends CI_Controller {
 	}
 
 	public function team_leaders() {
+        $this->load->library('convert');
+
 		$data['rosters'] = $this->mcbluv_model->get_all_players();
 		$data['opponents'] = $this->mcbluv_model->get_all_games();
 		$data['all_seasons'] = $this->mcbluv_model->all_seasons();
@@ -77,12 +79,15 @@ class Team extends CI_Controller {
 		$data['eligible_pitchers'] = $this->team_leaders_model->eligible_pitchers();
 		$data['eligible_batters'] = $this->team_leaders_model->eligible_batters();
 		$data['title'] = 'Team Leaders';
-		$this->load->view('templates/header', $data);
+		
+        $this->load->view('templates/header', $data);
 		$this->load->view('teams/team_leaders', $data);
 		$this->load->view('templates/footer');
 	}
 	
 	public function team_stats() {
+        $this->load->library('convert');
+
 		$data['game_set'] = $this->mcbluv_model->get_all_games();
 		$data['rosters'] = $this->mcbluv_model->get_all_players();
 		$data['opponents'] = $this->mcbluv_model->get_all_games();
@@ -99,6 +104,7 @@ class Team extends CI_Controller {
 		$data['selects_pitching'] = $this->mcbluv_model->select_pitching(); //
 		$data['selects_fielding'] = $this->mcbluv_model->select_fielding(); //
 		$data['title'] = 'Team Stats';
+
 		$this->load->view('templates/header', $data);
 		$this->load->view('teams/team_stats', $data);
 		$this->load->view('templates/footer');

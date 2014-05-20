@@ -5,11 +5,13 @@ class Players extends CI_Controller {
 	public function __construct() {
 		parent::__construct();
 		$this->load->model('mcbluv_model');
+        $this->load->library('convert');
 	}
 	
 	public function index() {
         $data['admin_p'] = $this->mcbluv_model->permissions();
-		$data['rosters'] = $this->mcbluv_model->get_all_players();
+		
+        $data['rosters'] = $this->mcbluv_model->get_all_players();
 		$data['opponents'] = $this->mcbluv_model->get_all_games();
 		$data['all_seasons'] = $this->mcbluv_model->all_seasons();
 		$data['next_games'] = $this->mcbluv_model->next_game();
@@ -17,14 +19,15 @@ class Players extends CI_Controller {
 		$data['last_three_games'] = $this->mcbluv_model->last_three_games();
         $data['get_headlines'] = $this->mcbluv_model->get_headline();
 		$data['title'] = 'McBluv Baseball'; // Refers to $title on the header
-		$this->load->view('templates/header', $data);
+		
+        $this->load->view('templates/header', $data);
 		$this->load->view('players/index', $data);
 		$this->load->view('templates/footer');
 	}
 	
 	public function player() {
-        $this->load->library('convert');
         $data['admin_p'] = $this->mcbluv_model->permissions();
+
 		$data['opponents'] = $this->mcbluv_model->get_all_games();
 		$data['rosters'] = $this->mcbluv_model->get_all_players();
 		$data['all_seasons'] = $this->mcbluv_model->all_seasons();
@@ -41,6 +44,7 @@ class Players extends CI_Controller {
 		$data['select_fielding_sum_year'] = $this->mcbluv_model->select_year_sum_fielding();
 		$data['last_active_year'] = $this->mcbluv_model->last_active_year();
 		$data['get_photos'] = $this->mcbluv_model->get_photos();
+
 		$this->load->view('templates/header', $data);
 		$this->load->view('players/player', $data);
 		$this->load->view('templates/footer');
@@ -64,7 +68,8 @@ class Players extends CI_Controller {
 		$data['era_leaders'] = $this->records_model->season_era_leaders();
 		$data['whip_leaders'] = $this->records_model->season_whip_leaders();
 		$data['title'] = "Mcbluv Season Records";
-		$this->load->view('templates/header', $data);
+		
+        $this->load->view('templates/header', $data);
 		$this->load->view('players/records_season', $data);
 		$this->load->view('templates/footer');
 	}
@@ -86,7 +91,8 @@ class Players extends CI_Controller {
 		$data['career_era_leaders'] = $this->records_model->career_era_leaders();
 		$data['career_whip_leaders'] = $this->records_model->career_whip_leaders();
 		$data['title'] = "Mcbluv Career Records";
-		$this->load->view('templates/header', $data);
+		
+        $this->load->view('templates/header', $data);
 		$this->load->view('players/records_career', $data);
 		$this->load->view('templates/footer');
 	}

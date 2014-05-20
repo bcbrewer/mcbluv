@@ -10,14 +10,14 @@ class Opponents extends CI_Controller {
 	public function opponent() {
         $opp_id = $_REQUEST['opp_id'];
         $data['admin_p'] = $this->mcbluv_model->permissions();
-        // Header
-		$data['sel_game_id'] = $this->mcbluv_model->get_opponent_by_id($opp_id);
+		
+        $data['sel_game_id'] = $this->mcbluv_model->get_opponent_by_id($opp_id);
 		$data['rosters'] = $this->mcbluv_model->get_all_players();
 		$data['opponents'] = $this->mcbluv_model->get_all_games();
 		$data['all_seasons'] = $this->mcbluv_model->all_seasons();
 		$data['sel_player_name'] = $this->mcbluv_model->find_selected_player();
-        // Page
-		$data['sel_logo_id'] = $this->mcbluv_model->get_opponent_logo($opp_id);
+		
+        $data['sel_logo_id'] = $this->mcbluv_model->get_opponent_logo($opp_id);
 		$data['get_photos'] = $this->mcbluv_model->get_photos($opp_id);
 		$this->load->view('templates/header', $data);
 		$this->load->view('opponents/opponent', $data);
@@ -25,15 +25,17 @@ class Opponents extends CI_Controller {
 	}
 
     public function game() {
+        $this->load->library('convert');
+
         $game_id = $_REQUEST['gm'];
         $data['admin_p'] = $this->mcbluv_model->permissions();;
-        // Header
+        
         $data['sel_game_id'] = $this->mcbluv_model->get_opponent_by_id($game_id);
         $data['rosters'] = $this->mcbluv_model->get_all_players();
         $data['opponents'] = $this->mcbluv_model->get_all_games();
         $data['all_seasons'] = $this->mcbluv_model->all_seasons();
         $data['sel_player_name'] = $this->mcbluv_model->find_selected_player();
-        // Page
+        
         $data['sel_batting_game_id'] = $this->mcbluv_model->get_game_by_id();
         $data['sel_pitching_game_id'] = $this->mcbluv_model->get_pitching_by_id();
         $data['sel_fielding_game_id'] = $this->mcbluv_model->get_fielding_by_id();
