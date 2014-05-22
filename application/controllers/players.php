@@ -27,14 +27,15 @@ class Players extends CI_Controller {
 	
 	public function player() {
         $data['admin_p'] = $this->mcbluv_model->permissions();
+        $player_id = $_REQUEST['player_id'];
 
 		$data['opponents'] = $this->mcbluv_model->get_all_games();
 		$data['rosters'] = $this->mcbluv_model->get_all_players();
 		$data['all_seasons'] = $this->mcbluv_model->all_seasons();
-		$data['sel_player_name'] = $this->mcbluv_model->find_selected_player();
-		$data['sel_career_batting'] = $this->mcbluv_model->career_batting();
-		$data['sel_career_pitching'] = $this->mcbluv_model->career_pitching();
-		$data['sel_career_fielding'] = $this->mcbluv_model->career_fielding();
+		$data['sel_player_name'] = $this->mcbluv_model->find_selected_player($player_id);
+		$data['sel_career_batting'] = $this->mcbluv_model->career_batting($player_id);
+		$data['sel_career_pitching'] = $this->mcbluv_model->career_pitching($player_id);
+		$data['sel_career_fielding'] = $this->mcbluv_model->career_fielding($player_id);
 		$data['selects'] = $this->mcbluv_model->select();
 		$data['select_by_year'] = $this->mcbluv_model->select_batting_year();
 		$data['select_pitching_year'] = $this->mcbluv_model->select_pitching_year();
@@ -42,10 +43,10 @@ class Players extends CI_Controller {
 		$data['select_batting_sum_year'] = $this->mcbluv_model->select_year_sum_batting();
 		$data['select_pitching_sum_year'] = $this->mcbluv_model->select_year_sum_pitching();
 		$data['select_fielding_sum_year'] = $this->mcbluv_model->select_year_sum_fielding();
-		$data['last_active_year'] = $this->mcbluv_model->last_active_year();
+		$data['last_active_year'] = $this->mcbluv_model->last_active_year($player_id);
 		$data['get_photos'] = $this->mcbluv_model->get_photos();
 
-		$this->load->view('templates/header', $data);
+        $this->load->view('templates/header', $data);
 		$this->load->view('players/player', $data);
 		$this->load->view('templates/footer');
 	}

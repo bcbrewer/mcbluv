@@ -354,8 +354,17 @@ tr.white {
 /**************Identifiers***********************************Identifiers***************************************************Identifiers*********************/
 /************************Identifiers*************Identifiers*************************************************************************Identifiers**********/
 	
-#careerToggle {
+.showHideToggle {
 	display:none;
+}
+
+#showHideToggle {
+    display:none;
+}
+
+#showHide {
+    color: blue;
+    cursor: pointer;
 }
 
 #careerStats {

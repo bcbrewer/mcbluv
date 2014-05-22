@@ -1,3 +1,19 @@
+ <script>
+     $(document).ready(function() {
+        $("#showHide").click(function() {
+            $(".showHideToggle").toggle();
+            $(".editToggle").toggle();
+        });
+    });
+
+    $(document).ready(function() { // All datepickers have the same class, but a different id
+        $( ".dob" ).datepicker ({
+            dateFormat: "yy-mm-dd",
+            changeMonth: true,
+            changeYear: true
+        }); // to change date format add {dateFormat: "mm-dd-yy"}
+    });
+</script>
 <br />
 <?php
     $categories = array(
@@ -8,6 +24,7 @@
                     'INF' => 'Infielders',
                     'OF'  => 'Outfielders'
                 ),
+        'primary_pos' => 'Pos',
         'batsthrows' => 'B/T',
         'ht' => 'Ht',
         'wt' => 'Wt',
@@ -53,6 +70,7 @@
         echo "<tr class=\"roster_category\" style=\"font-weight: bold;\">
                 <td class=\"roster_num\">#</td>
                 <td class=\"roster_player\">{$position}</td>
+                <td>Pos</td>
                 <td>B/T</td>
                 <td>Ht</td>
                 <td>Wt</td>
@@ -66,6 +84,7 @@
             echo "<tr>
                     <td class=\"roster_num\">{$player['jersey_num']}</td>
                     <td class=\"roster_player\"><a href=\"?c=players&amp;m=player" .htmlentities($query_string) . "\">{$player['first']} {$player['last']}</a></td>
+                    <td class=\"roster_info\">{$player['primary_pos']}</td>
                     <td class=\"roster_info\">{$player['batsthrows']}</td>
                     <td class=\"roster_info\">{$ht}</td>
                     <td class=\"roster_info\">{$player['wt']}</td>
@@ -97,13 +116,18 @@
         echo "<div style=\"color:red; font-weight:bold\">" . validation_errors(); "</div>";
         $attributes = array('name' => 'player_update', 'id' => 'player_update');
         echo form_open('c=team&amp;m=roster', $attributes);
-        echo form_submit('submit', 'Edit Player');
+        echo form_submit('submit', 'Update Players');
+        echo "<div id=\"showHide\"><a>Click Here to Edit</a></div>";
     }
 
     foreach($grouped_players as $position => $players) {
         echo "<tr class=\"roster_category\" style=\"font-weight: bold;\">
                 <td class=\"roster_num\">#</td>
-                <td class=\"roster_player\">{$position}</td>
+                <td class=\"roster_player\">{$position}</td>";
+            if ( $admin_p ) {
+                echo "<td>Pos Type</td>";
+            }
+          echo "<td>Pos</td>
                 <td>B/T</td>
                 <td>Ht</td>
                 <td>Wt</td>";
@@ -145,6 +169,25 @@
                     $player['wt'] => $player['wt'],
                     'lbs' => array_combine(range(150, 350, 5), range(150, 350, 5))
                 );
+                $pos_type = array (
+                    $player['pos'] => $player['pos'],
+                    'P' => 'P',
+                    'C' => 'C',
+                    'INF' => 'INF',
+                    'OF' => 'OF'
+                );
+                $primary_pos = array (
+                    $player['primary_pos'] => $player['primary_pos'],
+                    'P' => 'P',
+                    'C' => 'C',
+                    '1B' => '1B',
+                    '2B' => '2B',
+                    '3B' => '3B',
+                    'SS' => 'SS',
+                    'LF' => 'LF', 
+                    'CF' => 'CF',
+                    'RF' => 'RF'
+                );
                 if ( $player['active_p'] ) {
                     $active_p = "Y";
                 } else {
@@ -157,27 +200,34 @@
                 );
 
                 echo form_hidden('player_id[]', $player['player_id']);
-                echo "<tr>";
-                  echo "<td class=\"roster_num\">" . form_input(array('id' => 'jersey_num', 'name' => 'jersey_num[]', 'value' => $player['jersey_num'], 'size' => '2')) . "</td>";
-                  echo "<td class=\"roster_player\">
-                            <a href=\"?c=players&amp;m=player" .htmlentities($query_string) . "\">{$player['first']} {$player['last']}</a><br />"
-                            . form_input(array('id' => 'edit_player', 'name' => 'first_name[]', 'value' => $player['first'], 'size' => '10'))
-                            . form_input(array('id' => 'edit_player', 'name' => 'last_name[]', 'value' => $player['last'], 'size' => '10')) .
-                       "</td>";
-                  echo "<td class=\"roster_info\">" . form_dropdown('batsthrows[]', $bats_throws, $player['batsthrows']) . "</td>";
-                  echo "<td class=\"roster_info\">" . form_dropdown('height_ft[]', $height, $height[$feet], 'style="width: 40px;"') .
-                                                      form_dropdown('height_in[]', $height_in, $height_in[$inch], 'style="width: 45px;"') .
-                       "</td>";
-                  echo "<td class=\"roster_info\">"; echo form_dropdown('weight[]', $weight, $weight[$player['wt']], 'style="width: 60px;"'); echo "</td>";
-                  echo "<td class=\"roster_info\">" . 
-                            form_input(array('id' => 'dob_'.$player['player_id'], 'name' => 'dob[]', 'value' => $player['dob'], 'class' => 'dob', 'size' => '10', 'type' => 'date')) . 
-                        "</td>";
-                  echo "<td class=\"roster_info\">"; echo form_dropdown('active_p[]', $active); echo "</td>";
-                echo "</tr>";
+                echo "<tr>
+                        <td class=\"roster_num\">
+                            <span class=\"editToggle\">{$player['jersey_num']}</span>"
+                            . form_input(array('id' => 'jersey_num', 'name' => 'jersey_num[]', 'value' => $player['jersey_num'], 'class' => 'showHideToggle', 'size' => '2')) .
+                        "</td>
+                        <td class=\"roster_player\">
+                            <span class=\"editToggle\"><a href=\"?c=players&amp;m=player" .htmlentities($query_string) . "\">{$player['first']} {$player['last']}</a><br /></span>"
+                            . form_input(array('id' => 'edit_player', 'name' => 'first_name[]', 'value' => $player['first'], 'class' => 'showHideToggle', 'size' => '10'))
+                            . form_input(array('id' => 'edit_player', 'name' => 'last_name[]', 'value' => $player['last'], 'class' => 'showHideToggle', 'size' => '10')) .
+                       "</td>
+                        <td class=\"roster_info\">" . form_dropdown('pos_type[]', $pos_type, $player['pos']) . "</td>
+                        <td class=\"roster_info\">" . form_dropdown('primary_pos[]', $primary_pos, $player['primary_pos']) . "</td>
+                        <td class=\"roster_info\">" . form_dropdown('batsthrows[]', $bats_throws, $player['batsthrows']) . "</td>
+                        <td style=\"width: 230px;\">" 
+                            . form_dropdown('height_ft[]', $height, $height[$feet], 'style="width: 40px;"')
+                            . form_dropdown('height_in[]', $height_in, $height_in[$inch], 'style="width: 45px;"') .
+                       "</td>
+                        <td class=\"roster_info\">" . form_dropdown('weight[]', $weight, $weight[$player['wt']], 'style="width: 60px;"') . "</td>
+                        <td class=\"roster_info\">"
+                            . form_input(array('id' => 'dob_'.$player['player_id'], 'name' => 'dob[]', 'value' => $player['dob'], 'class' => 'dob', 'size' => '10', 'type' => 'date')) . 
+                        "</td>
+                        <td class=\"roster_info\">" . form_dropdown('active_p[]', $active) . "</td>
+                    </tr>";
             } else {
                 echo "<tr>
                         <td class=\"roster_num\">{$player['jersey_num']}</td>
                         <td class=\"roster_player\"><a href=\"?c=players&amp;m=player" .htmlentities($query_string) . "\">{$player['first']} {$player['last']}</a></td>
+                        <td class=\"roster_info\">{$player['primary_pos']}</td>
                         <td class=\"roster_info\">{$player['batsthrows']}</td>
                         <td class=\"roster_info\">{$ht}</td>
                         <td class=\"roster_info\">{$player['wt']}</td>
@@ -190,7 +240,7 @@
 </table>
 <?php
     if ( $admin_p ) {
-        echo form_submit('submit', 'Edit Player');
+        echo form_submit('submit', 'Update Players');
         echo form_close();
     }
 ?>

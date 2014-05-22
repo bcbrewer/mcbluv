@@ -45,6 +45,8 @@ class Update extends CI_Model {
             $data = array(
                 'first' => $value['first'],
                 'last'  => $value['last'],
+                'pos' => $value['pos'],
+                'primary_pos' => $value['primary_pos'],
                 'dob'   => $dob,
                 'ht'    => $value['height'],
                 'wt'    => $value['weight'],
@@ -67,18 +69,37 @@ class Update extends CI_Model {
             $updates = $this->input->post();
 
             $up = array();
-            $i = 0;
-            foreach($this->input->post('player_id') as $key) {
-                $up[$key] = array(
-                    'jersey_num' => $updates['jersey_num'][$i], 
-                    'first' => $updates['first_name'][$i], 
-                    'last' => $updates['last_name'][$i], 
-                    'batsthrows' => $updates['batsthrows'][$i], 
-                    'height' => $updates['height_ft'][$i]*12 + $updates['height_in'][$i], 
-                    'weight' => $updates['weight'][$i], 
-                    'dob' => $updates['dob'][$i], 
-                    'active_p' => $updates['active_p'][$i]); 
-                $i++;
+            if ( count($this->input->post('player_id')) == 1 ) {
+                $key = $this->input->post('player_id');
+                $up[$key] = array (
+                    'jersey_num' => $updates['jersey_num'], 
+                    'first' => $updates['first_name'], 
+                    'last' => $updates['last_name'], 
+                    'pos' => $updates['pos_type'], 
+                    'primary_pos' => $updates['primary_pos'], 
+                    'batsthrows' => $updates['batsthrows'], 
+                    'height' => $updates['height_ft']*12 + $updates['height_in'], 
+                    'weight' => $updates['weight'],
+                    'dob' => $updates['dob'],
+                    'active_p' => $updates['active_p']
+                );
+            } else {
+                $i = 0;
+                foreach($this->input->post('player_id') as $key) {
+                    $up[$key] = array(
+                        'jersey_num' => $updates['jersey_num'][$i], 
+                        'first' => $updates['first_name'][$i], 
+                        'last' => $updates['last_name'][$i], 
+                        'pos' => $updates['pos_type'][$i], 
+                        'primary_pos' => $updates['primary_pos'][$i], 
+                        'batsthrows' => $updates['batsthrows'][$i], 
+                        'height' => $updates['height_ft'][$i]*12 + $updates['height_in'][$i], 
+                        'weight' => $updates['weight'][$i], 
+                        'dob' => $updates['dob'][$i], 
+                        'active_p' => $updates['active_p'][$i]
+                    ); 
+                    $i++;
+                }
             }
             if ( $_POST['player_id'] ) {
                 foreach($up as $id => $val) {
@@ -86,7 +107,7 @@ class Update extends CI_Model {
                 }
             } else {
                 die('Still Needs Some More Work!');
-                $this->new_player($headline);
+            //    $this->new_player($headline);
             }
 
             redirect($_SERVER['HTTP_REFERER']);

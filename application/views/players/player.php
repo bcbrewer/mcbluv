@@ -1,3 +1,25 @@
+<script>
+    $(document).ready(function() {
+        $("#showHide").click(function() {
+            $(".showHideToggle").toggle();
+            $(".editToggle").toggle();
+        });
+    });
+
+    $(document).ready(function() { // All datepickers have the same class, but a different id
+        $( ".dob" ).datepicker ({
+            dateFormat: "yy-mm-dd",
+            changeMonth: true,
+            changeYear: true
+        }); // to change date format add {dateFormat: "mm-dd-yy"}
+    });
+
+    $(document).ready(function() {
+        $("#careerStats").click(function() {
+            $("#showHideToggle").toggle();
+        });
+    });
+</script>
 <?php
 	$categories = array(
 		'opponent' => 'Opponent',
@@ -25,7 +47,7 @@
 		'ops' => 'OPS'
 	);
 
-	$profiles = array( 'Name', 'DOB', 'Ht', 'Wt', 'B/T', 'POS');
+	$profiles = array( 'Name', '#', 'DOB', 'Ht', 'Wt', 'B/T', 'POS');
 ?>
 <br />
 
@@ -39,8 +61,19 @@
 		echo "<img style=\"float: right\" src=\"{$sel_player_name[0]['headshot']}\" alt=\" \" />";
 	}
 
-	echo "<br /><br />";
-	
+    if ( $admin_p ) {
+        echo "<div style=\"color:red; font-weight:bold\">" . validation_errors(); "</div>";
+        $attributes = array('name' => 'player_update', 'id' => 'player_update');
+        $query_string = '&player_id=' .urlencode($sel_player_name[0]['player_id']);
+        echo form_open('c=edit&amp;m=player'.htmlentities($query_string), $attributes);
+        echo form_submit('submit', 'Update Players');
+        echo "<div id=\"showHide\"><a>Click Here to Edit</a></div>";
+        array_unshift($profiles, "Active");
+        array_push($profiles, "Pos Type");
+    } else {
+	    echo "<br /><br />";
+	}
+
 	foreach($profiles as $profile) {
 		echo "<th>$profile</th>";
 	}
@@ -53,16 +86,99 @@
         $ht = $this->convert->measurements($sel_player['ht']);
         $player_dob = $this->convert->format_date($sel_player['dob']);
 		
-        echo "<td>$sel_player[first] $sel_player[last]</td>
-				<td>$player_dob</td>
-				<td>$ht</td>
-				<td>$sel_player[wt]</td>
-				<td>$sel_player[batsthrows]</td>
-				<td>$sel_player[primary_pos]</td>";
+        if ( $admin_p ) {
+            $bats_throws = array(
+                    $sel_player['batsthrows'] => $sel_player['batsthrows'],
+                    'R-R' => 'R-R',
+                    'L-L' => 'L-L',
+                    'R-L' => 'R-L',
+                    'L-R' => 'L-R',
+                    'S-R' => 'S-R',
+                    'S-L' => 'S-L'
+            );
+
+            $feet = floor($sel_player['ht']/12);
+            $inch = $sel_player['ht'] % 12;
+
+            $height = array (
+                $feet => $feet,
+                '5'   => '5',
+                '6'   => '6'
+            );
+            $height_in = array (
+                $inch   => $inch,
+                'inch'  => range(0,11)
+            );
+            $weight = array (
+                $sel_player['wt'] => $sel_player['wt'],
+                'lbs' => array_combine(range(150, 350, 5), range(150, 350, 5))
+            );
+            if ( $sel_player['active_p'] ) {
+                $active_p = "Y";
+            } else {
+                $active_p = "N";
+            }
+            $active = array (
+                $sel_player['active_p'] => $active_p,
+                '0'  => 'N',
+                '1' => 'Y'
+            );
+            $primary_pos = array (
+                $sel_player['primary_pos'] => $sel_player['primary_pos'],
+                'P' => 'P',
+                'C' => 'C',
+                '1B' => '1B',
+                '2B' => '2B',
+                '3B' => '3B',
+                'SS' => 'SS',
+                'LF' => 'LF',
+                'CF' => 'CF',
+                'RF' => 'RF'
+            );
+            $pos_type = array (
+                $sel_player['pos'] => $sel_player['pos'],
+                'P' => 'P',
+                'C' => 'C',
+                'INF' => 'INF',
+                'OF' => 'OF'
+            );
+            echo form_hidden('player_id', $sel_player['player_id']);
+
+            echo "<td>" . form_dropdown('active_p', $active) . "</td>
+                  <td>
+                    <span class=\"editToggle\">{$sel_player['first']} {$sel_player['last']}</a><br /></span>"
+                    . form_input(array('id' => 'edit_player', 'name' => 'first_name', 'value' => $sel_player['first'], 'class' => 'showHideToggle', 'size' => '10'))
+                    . form_input(array('id' => 'edit_player', 'name' => 'last_name', 'value' => $sel_player['last'], 'class' => 'showHideToggle', 'size' => '10')) .
+                  "</td>
+                  <td>
+                    <span class=\"editToggle\">{$sel_player['jersey_num']}</span>"
+                    . form_input(array('id' => 'jersey_num', 'name' => 'jersey_num', 'value' => $sel_player['jersey_num'], 'class' => 'showHideToggle', 'size' => '2')) .
+                  "</td>
+                    <td>"
+                    . form_input(array('id' => 'dob_'.$sel_player['player_id'], 'name' => 'dob', 'value' => $sel_player['dob'], 'class' => 'dob', 'size' => '10', 'type' => 'date')) .
+                  "</td>
+                   <td>"
+                    . form_dropdown('height_ft', $height, $height[$feet], 'style="width: 40px;"')
+                    . form_dropdown('height_in', $height_in, $height_in[$inch], 'style="width: 45px;"') .
+                  "</td>
+                  <td>" . form_dropdown('weight', $weight, $weight[$sel_player['wt']], 'style="width: 60px;"') . "</td>
+                  <td>" . form_dropdown('batsthrows', $bats_throws, $sel_player['batsthrows']) . "</td>
+                  <td>" . form_dropdown('primary_pos', $primary_pos, $sel_player['primary_pos']) . "</td>
+                  <td>" . form_dropdown('pos_type', $pos_type, $sel_player['pos']) . "</td>";
+        } else {
+            echo "<td>$sel_player[first] $sel_player[last]</td>
+                  <td>$sel_player[jersey_num]</td>
+			      <td>$player_dob</td>
+			      <td>$ht</td>
+			      <td>$sel_player[wt]</td>
+			      <td>$sel_player[batsthrows]</td>
+			      <td>$sel_player[primary_pos]</td>";
+        }
 	}
 ?>
 	
 </tr>
+<?php if ( $admin_p ) { echo form_close();} ?>
 </table>
 </div> <!-- end div profileWrapper -->
 <br />
@@ -307,7 +423,7 @@ if ( $select_by_year) {
 <?php
 if ( ! empty($sel_career_batting[0]['pa']) || ! empty($sel_career_pitching['opp_pa']) || ! empty($sel_career_fielding['tc']) ) {
     echo "<div id=\"careerStats\"><a>View Career Stats</a></div>													
-    <div id=\"careerToggle\">
+    <div id=\"showHideToggle\">
     <div id=\"careerWrapper\">
     <table class=\"career\">";
 
@@ -408,7 +524,7 @@ if ( ! empty($sel_career_batting[0]['pa']) || ! empty($sel_career_pitching['opp_
 		?>
     </tr>
 </div>
-</div> <!--END DIV careerToggle--!>
+</div> <!--END DIV showHideToggle--!>
 
 <?php
 	if(empty($get_photos)) {

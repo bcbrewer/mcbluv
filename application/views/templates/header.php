@@ -33,20 +33,6 @@
 		</script>
 		<script src="mcbluv.com/javascript/video.js"></script>
 		<script>videojs.options.flash.swf = "href="mcbluv.com/media/video-js.swf"</script>
-		<script>
-			$(document).ready(function() {
-			   	$("#careerStats").click(function() {
-			       	$("#careerToggle").toggle();
-			    });
-			})
-             $(document).ready(function() { // All datepickers have the same class, but a different id
-                $( ".dob" ).datepicker({
-                    dateFormat: "yy-mm-dd",
-                    changeMonth: true,
-                    changeYear: true
-                }); // to change date format add {dateFormat: "mm-dd-yy"}
-            });
-		</script>
         </head>
 
         <body>

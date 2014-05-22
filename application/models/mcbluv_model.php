@@ -308,8 +308,7 @@ public function career_batting() {
    return $query->result_array();
 }
 
-public function career_pitching() {
-   $player_id = $_REQUEST['player_id'];
+public function career_pitching($player_id = null) {
    $query = $this->db->query("
        select sum(wins) as wins, sum(loss) as loss, sum(save) as save,
            sum(bs) as bs, sum(ip) as ip, sum(hits) as hits,
@@ -323,8 +322,7 @@ public function career_pitching() {
    return $query->result_array();
 }
 	
-public function career_fielding() {
-    $player_id = $_REQUEST['player_id'];
+public function career_fielding($player_id = null) {
     $query = $this->db->query("
         select sum(tc) as tc, sum(po) as po, sum(a) as a,
             sum(errors) as errors
@@ -335,9 +333,7 @@ public function career_fielding() {
     return $query->result_array();
 }
 
-public function find_selected_player() {
-    if (isset($_REQUEST['player_id'])) {
-        $player_id = $_REQUEST['player_id'];
+public function find_selected_player($player_id = null) {
         $query = $this->db->query("
             select p.player_id, p.first, p.last, p.dob, p.ht, p.wt, p.batsthrows,
             p.pos, p.primary_pos, p.jersey_num, p.active_p,
@@ -354,7 +350,6 @@ public function find_selected_player() {
             limit 1;
         ", array($player_id, $player_id));
         return $query->result_array();
-    }
 }
 
 public function select_year_sum_batting() {
