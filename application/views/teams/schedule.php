@@ -1,6 +1,19 @@
  <script>
     $(document).ready(function () {
-        $('table').accordion({header: '.category' });
+         var icons = {
+            header: "ui-icon-circle-plus",
+            activeHeader: "ui-icon-circle-minus"
+        };
+        var d = new Date();
+        var n = d.getMonth() - 2;
+        $( "#accordion" ).accordion({
+            heightStyle: "content",
+            icons: icons,
+            active: n
+        });
+        $("#expandAll").click(function(){
+        $(".ui-accordion-content").show()
+});
     });
 </script>
 <?php
@@ -9,26 +22,23 @@
 <br />
 <br />
 <div id="scheduleWrapper">
-<table>
-	<tr>
-	    <?php
-		    foreach($categories as $category) {
-			    echo "<td class=\"schedule_category\"><strong>$category</strong></td>";
-		    }
-	    ?>
-	</tr>
+<div id="accordion">
 <?php
-
     foreach ($schedules as $month_key => &$month_value) {
         $m_key = date('F', strtotime($month_value['date']));
         $month_grouping[$m_key][$month_key] = $month_value;
     }
 
     foreach($month_grouping as $month => $opponents) {
-        echo "<tr>
-                <tbody class=\"category\"><td>{$month}</td></tbody>
-              </tr>";
-        echo "<tbody class=\"subcategory\">";
+        $month_num = date('n', strtotime($month));
+        echo "<h3 id=\"{$month_num}\" align=\"center\">{$month}</h3>";
+        echo "<div>";
+        echo "<table>";
+            echo "<tr>";
+                foreach($categories as $category) {
+                    echo "<td class=\"schedule_category\"><strong>$category</strong></td>";
+                }
+            echo "</tr>";
         foreach($opponents as $opponent) {
             $dow = date('D', strtotime($opponent['date']));
             $date = date('n/j/Y', strtotime($opponent['date']));
@@ -37,7 +47,7 @@
             $gm_string = '&gm=' .urlencode($opponent['game_id']);
            
             echo "<tr class=\"whiteline\">
-                    <td><a href=\"?c=opponents&amp;m=opponent" . htmlentities($opp_string) . "\">{$opponent['opponent']}</a></td>
+                    <td style=\"text-align: left;\"><a href=\"?c=opponents&amp;m=opponent" . htmlentities($opp_string) . "\">{$opponent['opponent']}</a></td>
                     <td>{$dow}, {$date}</td>
                     <td>{$time}</td>
                     <td>{$opponent['field_name']}</td>
@@ -45,8 +55,10 @@
                     <td>{$opponent['location']}</td>
                   </tr>";
         }
-       echo "</tbody>";
+        echo "</table>";
+        echo "</div>";
     }
 ?>
-</table>
 </div>
+</div>
+<div style="text-align: center; cursor: pointer;"><a id="expandAll">Expand All</a></div>
