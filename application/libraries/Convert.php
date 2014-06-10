@@ -126,15 +126,27 @@ class Convert extends CI_Model {
         return $height;
     }
 
-    public function format_date($date) {
+    public function format_date($date, $type = null) {
         if ( ! $date || $date == "0000-00-00" ) {
             $value = "NA";
+        } elseif ( $type == "schedule" ) {
+            $dow = date('D', strtotime($date));
+            $game_date = date('n/j/Y', strtotime($date));
+            $value = $dow . ', ' . $game_date;
         } else {
             $value = date("M d, Y", strtotime($date));
         }
         return $value;
     }
 
+    public function format_time($time) {
+        if ( ! $time || $time == "00:00:00" ) {
+            $value =  "TBD";
+        } else {
+            $value = date('g:i A', strtotime($time));
+        }
+        return $value;
+    }
 
 }
 

@@ -31,7 +31,7 @@ class Update extends CI_Model {
 
     function edit_player($value, $id) {
         if ( ! $id ) {
-            die('What exactly are you trying to update without an ID or Values?');
+            die('What exactly are you trying to update without an ID?');
         } else {
             if ( $value['dob'] == "" || $value['dob'] == "NA" ) {
                 $value['dob'] = '0000-00-00';
@@ -112,6 +112,67 @@ class Update extends CI_Model {
 
             redirect($_SERVER['HTTP_REFERER']);
         }
+    }
+
+    function edit_schedule($value, $id) {
+        if ( ! $id ) {
+            die('What exactly are you trying to update without an ID?');
+        } else {
+            if ( $value['date'] == "" || $value['date'] == "NA" ) {
+                $value['date'] = '0000-00-00 00:00:00';
+            }
+            if ( ($value['date'] != '0000-00-00 00:00:00') && ! preg_match('/^(19|20)\d\d[\-\/.](0[1-9]|1[012])[\-\/.](0[1-9]|[12][0-9]|3[01]) [0-2][0-9]:[0-5][0-9]:[0-5][0-9]$/', $value['date']) ) {
+                die('One or more of your date entries does not match the YYYY-MM-DD and/or the 24 hour format.');
+            } else {
+                $game_date = date('Y-m-d', strtotime($value['date']));
+            }
+            foreach (array_keys($value) as $field) {
+                if ( in_array( $field, array('opponent_id', 'field_id', 'playoff', 'date', 'result', 'notes') ) ) {
+                    $chosen[] = $field;
+                }
+            }
+
+            $data = array();
+            foreach ( $chosen as $sel ) {
+                $data[$sel] = $value[$sel];
+            }
+
+            $this->db->where('game_id', $id);
+            $this->db->update('game', $data);
+        }
+    }
+
+    function schedule_update() {
+        if($this->session->userdata('id') != 1) {
+            echo "You are not authorized to make changes";
+            die;
+        } else {
+            $updates = $this->input->post();
+
+            $up = array();
+            $i = 0;
+            foreach($this->input->post('game_id') as $key) {
+                $up[$key] = array(
+                    'opponent_id' => $updates['opponent_id'][$i],
+                    'date'        => $updates['date'][$i] . ' ' . $updates['game_time'][$i] . ':00',
+                    'field_id'    => $updates['field_id'][$i],
+                    'playoff'     => $updates['playoff'][$i],
+                    'result'      => $updates['result'][$i],
+                    'notes'       => $updates['notes'][$i]
+                );
+                $i++;
+            }
+        }
+        if ( $_POST['game_id'] ) {
+            foreach($up as $id => $val) {
+                $this->edit_schedule($val, $id);
+            }
+        } else {
+            die('Still Needs Some More Work!');
+        //    Add a team to the Schedule?
+        }
+
+        redirect($_SERVER['HTTP_REFERER']);
     }
 }
 

@@ -105,7 +105,7 @@ public function all_seasons() {
 	
 	return $query->result_array();
 }
-	
+
 public function get_all_games() {
 	$current_season = $this->all_seasons();
 	
@@ -137,6 +137,15 @@ public function get_all_players($active = FALSE) {
 	");
 	
 	return $query->result_array();
+}
+
+public function get_fields() {
+    $query = $this->db->query("
+        select * from field
+        order by field_name asc
+    ");
+
+    return $query->result_array();
 }
 	
 public function get_photos($id = null) {

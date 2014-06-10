@@ -79,7 +79,7 @@
 	foreach($next_games as $next_game) {
 		$dow = date('D', strtotime($next_game['date']));
 		$date = date('n/j/Y', strtotime($next_game['date']));
-		$time = date('g:i A', strtotime($next_game['date']));
+        $time = $this->convert->format_time(date('H:i:i', strtotime($next_game['date'])));
 		echo "<h2 align=\"center\">Next Game: McBluv vs {$next_game['opponent']} at <a href=\"http://mcbluv.com/index.php?c=team&m=schedule\">{$next_game['field_name']}</a> {$dow}, {$date} at {$time} ";
 		if($next_game['notes']) {
 			echo"{$next_game['notes']}</h2><br />";
@@ -144,21 +144,8 @@
 	</tr>
 	<tr class="standings_data">
 	<?php
-		$first="2";
-		$w="2";
-		$l="0";
-		$t="-";
-			echo "<td>Titans</td>";
-			echo "<td>$w</td>";
-			echo "<td>$l</td>";
-			echo "<td>$t</td>";
-			echo "<td>"; echo win_percentage($w,$l); echo"</td>";
-			echo "<td>"; echo games_back($first, $w); echo "</td>";
-	?>
-	</tr>
-	<tr class="standings_data">
-	<?php
-		$w="2";
+		$first="5";
+		$w="5";
 		$l="0";
 		$t="-";
 			echo "<td>Raw Dawgs</td>";
@@ -171,8 +158,21 @@
 	</tr>
 	<tr class="standings_data">
 	<?php
-		$w="1";
-		$l="0";
+		$w="5";
+		$l="1";
+		$t="-";
+			echo "<td>Titans</td>";
+			echo "<td>$w</td>";
+			echo "<td>$l</td>";
+			echo "<td>$t</td>";
+			echo "<td>"; echo win_percentage($w,$l); echo"</td>";
+			echo "<td>"; echo games_back($first, $w); echo "</td>";
+	?>
+	</tr>
+	<tr class="standings_data">
+	<?php
+		$w="4";
+		$l="1";
 		$t="-";
 			echo "<td>McBluv</td>";
 			echo "<td>$w</td>";
@@ -184,8 +184,21 @@
 	</tr>
 	<tr class="standings_data">
 	<?php
-		$w="0";
-		$l="1";
+		$w="2";
+		$l="3";
+		$t="-";
+			echo "<td>Rangers</td>";
+			echo "<td>$w</td>";
+			echo "<td>$l</td>";
+			echo "<td>$t</td>";
+			echo "<td>"; echo win_percentage($w,$l); echo"</td>";
+			echo "<td>"; echo games_back($first, $w); echo "</td>";
+	?>
+	</tr>
+	<tr class="standings_data">
+	<?php
+		$w="2";
+		$l="4";
 		$t="-";
 			echo "<td>Athletics</td>";
 			echo "<td>$w</td>";
@@ -197,23 +210,10 @@
 	</tr>
 	<tr class="standings_data">
 	<?php
-		$w="0";
-		$l="1";
+		$w="1";
+		$l="5";
 		$t="-";
 			echo "<td>Bears</td>";
-			echo "<td>$w</td>";
-			echo "<td>$l</td>";
-			echo "<td>$t</td>";
-			echo "<td>"; echo win_percentage($w,$l); echo"</td>";
-			echo "<td>"; echo games_back($first, $w); echo "</td>";
-	?>
-	</tr>
-	<tr class="standings_data">
-	<?php
-		$w="0";
-		$l="1";
-		$t="-";
-			echo "<td>Rangers</td>";
 			echo "<td>$w</td>";
 			echo "<td>$l</td>";
 			echo "<td>$t</td>";
@@ -246,22 +246,8 @@
 	</tr>
 	<tr class="standings_data">
 	<?php
-		$first="2";
-		$w="2";
-		$l="0";
-		$t="-";
-			echo "<td>Black Sox</td>";
-			echo "<td>$w</td>";
-			echo "<td>$l</td>";
-			echo "<td>$t</td>";
-			echo "<td>"; echo win_percentage($w,$l); echo"</td>";
-			echo "<td>"; echo games_back($first, $w); echo "</td>";
-	?>
-	</tr>
-	
-	<tr class="standings_data">
-	<?php
-		$w="1";
+		$first="4";
+		$w="4";
 		$l="1";
 		$t="-";
 			echo "<td>Red Bandits</td>";
@@ -275,8 +261,8 @@
 	
 	<tr class="standings_data">
 	<?php
-		$w="1";
-		$l="1";
+		$w="4";
+		$l="2";
 		$t="-";
 			echo "<td>Angels</td>";
 			echo "<td>$w</td>";
@@ -286,12 +272,26 @@
 			echo "<td>"; echo games_back($first, $w); echo "</td>";
 	?>
 	</tr>
+	
 	<tr class="standings_data">
 	<?php
-		$w="0";
-		$l="1";
+		$w="4";
+		$l="2";
 		$t="-";
-			echo "<td>Diamond Pigs</td>";
+			echo "<td>Black Sox</td>";
+			echo "<td>$w</td>";
+			echo "<td>$l</td>";
+			echo "<td>$t</td>";
+			echo "<td>"; echo win_percentage($w,$l); echo"</td>";
+			echo "<td>"; echo games_back($first, $w); echo "</td>";
+	?>
+	</tr>
+	<tr class="standings_data">
+	<?php
+		$w="1";
+		$l="5";
+		$t="-";
+			echo "<td>Wolf Pack</td>";
 			echo "<td>$w</td>";
 			echo "<td>$l</td>";
 			echo "<td>$t</td>";
@@ -302,7 +302,7 @@
 	<tr class="standings_data">
 	<?php
 		$w="0";
-		$l="1";
+		$l="4";
 		$t="-";
 			echo "<td>Cobb Red Sox</td>";
 			echo "<td>$w</td>";
@@ -316,9 +316,9 @@
 	<tr class="standings_data">
 	<?php
 		$w="0";
-		$l="2";
+		$l="5";
 		$t="-";
-			echo "<td>Wolf Pack</td>";
+			echo "<td>Diamond Pigs</td>";
 			echo "<td>$w</td>";
 			echo "<td>$l</td>";
 			echo "<td>$t</td>";

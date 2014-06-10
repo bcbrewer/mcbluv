@@ -6,6 +6,7 @@ class Team extends CI_Controller {
 		parent::__construct();
 		$this->load->model('mcbluv_model');
 		$this->load->model('team_stats_model');
+        $this->load->library('convert');
 	}
 	
 	public function schedule() {
@@ -16,14 +17,33 @@ class Team extends CI_Controller {
 		$data['all_seasons'] = $this->mcbluv_model->all_seasons();
 		$data['sel_player_name'] = $this->mcbluv_model->find_selected_player();
 		$data['title'] = 'Schedule';
-		$this->load->view('templates/header', $data);
-		$this->load->view('teams/schedule', $data);
-		$this->load->view('templates/footer');
+
+        if ( $data['admin_p'] ) {
+            $data['fields'] = $this->mcbluv_model->get_fields();
+            $this->load->view('templates/header', $data);
+
+            $this->load->helper(array('form', 'url'));
+            $this->load->library('form_validation');
+            $this->form_validation->set_rules('result[]', 'Result', 'max_length[10]|xss_clean');
+
+            $this->load->library('update');
+
+            if ($this->form_validation->run() == FALSE) {
+                $this->load->view('teams/schedule', $data);
+            } else {
+                $this->load->view('teams/schedule', $data);
+                $this->update->schedule_update();
+            }
+
+            $this->load->view('templates/footer');
+        } else {
+		    $this->load->view('templates/header', $data);
+		    $this->load->view('teams/schedule', $data);
+		    $this->load->view('templates/footer');
+        }
 	}
 
 	public function roster() {
-        $this->load->library('convert');
-
         $data['admin_p'] = $this->mcbluv_model->permissions();
         $data['active_roster'] = $this->mcbluv_model->get_all_players(true);
 		$data['rosters'] = $this->mcbluv_model->get_all_players();
@@ -58,8 +78,6 @@ class Team extends CI_Controller {
 	}
 
 	public function team_leaders() {
-        $this->load->library('convert');
-
 		$data['rosters'] = $this->mcbluv_model->get_all_players();
 		$data['opponents'] = $this->mcbluv_model->get_all_games();
 		$data['all_seasons'] = $this->mcbluv_model->all_seasons();
@@ -86,8 +104,6 @@ class Team extends CI_Controller {
 	}
 	
 	public function team_stats() {
-        $this->load->library('convert');
-
 		$data['game_set'] = $this->mcbluv_model->get_all_games();
 		$data['rosters'] = $this->mcbluv_model->get_all_players();
 		$data['opponents'] = $this->mcbluv_model->get_all_games();
