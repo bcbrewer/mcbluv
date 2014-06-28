@@ -5,333 +5,118 @@ class Team_stats_model extends CI_Model {
 	public function __construct() {
 		$this->load->database();
 	}
-	
-	public function get_game_by_season($season) {
-		$this->db->select('*');
-		$this->db->from('game');
-		$this->db->where('season_id', $season);
-		$this->db->order_by('game_id');
-		$query = $this->db->get();
-		return $query->result_array();
-	}
-	
-	public function find_sel_game_for_season() {
-		if (isset($_GET['season_id'])) {
-			$sel_game_for_season = $this->get_game_by_season($_GET['season_id']);
-		} else {
-			$sel_game_for_season = NULL;
-		}
-		return $sel_game_for_season;
+
+    // Team totals
+     public function team_batting($id, $type = null) {
+        if ( $type == 'season' ) {
+            $where = "where season_id = ?";
+        } else {
+            $where = "where game_id = ?";
+        }
+        $query = $this->db->query("
+            select sum(pa) as pa, sum(pa - bb - hbp - sac) as ab,
+                sum(single + `double` + triple + hr) as hits,
+                sum(hr) as hr, sum(rbi) as rbi, sum(bb) as bb, sum(runs) as runs,
+                sum(hbp) as hbp, sum(sac) as sac, sum(roe) as roe,
+                sum(single) as 1b, sum(`double`) as 2b, sum(triple) as 3b,
+                sum((single * 1) + (`double` * 2) + (triple * 3) + (hr * 4)) as tb,
+                sum(so) as so, sum(gidp) as gidp, sum(sb) as sb, sum(cs) as cs
+            from batting
+            $where
+        ", array($id));
+
+        return $query->result_array();
+    }
+
+    public function team_pitching($id, $type = null) {
+         if ( $type == 'season' ) {
+            $where = "where season_id = ?";
+        } else {
+            $where = "where game_id = ?";
+        }
+        $query = $this->db->query("
+            select sum(wins) as wins, sum(loss) as loss,
+                sum(save) as save, sum(bs) as bs, sum(ip) as ip, sum(hits) as hits,
+                sum(runs) as runs, sum(er) as er, sum(walks) as walks, sum(so) as so,
+                sum(qs) as qs, sum(cg) as cg, sum(hbp) as hbp, sum(opp_pa) as opp_pa,
+                sum(opp_pa - walks - hbp) as opp_ab
+            from pitching
+            $where
+        ", array($id));
+
+        return $query->result_array();
+    }
+
+     public function team_fielding($id, $type = null) {
+         if ( $type == 'season' ) {
+            $where = "where season_id = ?";
+        } else {
+            $where = "where game_id = ?";
+        }
+        $query = $this->db->query("
+            select sum(po) as po, sum(a) as a, sum(errors) as errors,
+                sum(po + a + errors) as tc
+            from fielding
+            $where
+        ", array($id));
+
+        return $query->result_array();
+    }
+
+	public function season_batting($season) {
+        $query = $this->db->query("
+            select b.game_id, o.opponent_id, o.opponent, g.season_id, g.result,
+                sum(b.pa) as pa, sum(b.pa - b.bb - b.hbp - b.sac) as ab,
+                sum(b.single + b.double + b.triple + b.hr) as hits,
+                sum(b.hr) as hr, sum(b.rbi) as rbi, sum(b.bb) as bb,
+                sum(b.runs) as runs, sum(b.hbp) as hbp, sum(b.sac) as sac,
+                sum(b.roe) as roe, sum(b.single) as 1b, sum(b.double) as 2b, sum(b.triple) as 3b,
+                sum((b.single * 1) + (b.double * 2) + (b.triple * 3) + (b.hr * 4)) as tb,
+                sum(b.so) as so, sum(b.gidp) as gidp, sum(b.sb) as sb, sum(b.cs) as cs
+            from batting b
+                join game g on (g.game_id = b.game_id)
+                join opponent o on (o.opponent_id = g.opponent_id)
+            where b.season_id = ?
+            group by b.game_id
+        ", array($season));
+
+        return $query->result_array();
 	}
 
-	public function sum_team_stats_batting($season) {
-		$this->db->select('season_id');
-		$this->db->select_sum('pa');
-		$this->db->select_sum('ab');
-		$this->db->select_sum('hits');
-		$this->db->select_sum('hr');
-		$this->db->select_sum('rbi');
-		$this->db->select_sum('bb');
-		$this->db->select_sum('runs');
-		$this->db->select_sum('hbp');
-		$this->db->select_sum('sac');
-		$this->db->select_sum('roe');
-		$this->db->select_sum('single');
-		$this->db->select_sum('`double`');
-		$this->db->select_sum('triple');
-		$this->db->select_sum('tb');
-		$this->db->select_sum('so');
-		$this->db->select_sum('gidp');
-		$this->db->select_sum('sb');
-		$this->db->select_sum('cs');
-		$this->db->from('batting');
-		$this->db->where('season_id', $season);
-		$query = $this->db->get();
-		return $query->result_array();
+	public function season_pitching($season) {
+        $query = $this->db->query("
+            select p.game_id, o.opponent_id, o.opponent, g.season_id,
+                case
+                    when sum(p.loss) = 1 then 'L'
+                    else 'W'
+                end as record,
+                sum(p.save) as save, sum(p.bs) as bs, sum(p.ip) as ip, sum(p.hits) as hits,
+                sum(p.runs) as runs, sum(p.er) as er, sum(p.walks) as walks, sum(p.so) as so,
+                sum(p.qs) as qs, sum(p.cg) as cg, sum(p.hbp) as hbp, sum(p.opp_pa) as opp_pa,
+                sum(p.opp_pa - p.walks - p.hbp) as opp_ab
+            from pitching p
+                join game g on (g.game_id = p.game_id)
+                join opponent o on (o.opponent_id = g.opponent_id)
+            where p.season_id = ?
+            group by p.game_id
+        ", array($season));
+
+        return $query->result_array();
 	}
 
-	public function sum_team_batting($game_id) {
-		$this->db->select_sum('pa');
-		$this->db->select_sum('ab');
-		$this->db->select_sum('hits');
-		$this->db->select_sum('hr');
-		$this->db->select_sum('rbi');
-		$this->db->select_sum('bb');
-		$this->db->select_sum('runs');
-		$this->db->select_sum('hbp');
-		$this->db->select_sum('sac');
-		$this->db->select_sum('roe');
-		$this->db->select_sum('single');
-		$this->db->select_sum('`double`');
-		$this->db->select_sum('triple');
-		$this->db->select_sum('tb');
-		$this->db->select_sum('so');
-		$this->db->select_sum('gidp');
-		$this->db->select_sum('sb');
-		$this->db->select_sum('cs');
-		$this->db->from('batting');
-		$this->db->where('game_id', $game_id);
-		$query = $this->db->get();
-		return $query->result_array();
-	}
-	
-	public function sum_team_stats_game_batting($season) {
-		$this->db->select('batting.game_id');
-		$this->db->select('opponent.opponent_id');
-		$this->db->select('opponent.opponent');
-		$this->db->select('game.season_id');
-		$this->db->select('game.result');
-		$this->db->select_sum('pa');
-		$this->db->select_sum('ab');
-		$this->db->select_sum('hits');
-		$this->db->select_sum('hr');
-		$this->db->select_sum('rbi');
-		$this->db->select_sum('bb');
-		$this->db->select_sum('runs');
-		$this->db->select_sum('hbp');
-		$this->db->select_sum('sac');
-		$this->db->select_sum('roe');
-		$this->db->select_sum('single');
-		$this->db->select_sum('`double`');
-		$this->db->select_sum('triple');
-		$this->db->select_sum('tb');
-		$this->db->select_sum('so');
-		$this->db->select_sum('gidp');
-		$this->db->select_sum('sb');
-		$this->db->select_sum('cs');
-		$this->db->from('batting');
-		$this->db->join('game', 'game.game_id = batting.game_id');
-		$this->db->join('opponent', 'opponent.opponent_id = game.opponent_id');
-		$this->db->where('batting.season_id', $season);
-		$this->db->group_by('game_id');
-		$query = $this->db->get();
-		return $query->result_array();
-	}
+	public function season_fielding($season) {
+        $query = $this->db->query("
+            select f.game_id, o.opponent_id, o.opponent, g.season_id,
+                sum(f.po) as po, sum(f.a) as a, sum(f.errors) as errors,
+                sum(f.po + f.a + f.errors) as tc
+            from fielding f
+                join game g on (g.game_id = f.game_id)
+                join opponent o on (o.opponent_id = g.opponent_id)
+            where f.season_id = ?
+            group by f.game_id
+        ", array($season));
 
-	public function sum_team_stats_pitching($season) {
-		$this->db->select('season_id');
-		$this->db->select_sum('wins');
-		$this->db->select_sum('loss');
-		$this->db->select_sum('record');
-		$this->db->select_sum('save');
-		$this->db->select_sum('bs');
-		$this->db->select_sum('ip');
-		$this->db->select_sum('hits');
-		$this->db->select_sum('runs');
-		$this->db->select_sum('er');
-		$this->db->select_sum('walks');
-		$this->db->select_sum('so');
-		$this->db->select_sum('qs');
-		$this->db->select_sum('cg');
-		$this->db->select_sum('hbp');
-		$this->db->select_sum('opp_pa');
-		$this->db->select_sum('opp_ab');
-		$this->db->from('pitching');
-		$this->db->where('season_id', $season);
-		$query = $this->db->get();
-		return $query->result_array();
-	}
-
-	public function sum_pitching($player_id) {
-		$this->db->select_sum('record');
-		$this->db->select_sum('save');
-		$this->db->select_sum('bs');
-		$this->db->select_sum('ip');
-		$this->db->select_sum('hits');
-		$this->db->select_sum('runs');
-		$this->db->select_sum('er');
-		$this->db->select_sum('walks');
-		$this->db->select_sum('so');
-		$this->db->select_sum('qs');
-		$this->db->select_sum('cg');
-		$this->db->select_sum('hbp');
-		$this->db->select_sum('opp_pa');
-		$this->db->select_sum('opp_ab');
-		$this->db->from('pitching');
-		$this->db->where('player_id', $player_id);
-		$query = $this->db->get();
-		return $query->result_array();
-	}
-
-	public function sum_team_pitching($game_id) {
-		$this->db->select_sum('save');
-		$this->db->select_sum('bs');
-		$this->db->select_sum('ip');
-		$this->db->select_sum('hits');
-		$this->db->select_sum('runs');
-		$this->db->select_sum('er');
-		$this->db->select_sum('walks');
-		$this->db->select_sum('so');
-		$this->db->select_sum('qs');
-		$this->db->select_sum('cg');
-		$this->db->select_sum('hbp');
-		$this->db->select_sum('opp_pa');
-		$this->db->select_sum('opp_ab');
-		$this->db->from('pitching');
-		$this->db->where('game_id', $game_id);
-		$query = $this->db->get();
-		return $query->result_array();
-	}
-
-	public function sum_team_stats_game_pitching($season) {
-		$this->db->select('pitching.game_id');
-		$this->db->select('opponent.opponent_id');
-		$this->db->select('opponent.opponent');
-		$this->db->select('game.season_id');
-		$this->db->select('record');
-		$this->db->select_sum('save');
-		$this->db->select_sum('bs');
-		$this->db->select_sum('ip');
-		$this->db->select_sum('hits');
-		$this->db->select_sum('runs');
-		$this->db->select_sum('er');
-		$this->db->select_sum('walks');
-		$this->db->select_sum('so');
-		$this->db->select_sum('qs');
-		$this->db->select_sum('cg');
-		$this->db->select_sum('hbp');
-		$this->db->select_sum('opp_pa');
-		$this->db->select_sum('opp_ab');
-		$this->db->from('pitching');
-		$this->db->join('game', 'game.game_id = pitching.game_id');
-		$this->db->join('opponent', 'opponent.opponent_id = game.opponent_id');
-		$this->db->where('pitching.season_id', $season);
-		$this->db->group_by('game_id');
-		$query = $this->db->get();
-		return $query->result_array();
-	}
-
-	public function sum_team_stats_fielding($season) {
-		$this->db->select('season_id');
-		$this->db->select_sum('tc');
-		$this->db->select_sum('po');
-		$this->db->select_sum('a');
-		$this->db->select_sum('errors');
-		$this->db->from('fielding');
-		$this->db->where('season_id', $season);
-		$query = $this->db->get();
-		return $query->result_array();
-	}
-
-	public function sum_fielding($player_id) {
-		$this->db->select_sum('tc');
-		$this->db->select_sum('po');
-		$this->db->select_sum('a');
-		$this->db->select_sum('errors');
-		$this->db->from('fielding');
-		$this->db->where('player_id', $player_id);
-		$query = $this->db->get();
-		return $query->result_array();
-	}
-
-	public function sum_team_fielding($game_id) {
-		$this->db->select_sum('tc');
-		$this->db->select_sum('po');
-		$this->db->select_sum('a');
-		$this->db->select_sum('errors');
-		$this->db->from('fielding');
-		$this->db->where('game_id', $game_id);
-		$query = $this->db->get();
-		return $query->result_array();
-	}
-
-	public function sum_team_stats_game_fielding($season) {
-		$this->db->select('fielding.game_id');
-		$this->db->select('opponent.opponent_id');
-		$this->db->select('opponent.opponent');
-		$this->db->select('game.season_id');
-		$this->db->select_sum('tc');
-		$this->db->select_sum('po');
-		$this->db->select_sum('a');
-		$this->db->select_sum('errors');
-		$this->db->from('fielding');
-		$this->db->join('game', 'game.game_id = fielding.game_id');
-		$this->db->join('opponent', 'opponent.opponent_id = game.opponent_id');
-		$this->db->where('fielding.season_id', $season);
-		$this->db->group_by('game_id');
-		$query = $this->db->get();
-		return $query->result_array();
-	}
-	
-	public function find_team_batting_sum_season() {
-		if (isset($_GET['season_id'])) {
-			$sel_team_batting_sum_season = $this->sum_team_stats_game_batting($_GET['season_id']);
-		} else {
-			$sel_team_batting_sum_season = null;
-		}
-		return $sel_team_batting_sum_season;
-	}
-	
-	public function find_team_pitching_sum_season() {
-		if (isset($_GET['season_id'])) {
-			$sel_team_pitching_sum_season = $this->sum_team_stats_game_pitching($_GET['season_id']);
-		} else {
-			$sel_team_pitching_sum_season = null;
-		}
-		return $sel_team_pitching_sum_season;
-	}
-	
-	public function find_team_fielding_sum_season() {
-		if (isset($_GET['season_id'])) {
-			$sel_team_fielding_sum_season = $this->sum_team_stats_game_fielding($_GET['season_id']);
-		} else {
-			$sel_team_fielding_sum_season = null;
-		}
-		return $sel_team_fielding_sum_season;
-	}
-	
-	public function find_batting_sum_season() {
-		if (isset($_GET['season_id'])) {
-			$sel_batting_sum_season = $this->sum_team_stats_batting($_GET['season_id']);
-		} else {
-			$sel_batting_sum_season = null;
-		}
-		return $sel_batting_sum_season;
-	}
-	
-	public function find_pitching_sum_season() {
-		if (isset($_GET['season_id'])) {
-			$sel_pitching_sum_season = $this->sum_team_stats_pitching($_GET['season_id']);
-		} else {
-			$sel_pitching_sum_season = null;
-		}
-		return $sel_pitching_sum_season;
-	}
-	
-	public function find_fielding_sum_season() {
-		if (isset($_GET['season_id'])) {
-			$sel_fielding_sum_season = $this->sum_team_stats_fielding($_GET['season_id']);
-		} else {
-			$sel_fielding_sum_season = null;
-		}
-		return $sel_fielding_sum_season;
-	}
-
-	public function find_batting_sum_for_team() {
-		if (isset($_GET['gm'])) {
-			$sel_team_batting_sum = $this->sum_team_batting($_GET['gm']);
-		} else {
-			$sel_team_batting_sum = NULL;
-		}
-		return $sel_team_batting_sum;
-	}
-
-	public function find_pitching_sum_for_team() {
-		if (isset($_GET['gm'])) {
-			$sel_team_pitching_sum = $this->sum_team_pitching($_GET['gm']);
-		} else {
-			$sel_team_pitching_sum = NULL;
-		}
-		return $sel_team_pitching_sum;
-	}
-
-	public function find_fielding_sum_for_team() {
-		if (isset($_GET['gm'])) {
-			$sel_team_fielding_sum = $this->sum_team_fielding($_GET['gm']);
-		} else {
-			$sel_team_fielding_sum = NULL;
-		}
-		return $sel_team_fielding_sum;
+        return $query->result_array();
 	}
 
 }

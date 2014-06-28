@@ -6,6 +6,20 @@ class Update extends CI_Model {
         $this->load->database();
     }
 
+    function columns($table) {
+        $query = $this->db->query("
+            select group_concat(`COLUMN_NAME` SEPARATOR ',') as column_name
+            from `INFORMATION_SCHEMA`.`COLUMNS`
+            where `TABLE_SCHEMA`='mcbluvco_baseball'
+                and `TABLE_NAME`= ?
+        ", array($table));
+
+        foreach($query->result_array() as $arr_col) {
+            $columns = explode(",", $arr_col['column_name']);
+        }
+        return $columns;
+    }
+
     function edit_headline($headline, $id) {
         if ( ! $headline || ! $id ) {
             die('You must include a headline and an ID');
@@ -29,8 +43,8 @@ class Update extends CI_Model {
         }
     }
 
-    function edit_player($value, $id) {
-        if ( ! $id ) {
+    function edit_player($value, $player_id) {
+        if ( ! $player_id ) {
             die('What exactly are you trying to update without an ID?');
         } else {
             if ( $value['dob'] == "" || $value['dob'] == "NA" ) {
@@ -42,80 +56,27 @@ class Update extends CI_Model {
                 $dob = date('Y-m-d', strtotime($value['dob']));
             }
 
-            $data = array(
-                'first' => $value['first'],
-                'last'  => $value['last'],
-                'pos' => $value['pos'],
-                'primary_pos' => $value['primary_pos'],
-                'dob'   => $dob,
-                'ht'    => $value['height'],
-                'wt'    => $value['weight'],
-                'batsthrows' => $value['batsthrows'],
-                'jersey_num' => $value['jersey_num'],
-                'active_p'   => $value['active_p']
-            );
+            $fields = $this->columns('player');
+
+            foreach (array_keys($value) as $field) {
+                if ( in_array( $field, $fields ) ) {
+                    $chosen[] = $field;
+                }
+            }
+
+            $data = array();
+            foreach ( $chosen as $sel ) {
+                $data[$sel] = $value[$sel];
+            }
             
-            $this->db->where('player_id', $id);
+            $this->db->where('player_id', $player_id);
             $this->db->update('player', $data); 
         }
 
     }
 
-    function player_update() {
-        if($this->session->userdata('id') != 1) {
-            echo "You are not authorized to make changes";
-            die;
-        } else {
-            $updates = $this->input->post();
-
-            $up = array();
-            if ( count($this->input->post('player_id')) == 1 ) {
-                $key = $this->input->post('player_id');
-                $up[$key] = array (
-                    'jersey_num' => $updates['jersey_num'], 
-                    'first' => $updates['first_name'], 
-                    'last' => $updates['last_name'], 
-                    'pos' => $updates['pos_type'], 
-                    'primary_pos' => $updates['primary_pos'], 
-                    'batsthrows' => $updates['batsthrows'], 
-                    'height' => $updates['height_ft']*12 + $updates['height_in'], 
-                    'weight' => $updates['weight'],
-                    'dob' => $updates['dob'],
-                    'active_p' => $updates['active_p']
-                );
-            } else {
-                $i = 0;
-                foreach($this->input->post('player_id') as $key) {
-                    $up[$key] = array(
-                        'jersey_num' => $updates['jersey_num'][$i], 
-                        'first' => $updates['first_name'][$i], 
-                        'last' => $updates['last_name'][$i], 
-                        'pos' => $updates['pos_type'][$i], 
-                        'primary_pos' => $updates['primary_pos'][$i], 
-                        'batsthrows' => $updates['batsthrows'][$i], 
-                        'height' => $updates['height_ft'][$i]*12 + $updates['height_in'][$i], 
-                        'weight' => $updates['weight'][$i], 
-                        'dob' => $updates['dob'][$i], 
-                        'active_p' => $updates['active_p'][$i]
-                    ); 
-                    $i++;
-                }
-            }
-            if ( $_POST['player_id'] ) {
-                foreach($up as $id => $val) {
-                    $this->edit_player($val, $id);
-                }
-            } else {
-                die('Still Needs Some More Work!');
-            //    $this->new_player($headline);
-            }
-
-            redirect($_SERVER['HTTP_REFERER']);
-        }
-    }
-
-    function edit_schedule($value, $id) {
-        if ( ! $id ) {
+    function edit_schedule($value, $game_id) {
+        if ( ! $game_id ) {
             die('What exactly are you trying to update without an ID?');
         } else {
             if ( $value['date'] == "" || $value['date'] == "NA" ) {
@@ -126,8 +87,11 @@ class Update extends CI_Model {
             } else {
                 $game_date = date('Y-m-d', strtotime($value['date']));
             }
+
+            $fields = $this->columns('game');
+
             foreach (array_keys($value) as $field) {
-                if ( in_array( $field, array('opponent_id', 'field_id', 'playoff', 'date', 'result', 'notes') ) ) {
+                if ( in_array( $field, $fields ) ) {
                     $chosen[] = $field;
                 }
             }
@@ -137,43 +101,118 @@ class Update extends CI_Model {
                 $data[$sel] = $value[$sel];
             }
 
-            $this->db->where('game_id', $id);
+            $this->db->where('game_id', $game_id);
             $this->db->update('game', $data);
         }
     }
 
-    function schedule_update() {
+    function edit_game($value, $player_id, $game_id, $type) {
+        if ( ! $player_id || ! $game_id) {
+            die('What exactly are you trying to update without an ID?');
+        } else {
+            if ( $type == "hitting_update" ) {
+                $table = "batting";
+            } elseif ( $type == "pitching_update" ) {
+                $table = "pitching";
+            } elseif ( $type == "fielding_update" ) {
+                $table = "fielding";
+            } else {
+                die('Type does not match');
+            }
+
+            $fields = $this->columns($table);
+
+            foreach (array_keys($value) as $field) {
+                if ( in_array( $field, $fields ) ) {
+                    $chosen[] = $field;
+                }
+            }
+
+            $data = array();
+            foreach ( $chosen as $sel ) {
+                $data[$sel] = $value[$sel];
+            }
+
+            for($i=0; $i<count($player_id); $i++) {
+                $this->db->where('player_id', $player_id);
+                $this->db->where('game_id', $game_id);
+                $this->db->update($table, $data);
+            }
+        }
+    }
+
+    function update() {
         if($this->session->userdata('id') != 1) {
             echo "You are not authorized to make changes";
             die;
         } else {
             $updates = $this->input->post();
 
-            $up = array();
-            $i = 0;
-            foreach($this->input->post('game_id') as $key) {
-                $up[$key] = array(
-                    'opponent_id' => $updates['opponent_id'][$i],
-                    'date'        => $updates['date'][$i] . ' ' . $updates['game_time'][$i] . ':00',
-                    'field_id'    => $updates['field_id'][$i],
-                    'playoff'     => $updates['playoff'][$i],
-                    'result'      => $updates['result'][$i],
-                    'notes'       => $updates['notes'][$i]
-                );
-                $i++;
-            }
-        }
-        if ( $_POST['game_id'] ) {
-            foreach($up as $id => $val) {
-                $this->edit_schedule($val, $id);
-            }
-        } else {
-            die('Still Needs Some More Work!');
-        //    Add a team to the Schedule?
-        }
+            if ( $updates ) {
+                if ( isset($_REQUEST['gm']) ) {
+                    $game_id = $_REQUEST['gm'];
+                }
+                $type = $_REQUEST['type'];
+               
+                 if ( $updates['submit'] ) {
+                    unset($updates['submit']);
+                }
+                
+                $up = array();
 
-        redirect($_SERVER['HTTP_REFERER']);
+                if ( count($updates['id']) == 1 ) {
+                    if ( in_array('height_ft', array_keys($updates)) ) {
+                        $updates['ht'] = $updates['height_ft']*12 + $updates['ht'];
+                    }
+
+                    $key = $updates['id'];
+                    $up[$key] = $updates;
+                } else {
+                    $keys = array_shift($updates);
+                    $cols = array_keys($updates);
+
+                    $n = 0;
+                    foreach($keys as $key) {
+                        if ( in_array('height_ft', array_keys($updates)) ) {
+                            $updates['ht'][$n] = $updates['height_ft'][$n]*12 + $updates['ht'][$n];
+                        }
+
+                        if ( in_array('date', array_keys($updates)) && $type == "schedule_update" ) {
+                            $updates['date'][$n] = $updates['date'][$n] . ' ' . $updates['game_time'][$n] . ':00';
+                        }
+
+                        for($i=0; $i<count(array_keys($cols)); $i++) {
+                            $up[$key][$cols[$i]] = $updates[$cols[$i]][$n];
+                        }
+                        $n++;
+                    }
+                }
+
+                if ( $type == "player_update" ) {
+                    foreach($up as $id => $val) {
+                        $this->edit_player($val, $id);
+                    }
+                } elseif ( $type == "schedule_update" ) {
+                    foreach($up as $id => $val) {
+                        $this->edit_schedule($val, $id);
+                    }
+                } elseif ( $type == "hitting_update" || $type == "pitching_update" || $type == "fielding_update" ) {
+                    foreach($up as $id => $val) {
+                        $this->edit_game($val, $id, $game_id, $type);
+                    }
+                } else {
+                    die('There is no type');
+                }
+
+            } else {
+                die('Still Needs Some More Work!');
+            //    $this->new_player($headline);
+            }
+
+            redirect($_SERVER['HTTP_REFERER']);
+        }
     }
+
 }
 
 ?>

@@ -6,223 +6,208 @@ class Team_leaders_model extends CI_Model {
 		$this->load->database();
 	}
 	
-	public function hr_leaders($season = "5") {
-		$this->db->select('player.player_id');
-		$this->db->select('first');
-		$this->db->select('last');
-		$this->db->select('season_id');
-		$this->db->select_sum('hr');
-		$this->db->from('batting');
-		$this->db->where("season_id", $season);
-		$this->db->join('player', 'batting.player_id = player.player_id');
-		$this->db->group_by('first');
-		$this->db->order_by('hr', 'desc');
-		$this->db->limit('3');
-		$query = $this->db->get();
-		return $query->result_array();
+	public function hr_leaders($season) {
+        $query = $this->db->query("
+            select p.player_id, p.first, p.last, sum(b.hr) as hr
+            from batting b
+                join player p on (p.player_id = b.player_id)
+            where b.season_id = ?
+            group by p.player_id
+            order by hr desc
+            limit 3;
+        ", array($season));
+
+        return $query->result_array();
+    }
+
+	public function avg_leaders($season) {
+        $query = $this->db->query("
+            select p.player_id, p.first, p.last,
+                sum(pa) as pa,
+                sum(pa - bb - hbp - sac) as ab,
+                sum(b.single + b.double + b.triple + b.hr) as hits
+            from batting b
+                join player p on (p.player_id = b.player_id)
+            where b.season_id = ?
+            group by p.player_id
+            order by hits desc
+            limit 3;
+        ", array($season));
+
+        return $query->result_array();
 	}
 	
-	public function avg_leaders($season = "5") {
-		$this->db->select('player.player_id');
-		$this->db->select('first');
-		$this->db->select('last');
-		$this->db->select('season_id');
-		$this->db->select_sum('hits');
-		$this->db->select_sum('ab');
-		$this->db->select_sum('pa');
-		$this->db->from('batting');
-		$this->db->where("season_id", $season);
-		$this->db->join('player', 'batting.player_id = player.player_id');
-		$this->db->group_by('first');
-		$this->db->order_by('hits', 'desc');
-		$this->db->order_by('single', 'desc');
-		$this->db->limit('3');
-		$query = $this->db->get();
-		return $query->result_array();
+	public function hits_leaders($season) {
+        $query = $this->db->query("
+            select p.player_id, p.first, p.last,
+                sum(b.single + b.double + b.triple + b.hr) as hits
+            from batting b
+                join player p on (p.player_id = b.player_id)
+            where b.season_id = ?
+            group by p.player_id
+            order by hits desc
+            limit 3;
+        ", array($season));
+
+        return $query->result_array();
 	}
 	
-	public function hits_leaders($season = "5") {
-		$this->db->select('player.player_id');
-		$this->db->select('first');
-		$this->db->select('last');
-		$this->db->select('season_id');
-		$this->db->select_sum('hits');
-		$this->db->from('batting');
-		$this->db->where("season_id", $season);
-		$this->db->join('player', 'batting.player_id = player.player_id');
-		$this->db->group_by('first');
-		$this->db->order_by('hits', 'desc');
-		$this->db->limit('3');
-		$query = $this->db->get();
-		return $query->result_array();
+	public function runs_leaders($season) {
+        $query = $this->db->query("
+            select p.player_id, p.first, p.last,
+                sum(b.runs) as runs
+            from batting b
+                join player p on (p.player_id = b.player_id)
+            where b.season_id = ?
+            group by p.player_id
+            order by runs desc
+            limit 3;
+        ", array($season));
+
+        return $query->result_array();
 	}
 	
-	public function runs_leaders($season = "5") {
-		$this->db->select('player.player_id');
-		$this->db->select('first');
-		$this->db->select('last');
-		$this->db->select('season_id');
-		$this->db->select_sum('runs');
-		$this->db->from('batting');
-		$this->db->where("season_id", $season);
-		$this->db->join('player', 'batting.player_id = player.player_id');
-		$this->db->group_by('first');
-		$this->db->order_by('runs', 'desc');
-		$this->db->limit('3');
-		$query = $this->db->get();
-		return $query->result_array();
+	public function rbi_leaders($season) {
+        $query = $this->db->query("
+            select p.player_id, p.first, p.last,
+                sum(b.rbi) as rbi
+            from batting b
+                join player p on (p.player_id = b.player_id)
+            where b.season_id = ?
+            group by p.player_id
+            order by rbi desc
+            limit 3;
+        ", array($season));
+
+        return $query->result_array();
 	}
 	
-	public function rbi_leaders($season = "5") {
-		$this->db->select('player.player_id');
-		$this->db->select('first');
-		$this->db->select('last');
-		$this->db->select('season_id');
-		$this->db->select_sum('rbi');
-		$this->db->from('batting');
-		$this->db->where("season_id", $season);
-		$this->db->join('player', 'batting.player_id = player.player_id');
-		$this->db->group_by('first');
-		$this->db->order_by('rbi', 'desc');
-		$this->db->limit('3');
-		$query = $this->db->get();
-		return $query->result_array();
+    public function sb_leaders($season) {
+         $query = $this->db->query("
+            select p.player_id, p.first, p.last,
+                sum(b.pa) as pa,
+                sum(b.sb) as sb
+            from batting b
+                join player p on (p.player_id = b.player_id)
+            where b.season_id = ?
+            group by p.player_id
+            order by sb desc
+            limit 3;
+        ", array($season));
+
+        return $query->result_array();
 	}
 	
-	public function sb_leaders($season = "5") {
-		$this->db->select('player.player_id');
-		$this->db->select('first');
-		$this->db->select('last');
-		$this->db->select('season_id');
-		$this->db->select_sum('sb');
-		$this->db->select_sum('pa');
-		$this->db->from('batting');
-		$this->db->where("season_id", $season);
-		$this->db->join('player', 'batting.player_id = player.player_id');
-		$this->db->group_by('first');
-		$this->db->order_by('sb', 'desc');
-		$this->db->limit('3');
-		$query = $this->db->get();
-		return $query->result_array();
+	public function wins_leaders($season) {
+        $query = $this->db->query("
+            select ply.player_id, ply.first, ply.last,
+                sum(p.wins) as wins
+            from pitching p
+                join player ply on (ply.player_id = p.player_id)
+            where p.season_id = ?
+            group by ply.player_id
+            order by wins desc
+            limit 3;
+        ", array($season));
+
+        return $query->result_array();
 	}
 	
-	public function wins_leaders($season = "5") {
-		$this->db->select('player.player_id');
-		$this->db->select('first');
-		$this->db->select('last');
-		$this->db->select('season_id');
-		$this->db->select_sum('wins');
-		$this->db->from('pitching');
-		$this->db->where("season_id", $season);
-		$this->db->join('player', 'pitching.player_id = player.player_id');
-		$this->db->group_by('first');
-		$this->db->order_by('wins', 'desc');
-		$this->db->limit('3');
-		$query = $this->db->get();
-		return $query->result_array();
+	public function qs_leaders($season) {
+	     $query = $this->db->query("
+            select ply.player_id, ply.first, ply.last,
+                sum(p.qs) as qs
+            from pitching p
+                join player ply on (ply.player_id = p.player_id)
+            where p.season_id = ?
+            group by ply.player_id
+            order by qs desc
+            limit 3;
+        ", array($season));
+
+        return $query->result_array();
+    }
+	
+	public function saves_leaders($season) {
+         $query = $this->db->query("
+            select ply.player_id, ply.first, ply.last,
+                sum(p.save) as save
+            from pitching p
+                join player ply on (ply.player_id = p.player_id)
+            where p.season_id = ?
+            group by ply.player_id
+            order by save desc
+            limit 3;
+        ", array($season));
+
+        return $query->result_array();
 	}
 	
-	public function qs_leaders($season = "5") {
-		$this->db->select('player.player_id');
-		$this->db->select('first');
-		$this->db->select('last');
-		$this->db->select('season_id');
-		$this->db->select_sum('qs');
-		$this->db->from('pitching');
-		$this->db->where("season_id", $season);
-		$this->db->join('player', 'pitching.player_id = player.player_id');
-		$this->db->group_by('first');
-		$this->db->order_by('qs', 'desc');
-		$this->db->limit('3');
-		$query = $this->db->get();
-		return $query->result_array();
+	public function strikeouts_leaders($season) {
+	     $query = $this->db->query("
+            select ply.player_id, ply.first, ply.last,
+                sum(p.so) as so
+            from pitching p
+                join player ply on (ply.player_id = p.player_id)
+            where p.season_id = ?
+            group by ply.player_id
+            order by so desc
+            limit 3;
+        ", array($season));
+
+        return $query->result_array();
+    }
+	
+	public function era_leaders($season) {
+         $query = $this->db->query("
+            select ply.player_id, ply.first, ply.last,
+                sum(p.er) as er, sum(p.ip) as ip
+            from pitching p
+                join player ply on (ply.player_id = p.player_id)
+            where p.season_id = ?
+            group by ply.player_id
+            order by ip desc
+            limit 3;
+        ", array($season));
+
+        return $query->result_array();
 	}
 	
-	public function saves_leaders($season = "5") {
-		$this->db->select('player.player_id');
-		$this->db->select('first');
-		$this->db->select('last');
-		$this->db->select('season_id');
-		$this->db->select_sum('save');
-		$this->db->from('pitching');
-		$this->db->where("season_id", $season);
-		$this->db->join('player', 'pitching.player_id = player.player_id');
-		$this->db->group_by('first');
-		$this->db->order_by('save', 'desc');
-		$this->db->limit('3');
-		$query = $this->db->get();
-		return $query->result_array();
+	public function whip_leaders($season) {
+         $query = $this->db->query("
+            select ply.player_id, ply.first, ply.last,
+                sum(p.er) as er, sum(p.ip) as ip, sum(p.walks) as walks, sum(p.hits) as hits
+            from pitching p
+                join player ply on (ply.player_id = p.player_id)
+            where p.season_id = ?
+            group by ply.player_id
+            order by hits desc
+            limit 3;
+        ", array($season));
+
+        return $query->result_array();
 	}
 	
-	public function strikeouts_leaders($season = "5") {
-		$this->db->select('player.player_id');
-		$this->db->select('first');
-		$this->db->select('last');
-		$this->db->select('season_id');
-		$this->db->select_sum('so');
-		$this->db->from('pitching');
-		$this->db->where("season_id", $season);
-		$this->db->join('player', 'pitching.player_id = player.player_id');
-		$this->db->group_by('first');
-		$this->db->order_by('so', 'desc');
-		$this->db->limit('3');
-		$query = $this->db->get();
-		return $query->result_array();
+	public function eligible_pitchers($season) {
+         $query = $this->db->query("
+            select sum(ip) as ip
+            from pitching p
+            where p.season_id = ?
+                and p.ip > 0
+        ", array($season));
+
+        return $query->result_array();
 	}
 	
-	public function era_leaders($season = "5") {
-		$this->db->select('player.player_id');
-		$this->db->select('first');
-		$this->db->select('last');
-		$this->db->select('season_id');
-		$this->db->select_sum('er');
-		$this->db->select_sum('ip');
-		$this->db->from('pitching');
-		$this->db->where("season_id", $season);
-		$this->db->join('player', 'pitching.player_id = player.player_id');
-		$this->db->group_by('first');
-		$this->db->order_by('ip', 'desc');
-		$this->db->limit('3');
-		$query = $this->db->get();
-		return $query->result_array();
-	}
-	
-	public function whip_leaders($season = "5") {
-		$this->db->select('player.player_id');
-		$this->db->select('first');
-		$this->db->select('last');
-		$this->db->select('season_id');
-		$this->db->select_sum('walks');
-		$this->db->select_sum('hits');
-		$this->db->select_sum('ip');
-		$this->db->from('pitching');
-		$this->db->where("season_id", $season);
-		$this->db->join('player', 'pitching.player_id = player.player_id');
-		$this->db->group_by('first');
-		$this->db->order_by('hits', 'desc');
-		$this->db->limit('3');
-		$query = $this->db->get();
-		return $query->result_array();
-	}
-	
-	public function eligible_pitchers($season = "5") {
-		$this->db->select('player_id');
-		$this->db->select_sum('ip');
-		$this->db->from('pitching');
-		$this->db->where("season_id", $season);
-		$this->db->where('pitching.ip > 0');
-		$query = $this->db->get();
-		return $query->result_array();
-	}
-	
-	public function eligible_batters($season = "5") {
-		$this->db->select('player_id');
-		$this->db->select_sum('pa');
-		$this->db->from('batting');
-		$this->db->where("season_id", $season);
-		$this->db->where('batting.pa > 0');
-		$query = $this->db->get();
-		return $query->result_array();
+	public function eligible_batters($season) {
+         $query = $this->db->query("
+            select sum(b.pa) as pa,
+            from batting b
+            where b.season_id = ?
+                and sum(b.single + b.double + b.triple + b.hr + b.bb + b.hbp + b.sac + b.roe) > 0
+        ", array($season));
+
+        return $query->result_array();
 	}
 	
 }

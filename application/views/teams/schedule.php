@@ -43,7 +43,8 @@
     if ( $admin_p ) {
         echo "<div style=\"color:red; font-weight:bold\">" . validation_errors(); "</div>";
         $attributes = array('name' => 'schedule_update', 'id' => 'schedule_update');
-        echo form_open('c=team&amp;m=schedule', $attributes);
+       // echo form_open('c=team&amp;m=schedule&type=schedule_update', $attributes);
+        echo form_open('c=edit&amp;m=schedule&type=schedule_update', $attributes);
         echo "<div style=\"padding-left: 125px;\">";
         echo form_submit('submit', 'Update Schedule');
         echo "<div id=\"showHide\"><a>Click Here to Edit</a></div>";
@@ -109,7 +110,7 @@
                     'n'  => 'N',
                     'y' => 'Y'
                 );
-                echo form_hidden('game_id[]', $opponent['game_id']);
+                echo form_hidden('id[]', $opponent['game_id']);
                 echo "<tr class=\"whiteline\">
                     <td style=\"text-align: left;\"><a href=\"?c=opponents&amp;m=opponent" . htmlentities($opp_string) . "\">{$opponent['opponent']}</a><br />"
                         . form_dropdown('opponent_id[]', $opponent_list, $opponent['opponent_id'], 'class=showHideToggle') .

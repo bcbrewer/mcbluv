@@ -8,7 +8,7 @@
 	<h3>Batting Average Leaders</h3>
 <?php
 	foreach($career_avg_leaders as $career_avg_leader) {
-		$query_string = '&player_id=' .urlencode($career_avg_leader['player_id']) . '&season_id=' .urlencode($career_avg_leader['season_id']);
+		$query_string = '&player_id=' .urlencode($career_avg_leader['player_id']);
 		echo "<tr class=white>
                 <td class=team_leaders><a href=\"?c=players&m=player" .htmlentities($query_string) ."\">{$career_avg_leader['first']} {$career_avg_leader['last']}</a></td>
                 <td>" . $this->convert->batting_avg($career_avg_leader['hits'], $career_avg_leader['ab']) . "</td>
@@ -25,7 +25,7 @@
 	<h3>Hits Leaders</h3>
 <?php
 	foreach($career_hits_leaders as $career_hit_leader) {
-		$query_string = '&player_id=' .urlencode($career_hit_leader['player_id']) . '&season_id=' .urlencode($career_hit_leader['season_id']);
+		$query_string = '&player_id=' .urlencode($career_hit_leader['player_id']);
 		echo "<tr class=white>
                 <td class=team_leaders><a href=\"?c=players&m=player" .htmlentities($query_string) ."\">{$career_hit_leader['first']} {$career_hit_leader['last']}</a></td>
                 <td>{$career_hit_leader['hits']}</td>
@@ -42,7 +42,7 @@
 	<h3>Homerun Leaders</h3>
 <?php
 	foreach($career_hr_leaders as $career_hr_leader) {
-		$query_string = '&player_id=' .urlencode($career_hr_leader['player_id']) . '&season_id=' .urlencode($career_hr_leader['season_id']);
+		$query_string = '&player_id=' .urlencode($career_hr_leader['player_id']);
 			echo "<tr class=white>
                     <td class=team_leaders><a href=\"?c=players&m=player" .htmlentities($query_string) ."\">{$career_hr_leader['first']} {$career_hr_leader['last']}</a></td>
                     <td>{$career_hr_leader['hr']}</td>
@@ -59,7 +59,7 @@
 	<h3>Runs Leaders</h3>
 <?php
 	foreach($career_runs_leaders as $career_runs_leader) {
-		$query_string = '&player_id=' .urlencode($career_runs_leader['player_id']) . '&season_id=' .urlencode($career_runs_leader['season_id']);
+		$query_string = '&player_id=' .urlencode($career_runs_leader['player_id']);
 		echo "<tr class=white>
                 <td class=team_leaders><a href=\"?c=players&m=player" .htmlentities($query_string) ."\">{$career_runs_leader['first']} {$career_runs_leader['last']}</a></td>
                 <td>{$career_runs_leader['runs']}</td>
@@ -76,7 +76,7 @@
 	<h3>RBI Leaders</h3>
 <?php
 	foreach($career_rbi_leaders as $career_rbi_leader) {
-		$query_string = '&player_id=' .urlencode($career_rbi_leader['player_id']) . '&season_id=' .urlencode($career_rbi_leader['season_id']);
+		$query_string = '&player_id=' .urlencode($career_rbi_leader['player_id']);
 		echo "<tr class=white>
                 <td class=team_leaders><a href=\"?c=players&m=player" .htmlentities($query_string) ."\">{$career_rbi_leader['first']} {$career_rbi_leader['last']}</a></td>
                 <td>{$career_rbi_leader['rbi']}</td>
@@ -93,7 +93,7 @@
 	<h3>SB Leaders</h3>
 <?php
 	foreach($career_sb_leaders as $career_sb_leader) {
-		$query_string = '&player_id=' .urlencode($career_sb_leader['player_id']) . '&season_id=' .urlencode($career_sb_leader['season_id']);
+		$query_string = '&player_id=' .urlencode($career_sb_leader['player_id']);
 		echo "<tr class=white>
                 <td class=team_leaders><a href=\"?c=players&m=player" .htmlentities($query_string) ."\">{$career_sb_leader['first']} {$career_sb_leader['last']}</a></td>
                 <td>{$career_sb_leader['sb']}</td>
@@ -115,7 +115,7 @@
 	<h3>Wins Leaders</h3>
 <?php
 	foreach($career_wins_leaders as $career_wins_leader) {
-		$query_string = '&player_id=' .urlencode($career_wins_leader['player_id']) . '&season_id=' .urlencode($career_wins_leader['season_id']);
+		$query_string = '&player_id=' .urlencode($career_wins_leader['player_id']);
 		echo "<tr class=white>
                 <td class=team_leaders><a href=\"?c=players&m=player" .htmlentities($query_string) ."\">{$career_wins_leader['first']} {$career_wins_leader['last']}</a></td>
                 <td>{$career_wins_leader['wins']}</td>
@@ -132,7 +132,7 @@
 	<h3>Quality Starts Leaders</h3>
 <?php
 	foreach($career_qs_leaders as $career_qs_leader) {
-		$query_string = '&player_id=' .urlencode($career_qs_leader['player_id']) . '&season_id=' .urlencode($career_qs_leader['season_id']);
+		$query_string = '&player_id=' .urlencode($career_qs_leader['player_id']);
 		echo "<tr class=white>
                 <td class=team_leaders><a href=\"?c=players&m=player" .htmlentities($query_string) ."\">{$career_qs_leader['first']} {$career_qs_leader['last']}</a></td>
                 <td>{$career_qs_leader['qs']}</td>
@@ -149,7 +149,7 @@
 	<h3>Saves Leaders</h3>
 <?php
 	foreach($career_saves_leaders as $career_saves_leader) {
-		$query_string = '&player_id=' .urlencode($career_saves_leader['player_id']) . '&season_id=' .urlencode($career_saves_leader['season_id']);
+		$query_string = '&player_id=' .urlencode($career_saves_leader['player_id']);
 		echo "<tr class=white>
                 <td class=team_leaders><a href=\"?c=players&m=player" .htmlentities($query_string) ."\">{$career_saves_leader['first']} {$career_saves_leader['last']}</a></td>
                 <td>{$career_saves_leader['save']}</td>
@@ -166,7 +166,7 @@
 	<h3>Strikeout Leaders</h3>
 <?php
 	foreach($career_strikeouts_leaders as $career_strikeout_leader) {
-		$query_string = '&player_id=' .urlencode($career_strikeout_leader['player_id']) . '&season_id=' .urlencode($career_strikeout_leader['season_id']);
+		$query_string = '&player_id=' .urlencode($career_strikeout_leader['player_id']);
 		echo "<tr class=white>
                 <td class=team_leaders><a href=\"?c=players&m=player" .htmlentities($query_string) ."\">{$career_strikeout_leader['first']} {$career_strikeout_leader['last']}</a></td>
                 <td>{$career_strikeout_leader['so']}</td>
@@ -183,7 +183,7 @@
 	<h3>ERA Leaders</h3>
 <?php
 	foreach($career_era_leaders as $career_era_leader) {
-		$query_string = '&player_id=' .urlencode($career_era_leader['player_id']) . '&season_id=' .urlencode($career_era_leader['season_id']);
+		$query_string = '&player_id=' .urlencode($career_era_leader['player_id']);
 		echo "<tr class=white>
                 <td class=team_leaders><a href=\"?c=players&m=player" .htmlentities($query_string) ."\">{$career_era_leader['first']} {$career_era_leader['last']}</a></td>
                 <td>" . $this->convert->era($career_era_leader['er'], $career_era_leader['ip']) . "</td>
@@ -200,7 +200,7 @@
 	<h3>WHIP Leaders</h3>
 <?php
 	foreach($career_whip_leaders as $career_whip_leader) {
-		$query_string = '&player_id=' .urlencode($career_whip_leader['player_id']) . '&season_id=' .urlencode($career_whip_leader['season_id']);
+		$query_string = '&player_id=' .urlencode($career_whip_leader['player_id']);
 		echo "<tr class=white>
                 <td class=team_leaders><a href=\"?c=players&m=player" .htmlentities($query_string) ."\">{$career_whip_leader['first']} {$career_whip_leader['last']}</a></td>
                 <td>" . $this->convert->whip($career_whip_leader['walks'], $career_whip_leader['hits'], $career_whip_leader['ip']); echo "</td>

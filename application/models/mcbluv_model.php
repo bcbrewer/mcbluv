@@ -245,40 +245,54 @@ public function get_opponent_logo($id) {
     return $query->result_array();
 }	
 
-public function get_game_by_id() {
-   $game_id = $_REQUEST['gm'];
-   $query = $this->db->query("
-       select b.*, g.*, p.*
-       from batting b
-           join game g on (g.game_id = b.game_id)
-           join player p on (p.player_id = b.player_id)
-       where b.game_id = ?
+public function get_game_by_id($game_id) {
+    $query = $this->db->query("
+        select b.player_id, b.game_id, b.season_id, b.playoff,
+            sum(b.pa) as pa,
+            sum(b.pa - b.bb - b.hbp - b.sac) as ab,
+            sum(b.single + b.double + b.triple + b.hr) as hits,
+            b.hr, b.rbi, b.bb, b.runs, b.hbp, b.sac, b.roe,
+            b.single, b.double, b.triple,
+            sum((b.single * 1) + (b.double * 2) + (b.triple * 3) + (b.hr * 4)) as tb,
+            b.so, b.gidp, b.sb, b.cs,
+            g.*, p.*
+        from batting b
+            join game g on (g.game_id = b.game_id)
+            join player p on (p.player_id = b.player_id)
+        where b.game_id = ?
+        group by b.player_id
+    ", array($game_id));
+
+    return $query->result_array();
+}
+
+public function get_pitching_by_id($game_id) {
+    $query = $this->db->query("
+        select p.player_id, p.game_id, p.season_id, p.playoff,
+            p.runs, p.er, p.walks, p.hbp, p.hits, p.ip, p.so, p.qs,
+            p.cg, p.opp_pa, sum(p.opp_pa - p.walks - p.hbp) as opp_ab,
+            p.record, p.wins, p.loss, p.save, p.bs,
+            ply.*, g.*
+        from pitching p
+            join player ply on (ply.player_id = p.player_id)
+            join game g on (g.game_id = p.game_id)
+        where p.game_id = ?
+        group by p.player_id
    ", array($game_id));
 
    return $query->result_array();
 }
 
-public function get_pitching_by_id() {
-   $game_id = $_REQUEST['gm'];
-   $query = $this->db->query("
-       select p.*, ply.*, g.*
-       from pitching p
-           join player ply on (ply.player_id = p.player_id)
-           join game g on (g.game_id = p.game_id)
-       where p.game_id = ?
-   ", array($game_id));
-
-   return $query->result_array();
-}
-
-public function get_fielding_by_id() {
-   $game_id = $_REQUEST['gm'];
-   $query = $this->db->query("
-       select f.*, p.*, g.*
-       from fielding f
-           join player p on (p.player_id = f.player_id)
-           join game g on (g.game_id = f.game_id)
-       where f.game_id = ?
+public function get_fielding_by_id($game_id) {
+    $query = $this->db->query("
+        select f.player_id, f.game_id, f.season_id, f.playoff,
+            f.po, f.a, f.errors, sum(f.po + f.a + f.errors) as tc,
+            p.*, g.*
+        from fielding f
+            join player p on (p.player_id = f.player_id)
+            join game g on (g.game_id = f.game_id)
+        where f.game_id = ?
+        group by f.player_id
    ", array($game_id));
 
    return $query->result_array();
@@ -303,18 +317,21 @@ public function get_opponent_by_id($id = null) {
 public function career_batting() {
    $player_id = $_REQUEST['player_id'];
    $query = $this->db->query("
-       select sum(pa) as pa, sum(ab) as ab, sum(hits) as hits, 
-           sum(hr) as hr, sum(rbi) as rbi, sum(bb) as bb,
-           sum(runs) as runs, sum(hbp) as hbp, sum(sac) as sac,
-           sum(roe) as roe, sum(single) as single,
-           sum(`double`) as `double`, sum(triple) as triple,
-           sum(tb) as tb, sum(so) as so, sum(gidp) as gidp,
-           sum(sb) as sb, sum(cs) as cs
-       from batting b
-       where b.player_id = ?
-   ", array($player_id));
+        select sum(b.pa) as pa,
+            sum(b.pa - b.bb - b.hbp - b.sac) as ab,
+            sum(b.single + b.double + b.triple + b.hr) as hits, 
+            sum(hr) as hr, sum(rbi) as rbi, sum(bb) as bb,
+            sum(runs) as runs, sum(hbp) as hbp, sum(sac) as sac,
+            sum(roe) as roe, sum(single) as single,
+            sum(`double`) as `double`, sum(triple) as triple,
+            sum((b.single * 1) + (b.double * 2) + (b.triple * 3) + (b.hr * 4)) as tb,
+            sum(so) as so, sum(gidp) as gidp,
+            sum(sb) as sb, sum(cs) as cs
+        from batting b
+        where b.player_id = ?
+    ", array($player_id));
 
-   return $query->result_array();
+    return $query->result_array();
 }
 
 public function career_pitching($player_id = null) {
@@ -333,8 +350,8 @@ public function career_pitching($player_id = null) {
 	
 public function career_fielding($player_id = null) {
     $query = $this->db->query("
-        select sum(tc) as tc, sum(po) as po, sum(a) as a,
-            sum(errors) as errors
+        select sum(f.po + f.a + f.errors) as tc,
+            sum(f.po) as po, sum(f.a) as a, sum(f.errors) as errors
         from fielding f
         where f.player_id = ?
     ", array($player_id));
@@ -384,11 +401,13 @@ public function select_year_sum_batting() {
             }
         }
         $query = $this->db->query("
-            select sum(pa) as pa, sum(ab) as ab, sum(hits) as hits,
-                sum(hr) as hr, sum(rbi) as rbi, sum(bb) as bb,
-                sum(runs) as runs, sum(hbp) as hbp, sum(sac) as sac,
-                sum(roe) as roe, sum(single) as single, sum(`double`) as `double`,
-                sum(triple) as triple, sum(tb) as tb, sum(so) as so,
+            select sum(b.pa) as pa,
+                sum(b.pa - b.bb - b.hbp - b.sac) as ab,
+                sum(b.single + b.double + b.triple + b.hr) as hits,
+                sum(hr) as hr, sum(rbi) as rbi, sum(bb) as bb, sum(runs) as runs,
+                sum(hbp) as hbp, sum(sac) as sac, sum(roe) as roe,
+                sum(single) as single, sum(`double`) as `double`, sum(triple) as triple,
+                sum((b.single * 1) + (b.double * 2) + (b.triple * 3) + (b.hr * 4))as tb, sum(so) as so,
                 sum(gidp) as gidp, sum(sb) as sb, sum(cs) as cs,
                 b.player_id, b.game_id, b.season_id,
                 s.year, s.season
@@ -478,7 +497,7 @@ public function select_year_sum_fielding() {
             }
         }
         $query = $this->db->query("
-            select sum(tc) as tc, sum(po) as po, sum(a) as a,
+            select sum(f.po + f.a + f.errors) as tc, sum(po) as po, sum(a) as a,
                 sum(errors) as errors,
                 f.player_id, f.game_id, f.season_id,
                 s.season, o.opponent_id, o.opponent
@@ -523,7 +542,7 @@ public function select_fielding_year() {
             }
         }
         $query = $this->db->query("
-            select f.tc, f.po, f.a, f.errors,
+            select sum(f.po + f.a + f.errors) as tc, f.po, f.a, f.errors,
                 f.player_id, f.game_id, f.season_id,
                 s.season, o.opponent_id, o.opponent
             from fielding f
@@ -534,6 +553,7 @@ public function select_fielding_year() {
             and s.year = ?
             and s.season = ?
             and f.playoff = ?
+            group by f.game_id
         ", array($player_id, $year, $season, $playoffs));
 
         return $query->result_array();
@@ -613,9 +633,12 @@ public function select_batting_year() {
             }
         }
         $query = $this->db->query("
-            select b.pa, b.ab, b.hits, b.hr, b.rbi,
-                b.bb, b.runs, b.hbp, b.sac, b.roe,
-                b.single, b.double, b.triple, b.tb,
+            select sum(b.pa) as pa,
+                sum(b.pa - b.bb - b.hbp - b.sac) as ab,
+                sum(b.single + b.double + b.triple + b.hr) as hits,
+                b.hr, b.rbi, b.bb, b.runs, b.hbp, b.sac, b.roe,
+                b.single, b.double, b.triple,
+                sum((b.single * 1) + (b.double * 2) + (b.triple * 3) + (b.hr * 4)) as tb,
                 b.so, b.gidp, b.sb, b.cs, b.player_id,
                 b.game_id, b.season_id, s.season,
                 o.opponent_id, o.opponent
@@ -627,6 +650,7 @@ public function select_batting_year() {
             and s.year = ?
             and s.season = ?
             and b.playoff = ?
+            group by b.game_id
         ", array($player_id, $year, $season, $playoffs));
 
         return $query->result_array();
@@ -665,11 +689,14 @@ public function select() {
 
     $query = $this->db->query("
         select b.player_id as player_id, sum(b.season_id) as season_id,
-            sum(b.pa) as pa, sum(b.ab) as ab, sum(b.hits) as hits, sum(b.hr) as hr,
+            sum(b.pa) as pa,
+            sum(b.pa - b.bb - b.hbp - b.sac) as ab,
+            sum(b.single + b.double + b.triple + b.hr) as hits, sum(b.hr) as hr,
             sum(b.rbi) as rbi, sum(b.bb) as bb, sum(b.runs) as runs,
             sum(b.hbp) as hbp, sum(b.sac) as sac, sum(b.roe) as roe,
-            sum(b.single) as single, sum(b.double) as `double`, sum(b.triple) as triple,
-            sum(b.tb) as tb, sum(b.so) as so, sum(b.gidp) as gidp, sum(b.sb) as sb,
+            sum(b.single) as 1b, sum(b.double) as 2b, sum(b.triple) as 3b,
+            sum((b.single * 1) + (b.double * 2) + (b.triple * 3) + (b.hr * 4)) as tb,
+            sum(b.so) as so, sum(b.gidp) as gidp, sum(b.sb) as sb,
             sum(b.cs) as cs, ply.first, ply.last
         from batting b
             join game g on (g.game_id = b.game_id)
@@ -757,7 +784,7 @@ public function select_fielding() {
     }
 
     $query = $this->db->query("
-                select f.player_id as player_id, sum(f.tc) as tc, sum(f.po) as po,
+                select f.player_id as player_id, sum(f.po + f.a + f.errors) as tc, sum(f.po) as po,
                     sum(f.a) as a, sum(f.errors) as errors,
                     p.first, p.last
                 from fielding f

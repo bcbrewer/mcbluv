@@ -115,7 +115,7 @@
      if ( $admin_p ) {
         echo "<div style=\"color:red; font-weight:bold\">" . validation_errors(); "</div>";
         $attributes = array('name' => 'player_update', 'id' => 'player_update');
-        echo form_open('c=team&amp;m=roster', $attributes);
+        echo form_open('c=edit&amp;m=player&type=player_update', $attributes);
         echo form_submit('submit', 'Update Players');
         echo "<div id=\"showHide\"><a>Click Here to Edit</a></div>";
     }
@@ -199,7 +199,7 @@
                     '1' => 'Y'
                 );
 
-                echo form_hidden('player_id[]', $player['player_id']);
+                echo form_hidden('id[]', $player['player_id']);
                 echo "<tr>
                         <td class=\"roster_num\">
                             <span class=\"editToggle\">{$player['jersey_num']}</span>"
@@ -207,17 +207,17 @@
                         "</td>
                         <td class=\"roster_player\">
                             <span class=\"editToggle\"><a href=\"?c=players&amp;m=player" .htmlentities($query_string) . "\">{$player['first']} {$player['last']}</a><br /></span>"
-                            . form_input(array('id' => 'edit_player', 'name' => 'first_name[]', 'value' => $player['first'], 'class' => 'showHideToggle', 'size' => '10'))
-                            . form_input(array('id' => 'edit_player', 'name' => 'last_name[]', 'value' => $player['last'], 'class' => 'showHideToggle', 'size' => '10')) .
+                            . form_input(array('id' => 'edit_player', 'name' => 'first[]', 'value' => $player['first'], 'class' => 'showHideToggle', 'size' => '10'))
+                            . form_input(array('id' => 'edit_player', 'name' => 'last[]', 'value' => $player['last'], 'class' => 'showHideToggle', 'size' => '10')) .
                        "</td>
-                        <td class=\"roster_info\">" . form_dropdown('pos_type[]', $pos_type, $player['pos']) . "</td>
+                        <td class=\"roster_info\">" . form_dropdown('pos[]', $pos_type, $player['pos']) . "</td>
                         <td class=\"roster_info\">" . form_dropdown('primary_pos[]', $primary_pos, $player['primary_pos']) . "</td>
                         <td class=\"roster_info\">" . form_dropdown('batsthrows[]', $bats_throws, $player['batsthrows']) . "</td>
                         <td style=\"width: 230px;\">" 
                             . form_dropdown('height_ft[]', $height, $height[$feet], 'style="width: 40px;"')
-                            . form_dropdown('height_in[]', $height_in, $height_in[$inch], 'style="width: 45px;"') .
+                            . form_dropdown('ht[]', $height_in, $height_in[$inch], 'style="width: 45px;"') .
                        "</td>
-                        <td class=\"roster_info\">" . form_dropdown('weight[]', $weight, $weight[$player['wt']], 'style="width: 60px;"') . "</td>
+                        <td class=\"roster_info\">" . form_dropdown('wt[]', $weight, $weight[$player['wt']], 'style="width: 60px;"') . "</td>
                         <td class=\"roster_info\">"
                             . form_input(array('id' => 'dob_'.$player['player_id'], 'name' => 'dob[]', 'value' => $player['dob'], 'class' => 'dob', 'size' => '10', 'type' => 'date')) . 
                         "</td>

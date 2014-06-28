@@ -1,14 +1,41 @@
+<script>
+    $(document).ready(function() {
+        $("#showHide").click(function() {
+            $(".showHideToggle").toggle();
+            $(".editToggle").toggle();
+        });
+    });
+
+     $(document).ready(function() {
+        $("#showHidePitching").click(function() {
+            $(".showHideToggle").toggle();
+            $(".editToggle").toggle();
+        });
+    });
+
+    $(document).ready(function() {
+        $("#showHideFielding").click(function() {
+            $(".showHideToggle").toggle();
+            $(".editToggle").toggle();
+        });
+    });
+</script>
+
 <?php
-$categories = array('Name', 'PA', 'AB', 'Hits', 'HR', 'RBI', 'BB', 'Runs', 'HBP', 'SAC', 'ROE',
+    $categories = array('Name', 'PA', 'AB', 'Hits', 'HR', 'RBI', 'BB', 'Runs', 'HBP', 'SAC', 'ROE',
                     '1B', '2B', '3B', 'TB', 'SO', 'GIDP', 'SB', 'CS', 'AVG', 'OBP', 'SLG', 'OPS'
                     );
 ?>
 <br />
+
 <div id="mcbluv_logoWrapper">
     <img  class="mcbluv_logo" src="images/smiley.png" alt="" />
 </div> <!-- end div mcbluv_logoWrapper -->
+
 <img class="vs" src="images/versus_pink.png" alt="" />
+
 <div id="opponent_logoWrapper">
+
 <?php
     if ( !empty($sel_logo_id) ) {
         foreach($sel_logo_id as $sel_logo) {
@@ -18,7 +45,8 @@ $categories = array('Name', 'PA', 'AB', 'Hits', 'HR', 'RBI', 'BB', 'Runs', 'HBP'
         echo "<img class=\"opponent_logo\" src=\"../../images/logos/tbd.jpg\" alt=\"\" />";
     }
 ?>
-</div> <!-- end div opponent_photoWrapper -->
+
+</div> <!-- end div opponent_logoWrapper -->
 
 <?php
     if ( empty($sel_batting_game_id) && empty($sel_pitching_game_id) && empty($sel_fielding_game_id) ) {
@@ -29,7 +57,20 @@ $categories = array('Name', 'PA', 'AB', 'Hits', 'HR', 'RBI', 'BB', 'Runs', 'HBP'
 ?>
 
 <h2 align="center">Hitting</h2>
-
+<?php
+    if ( $admin_p ) {
+        if ( validation_errors() ) {
+            echo "<div style=\"color:red; font-weight:bold\">" . validation_errors(); "</div>";
+        }
+        $attributes = array('name' => 'hitting_update', 'id' => 'hitting_update');
+        $query_string = '&gm=' .urlencode($sel_batting_game_id[0]['game_id']) . '&type=hitting_update';
+        echo form_open('c=edit&amp;m=game'.htmlentities($query_string), $attributes);
+        echo "<div style=\"padding-left: 50px;\">";
+            echo form_submit('submit', 'Update Hitting Stats');
+            echo "<div id=\"showHide\"><a>Click Here to Edit</a></div>";
+        echo "</div>";
+    }
+?>
 <div id="battingWrapper">
 
 <table class="hitting">
@@ -40,70 +81,125 @@ $categories = array('Name', 'PA', 'AB', 'Hits', 'HR', 'RBI', 'BB', 'Runs', 'HBP'
     echo "<tr>";
 
     $i = 1;
-    foreach($sel_batting_game_id as $sel_batting_game) {
+    foreach($sel_batting_game_id as $batting) {
         if ($i % 2 != 0) { # An odd row
             $rowColor = "#D0D0D0";
         } else { # An even row
             $rowColor = "";
         }
-        $query_string = '&player_id=' .urlencode($sel_batting_game['player_id']);
-        echo "<tr bgcolor={$rowColor}>
-                <td class=\"player_column\"><a href=\"?c=players&amp;m=player" .htmlentities($query_string) . "\">{$sel_batting_game['first']} {$sel_batting_game['last']}</a></td>
-                <td class=\"border\">$sel_batting_game[pa]</td>
-                <td class=\"border\">$sel_batting_game[ab]</td>
-                <td class=\"border\">$sel_batting_game[hits]</td>
-                <td class=\"border\">$sel_batting_game[hr]</td>
-                <td class=\"border\">$sel_batting_game[rbi]</td>
-                <td class=\"border\">$sel_batting_game[bb]</td>
-                <td class=\"border\">$sel_batting_game[runs]</td>
-                <td class=\"border\">$sel_batting_game[hbp]</td>
-                <td class=\"border\">$sel_batting_game[sac]</td>
-                <td class=\"border\">$sel_batting_game[roe]</td>
-                <td class=\"border\">$sel_batting_game[single]</td>
-                <td class=\"border\">$sel_batting_game[double]</td>
-                <td class=\"border\">$sel_batting_game[triple]</td>
-                <td class=\"border\">$sel_batting_game[tb]</td>
-                <td class=\"border\">$sel_batting_game[so]</td>
-                <td class=\"border\">$sel_batting_game[gidp]</td>
-                <td class=\"border\">$sel_batting_game[sb]</td>
-                <td class=\"border\">$sel_batting_game[cs]</td>
-                <td class=\"border\">" . $this->convert->batting_avg($sel_batting_game['hits'], $sel_batting_game['ab']) . "</td>
-                <td class=\"border\">" . $this->convert->obp($sel_batting_game['hits'], $sel_batting_game['bb'], $sel_batting_game['hbp'], $sel_batting_game['pa']) . "</td>
-                <td class=\"border\">" . $this->convert->slg($sel_batting_game['tb'], $sel_batting_game['ab']) . "</td>
-                <td class=\"border\">" . $this->convert->ops($sel_batting_game['hits'], $sel_batting_game['bb'], $sel_batting_game['hbp'], $sel_batting_game['pa'], $sel_batting_game['tb'], $sel_batting_game['ab']) . "</td>";
+        $query_string = '&player_id=' .urlencode($batting['player_id']);
+        
+        echo "<tr bgcolor={$rowColor}>";
+          echo "<td class=\"player_column\"><a href=\"?c=players&amp;m=player" .htmlentities($query_string) . "\">{$batting['first']} {$batting['last']}</a></td>";
+        if ( $admin_p ) {
+          echo form_hidden('id[]', $batting['player_id']);
+          echo "<td class=\"border\"><span class=\"editToggle\">$batting[pa]</span>"
+                    . form_input(array('id' => 'pa', 'name' => 'pa[]', 'value' => $batting['pa'], 'class' => 'showHideToggle', 'size' => '1')) .
+               "</td>
+                <td class=\"border\">$batting[ab]</td>
+                <td class=\"border\">$batting[hits]</td>
+                <td class=\"border\"><span class=\"editToggle\">$batting[hr]</span>"
+                    . form_input(array('id' => 'hr', 'name' => 'hr[]', 'value' => $batting['hr'], 'class' => 'showHideToggle', 'size' => '1')) .
+                "</td>
+                <td class=\"border\"><span class=\"editToggle\">$batting[rbi]</span>"
+                    . form_input(array('id' => 'rbi', 'name' => 'rbi[]', 'value' => $batting['rbi'], 'class' => 'showHideToggle', 'size' => '1')) .
+                "</td>
+                <td class=\"border\"><span class=\"editToggle\">$batting[bb]</span>"
+                    . form_input(array('id' => 'bb', 'name' => 'bb[]', 'value' => $batting['bb'], 'class' => 'showHideToggle', 'size' => '1')) .
+                "</td>
+                <td class=\"border\"><span class=\"editToggle\">$batting[runs]</span>"
+                    . form_input(array('id' => 'runs', 'name' => 'runs[]', 'value' => $batting['runs'], 'class' => 'showHideToggle', 'size' => '1')) .
+                "</td>
+                <td class=\"border\"><span class=\"editToggle\">$batting[hbp]</span>"
+                    . form_input(array('id' => 'hbp', 'name' => 'hbp[]', 'value' => $batting['hbp'], 'class' => 'showHideToggle', 'size' => '1')) .
+                "</td>
+                <td class=\"border\"><span class=\"editToggle\">$batting[sac]</span>"
+                    . form_input(array('id' => 'sac', 'name' => 'sac[]', 'value' => $batting['sac'], 'class' => 'showHideToggle', 'size' => '1')) .
+                "</td>
+                <td class=\"border\"><span class=\"editToggle\">$batting[roe]</span>"
+                    . form_input(array('id' => 'roe', 'name' => 'roe[]', 'value' => $batting['roe'], 'class' => 'showHideToggle', 'size' => '1')) .
+                "</td>
+                <td class=\"border\"><span class=\"editToggle\">$batting[single]</span>"
+                    . form_input(array('id' => 'single', 'name' => 'single[]', 'value' => $batting['single'], 'class' => 'showHideToggle', 'size' => '1')) .
+                "</td>
+                <td class=\"border\"><span class=\"editToggle\">$batting[double]</span>"
+                    . form_input(array('id' => 'double', 'name' => 'double[]', 'value' => $batting['double'], 'class' => 'showHideToggle', 'size' => '1')) .
+                "</td>
+                <td class=\"border\"><span class=\"editToggle\">$batting[triple]</span>"
+                    . form_input(array('id' => 'triple', 'name' => 'triple[]', 'value' => $batting['triple'], 'class' => 'showHideToggle', 'size' => '1')) .
+                "</td>
+                <td class=\"border\">$batting[tb]</td>
+                <td class=\"border\"><span class=\"editToggle\">$batting[so]</span>"
+                    . form_input(array('id' => 'so', 'name' => 'so[]', 'value' => $batting['so'], 'class' => 'showHideToggle', 'size' => '1')) .
+                "</td>
+                <td class=\"border\"><span class=\"editToggle\">$batting[gidp]</span>"
+                    . form_input(array('id' => 'gidp', 'name' => 'gidp[]', 'value' => $batting['gidp'], 'class' => 'showHideToggle', 'size' => '1')) .
+                "</td>
+                <td class=\"border\"><span class=\"editToggle\">$batting[sb]</span>"
+                    . form_input(array('id' => 'sb', 'name' => 'sb[]', 'value' => $batting['sb'], 'class' => 'showHideToggle', 'size' => '1')) .
+                "</td>
+                <td class=\"border\"><span class=\"editToggle\">$batting[cs]</span>"
+                    . form_input(array('id' => 'cs', 'name' => 'cs[]', 'value' => $batting['cs'], 'class' => 'showHideToggle', 'size' => '1')) .
+                "</td>";
+        } else {
+          echo "<td class=\"border\">$batting[pa]</td>
+                <td class=\"border\">$batting[ab]</td>
+                <td class=\"border\">$batting[hits]</td>
+                <td class=\"border\">$batting[hr]</td>
+                <td class=\"border\">$batting[rbi]</td>
+                <td class=\"border\">$batting[bb]</td>
+                <td class=\"border\">$batting[runs]</td>
+                <td class=\"border\">$batting[hbp]</td>
+                <td class=\"border\">$batting[sac]</td>
+                <td class=\"border\">$batting[roe]</td>
+                <td class=\"border\">$batting[single]</td>
+                <td class=\"border\">$batting[double]</td>
+                <td class=\"border\">$batting[triple]</td>
+                <td class=\"border\">$batting[tb]</td>
+                <td class=\"border\">$batting[so]</td>
+                <td class=\"border\">$batting[gidp]</td>
+                <td class=\"border\">$batting[sb]</td>
+                <td class=\"border\">$batting[cs]</td>";
+        }
+          echo "<td class=\"border\">" . $this->convert->batting_avg($batting['hits'], $batting['ab']) . "</td>
+                <td class=\"border\">" . $this->convert->obp($batting['hits'], $batting['bb'], $batting['hbp'], $batting['pa']) . "</td>
+                <td class=\"border\">" . $this->convert->slg($batting['tb'], $batting['ab']) . "</td>
+                <td class=\"border\">" . $this->convert->ops($batting['hits'], $batting['bb'], $batting['hbp'], $batting['pa'], $batting['tb'], $batting['ab']) . "</td>";
                 $i++;
-        echo "</tr>";
+            echo "</tr>";
     }
     echo "<tr>";
         echo "<td class=\"last_row\"><strong>Total</strong></td>";
-        foreach($sel_sum_team_batting_id as $sel_sum_team_batting) {
-            echo "<td class=\"last_row\">{$sel_sum_team_batting['pa']}</td>
-                  <td class=\"last_row\">{$sel_sum_team_batting['ab']}</td>
-                  <td class=\"last_row\">{$sel_sum_team_batting['hits']}</td>   
-                  <td class=\"last_row\">{$sel_sum_team_batting['hr']}</td>
-                  <td class=\"last_row\">{$sel_sum_team_batting['rbi']}</td>        
-                  <td class=\"last_row\">{$sel_sum_team_batting['bb']}</td>
-                  <td class=\"last_row\">{$sel_sum_team_batting['runs']}</td>       
-                  <td class=\"last_row\">{$sel_sum_team_batting['hbp']}</td>
-                  <td class=\"last_row\">{$sel_sum_team_batting['sac']}</td>
-                  <td class=\"last_row\">{$sel_sum_team_batting['roe']}</td>    
-                  <td class=\"last_row\">{$sel_sum_team_batting['single']}</td> 
-                  <td class=\"last_row\">{$sel_sum_team_batting['double']}</td> 
-                  <td class=\"last_row\">{$sel_sum_team_batting['triple']}</td> 
-                  <td class=\"last_row\">{$sel_sum_team_batting['tb']}</td>
-                  <td class=\"last_row\">{$sel_sum_team_batting['so']}</td>
-                  <td class=\"last_row\">{$sel_sum_team_batting['gidp']}</td>       
-                  <td class=\"last_row\">{$sel_sum_team_batting['sb']}</td>
-                  <td class=\"last_row\">{$sel_sum_team_batting['cs']}</td>
-                  <td class=\"last_row\">" . $this->convert->batting_avg($sel_sum_team_batting['hits'], $sel_sum_team_batting['ab']) . "</td>
-                  <td class=\"last_row\">" . $this->convert->obp($sel_sum_team_batting['hits'], $sel_sum_team_batting['bb'], $sel_sum_team_batting['hbp'], $sel_sum_team_batting['pa']) . "</td>
-                  <td class=\"last_row\">" . $this->convert->slg($sel_sum_team_batting['tb'], $sel_sum_team_batting['ab']) . "</td>
-                  <td class=\"last_row\">" . $this->convert->ops($sel_sum_team_batting['hits'], $sel_sum_team_batting['bb'], $sel_sum_team_batting['hbp'], $sel_sum_team_batting['pa'], $sel_sum_team_batting['tb'], $sel_sum_team_batting['ab']) . "</td>";
+        foreach($sel_sum_team_batting_id as $team_batting) {
+            echo "<td class=\"last_row\">{$team_batting['pa']}</td>
+                  <td class=\"last_row\">{$team_batting['ab']}</td>
+                  <td class=\"last_row\">{$team_batting['hits']}</td>   
+                  <td class=\"last_row\">{$team_batting['hr']}</td>
+                  <td class=\"last_row\">{$team_batting['rbi']}</td>        
+                  <td class=\"last_row\">{$team_batting['bb']}</td>
+                  <td class=\"last_row\">{$team_batting['runs']}</td>       
+                  <td class=\"last_row\">{$team_batting['hbp']}</td>
+                  <td class=\"last_row\">{$team_batting['sac']}</td>
+                  <td class=\"last_row\">{$team_batting['roe']}</td>    
+                  <td class=\"last_row\">{$team_batting['1b']}</td> 
+                  <td class=\"last_row\">{$team_batting['2b']}</td> 
+                  <td class=\"last_row\">{$team_batting['3b']}</td> 
+                  <td class=\"last_row\">{$team_batting['tb']}</td>
+                  <td class=\"last_row\">{$team_batting['so']}</td>
+                  <td class=\"last_row\">{$team_batting['gidp']}</td>       
+                  <td class=\"last_row\">{$team_batting['sb']}</td>
+                  <td class=\"last_row\">{$team_batting['cs']}</td>
+                  <td class=\"last_row\">" . $this->convert->batting_avg($team_batting['hits'], $team_batting['ab']) . "</td>
+                  <td class=\"last_row\">" . $this->convert->obp($team_batting['hits'], $team_batting['bb'], $team_batting['hbp'], $team_batting['pa']) . "</td>
+                  <td class=\"last_row\">" . $this->convert->slg($team_batting['tb'], $team_batting['ab']) . "</td>
+                  <td class=\"last_row\">" . $this->convert->ops($team_batting['hits'], $team_batting['bb'], $team_batting['hbp'], $team_batting['pa'], $team_batting['tb'], $team_batting['ab']) . "</td>";
         }
     echo "</tr>";
-echo "</table>";
 ?>
+</table>
 </div> <!-- end div battingWrapper -->
+
+<?php if ( $admin_p ) { echo form_close(); } ?>
 
 <br />
 
@@ -118,6 +214,21 @@ echo "</table>";
 
 <h2 align="center">Pitching</h2>
 
+<?php
+    if ( $admin_p ) {
+        if ( validation_errors() ) {
+            echo "<div style=\"color:red; font-weight:bold\">" . validation_errors(); "</div>";
+        }
+        $attributes = array('name' => 'pitching_update', 'id' => 'pitching_update');
+        $query_string = '&gm=' .urlencode($sel_pitching_game_id[0]['game_id']) . '&type=pitching_update';
+        echo form_open('c=edit&amp;m=game'.htmlentities($query_string), $attributes);
+        echo "<div style=\"padding-left: 50px;\">";
+            echo form_submit('submit', 'Update Pitching Stats');
+            echo "<div id=\"showHidePitching\"><a style=\"cursor: pointer; color: blue;\">Click Here to Edit</a></div>";
+        echo "</div>";
+    }
+?>
+
 <div id="pitchingWrapper">
 <table class="pitching">
     <?php
@@ -126,69 +237,117 @@ echo "</table>";
     }
     echo "<tr>";
 
-    $i =1 ;
-        foreach($sel_pitching_game_id as $sel_pitching_game) {
+    $i=1 ;
+        foreach($sel_pitching_game_id as $pitching) {
             if ($i % 2 != 0) { # An odd row
                 $rowColor = "#D0D0D0";
             } else { # An even row
                 $rowColor = "";
             }
-            $query_string = '&player_id=' .urlencode($sel_pitching_game['player_id']);
-            if($sel_pitching_game['opp_ab'] > 0) {
-                $opp_avg = $this->convert->opp_avg($sel_pitching_game['hits'], $sel_pitching_game['opp_ab']);
+            $query_string = '&player_id=' .urlencode($pitching['player_id']);
+            if($pitching['opp_ab'] > 0) {
+                $opp_avg = $this->convert->opp_avg($pitching['hits'], $pitching['opp_ab']);
             } else {
                 $opp_avg = "0.000";
             }
-            echo "<tr bgcolor=" . $rowColor . ">
-                <td class=\"player_column\"><a href=\"?c=players&amp;m=player" .htmlentities($query_string) . "\">{$sel_pitching_game['first']} {$sel_pitching_game['last']}</a></td>
-                <td class=\"border\">" . $this->convert->era($sel_pitching_game['er'], $sel_pitching_game['ip']) . "</td>
-                <td class=\"border\">{$sel_pitching_game['save']}</td>
-                <td class=\"border\">{$sel_pitching_game['bs']}</td>
-                <td class=\"border\">{$sel_pitching_game['ip']}</td>
-                <td class=\"border\">{$sel_pitching_game['hits']}</td>
-                <td class=\"border\">{$sel_pitching_game['runs']}</td>
-                <td class=\"border\">{$sel_pitching_game['er']}</td>
-                <td class=\"border\">{$sel_pitching_game['walks']}</td>
-                <td class=\"border\">{$sel_pitching_game['so']}</td>
-                <td class=\"border\">{$sel_pitching_game['qs']}</td>
-                <td class=\"border\"> {$opp_avg}</td>
-                <td class=\"border\">" . $this->convert->whip($sel_pitching_game['walks'], $sel_pitching_game['hits'], $sel_pitching_game['ip']) . "</td>
-                <td class=\"border\">{$sel_pitching_game['cg']}</td>
-                <td class=\"border\">{$sel_pitching_game['hbp']}</td>
-                <td class=\"border\">{$sel_pitching_game['opp_pa']}</td>
-                <td class=\"border\">{$sel_pitching_game['opp_ab']}</td>
-                <td class=\"border\">" . $this->convert->k_per_nine($sel_pitching_game['so'], $sel_pitching_game['ip']) . "</td>
-                <td class=\"border\">" . $this->convert->k_per_walk($sel_pitching_game['so'], $sel_pitching_game['walks']) . "</td>";
+            echo "<tr bgcolor=" . $rowColor . ">";
+                echo "<td class=\"player_column\"><a href=\"?c=players&amp;m=player" .htmlentities($query_string) . "\">{$pitching['first']} {$pitching['last']}</a></td>";
+            if ( $admin_p ) {
+                echo form_hidden('id[]', $pitching['player_id']);
+                echo "<td class=\"border\">" . $this->convert->era($pitching['er'], $pitching['ip']) . "</td>
+                      <td class=\"border\"><span class=\"editToggle\">$pitching[save]</span>"
+                        . form_input(array('id' => 'save', 'name' => 'save[]', 'value' => $pitching['save'], 'class' => 'showHideToggle', 'size' => '1')) .
+                     "</td>
+                    <td class=\"border\"><span class=\"editToggle\">$pitching[bs]</span>"
+                        . form_input(array('id' => 'bs', 'name' => 'bs[]', 'value' => $pitching['bs'], 'class' => 'showHideToggle', 'size' => '1')) .
+                     "</td>
+                    <td class=\"border\"><span class=\"editToggle\">$pitching[ip]</span>"
+                        . form_input(array('id' => 'ip', 'name' => 'ip[]', 'value' => $pitching['ip'], 'class' => 'showHideToggle', 'size' => '2')) .
+                     "</td>
+                    <td class=\"border\"><span class=\"editToggle\">$pitching[hits]</span>"
+                        . form_input(array('id' => 'hits', 'name' => 'hits[]', 'value' => $pitching['hits'], 'class' => 'showHideToggle', 'size' => '1')) .
+                     "</td>
+                    <td class=\"border\"><span class=\"editToggle\">$pitching[runs]</span>"
+                        . form_input(array('id' => 'runs', 'name' => 'runs[]', 'value' => $pitching['runs'], 'class' => 'showHideToggle', 'size' => '1')) .
+                     "</td>
+                    <td class=\"border\"><span class=\"editToggle\">$pitching[er]</span>"
+                        . form_input(array('id' => 'er', 'name' => 'er[]', 'value' => $pitching['er'], 'class' => 'showHideToggle', 'size' => '1')) .
+                     "</td>
+                    <td class=\"border\"><span class=\"editToggle\">$pitching[walks]</span>"
+                        . form_input(array('id' => 'walks', 'name' => 'walks[]', 'value' => $pitching['walks'], 'class' => 'showHideToggle', 'size' => '1')) .
+                     "</td>
+                    <td class=\"border\"><span class=\"editToggle\">$pitching[so]</span>"
+                        . form_input(array('id' => 'so', 'name' => 'so[]', 'value' => $pitching['so'], 'class' => 'showHideToggle', 'size' => '1')) .
+                     "</td>
+                    <td class=\"border\"><span class=\"editToggle\">$pitching[qs]</span>"
+                        . form_input(array('id' => 'qs', 'name' => 'qs[]', 'value' => $pitching['qs'], 'class' => 'showHideToggle', 'size' => '1')) .
+                     "</td>
+                    <td class=\"border\"> {$opp_avg}</td>
+                    <td class=\"border\">" . $this->convert->whip($pitching['walks'], $pitching['hits'], $pitching['ip']) . "</td>
+                    <td class=\"border\"><span class=\"editToggle\">$pitching[cg]</span>"
+                        . form_input(array('id' => 'cg', 'name' => 'cg[]', 'value' => $pitching['cg'], 'class' => 'showHideToggle', 'size' => '1')) .
+                     "</td>
+                    <td class=\"border\"><span class=\"editToggle\">$pitching[hbp]</span>"
+                        . form_input(array('id' => 'hbp', 'name' => 'hbp[]', 'value' => $pitching['hbp'], 'class' => 'showHideToggle', 'size' => '1')) .
+                     "</td>
+                    <td class=\"border\"><span class=\"editToggle\">$pitching[opp_pa]</span>"
+                        . form_input(array('id' => 'opp_pa', 'name' => 'opp_pa[]', 'value' => $pitching['opp_pa'], 'class' => 'showHideToggle', 'size' => '1')) .
+                     "</td>
+                    <td class=\"border\">{$pitching['opp_ab']}</td>";
+            } else {
+                echo "<td class=\"border\">" . $this->convert->era($pitching['er'], $pitching['ip']) . "</td>
+                      <td class=\"border\">{$pitching['save']}</td>
+                      <td class=\"border\">{$pitching['bs']}</td>
+                      <td class=\"border\">{$pitching['ip']}</td>
+                      <td class=\"border\">{$pitching['hits']}</td>
+                      <td class=\"border\">{$pitching['runs']}</td>
+                      <td class=\"border\">{$pitching['er']}</td>
+                      <td class=\"border\">{$pitching['walks']}</td>
+                      <td class=\"border\">{$pitching['so']}</td>
+                      <td class=\"border\">{$pitching['qs']}</td>
+                      <td class=\"border\"> {$opp_avg}</td>
+                      <td class=\"border\">" . $this->convert->whip($pitching['walks'], $pitching['hits'], $pitching['ip']) . "</td>
+                      <td class=\"border\">{$pitching['cg']}</td>
+                      <td class=\"border\">{$pitching['hbp']}</td>
+                      <td class=\"border\">{$pitching['opp_pa']}</td>
+                      <td class=\"border\">{$pitching['opp_ab']}</td>";
+            }
+             echo "<td class=\"border\">" . $this->convert->k_per_nine($pitching['so'], $pitching['ip']) . "</td>
+                   <td class=\"border\">" . $this->convert->k_per_walk($pitching['so'], $pitching['walks']) . "</td>";
             $i++;
             echo "</tr>";
         }
     echo "<tr>";
         echo "<td class=\"last_row\"><strong>Total</strong></td>";
-        foreach($sel_sum_team_pitching_id as $sel_team_pitching) {
-            echo "<td class=\"last_row\">" . $this->convert->era($sel_team_pitching['er'], $sel_team_pitching['ip']) . "</td>
-                  <td class=\"last_row\">{$sel_team_pitching['save']}</td>
-                  <td class=\"last_row\">{$sel_team_pitching['bs']}</td>
-                  <td class=\"last_row\">{$sel_team_pitching['ip']}</td>
-                  <td class=\"last_row\">{$sel_team_pitching['hits']}</td>
-                  <td class=\"last_row\">{$sel_team_pitching['runs']}</td>
-                  <td class=\"last_row\">{$sel_team_pitching['er']}</td>
-                  <td class=\"last_row\">{$sel_team_pitching['walks']}</td>
-                  <td class=\"last_row\">{$sel_team_pitching['so']}</td>
-                  <td class=\"last_row\">{$sel_team_pitching['qs']}</td>
-                  <td class=\"last_row\">" . $this->convert->opp_avg($sel_team_pitching['hits'], $sel_team_pitching['opp_ab']) . "</td>
-                  <td class=\"last_row\">" . $this->convert->whip($sel_team_pitching['walks'], $sel_team_pitching['hits'], $sel_team_pitching['ip']) . "</td>
-                  <td class=\"last_row\">{$sel_team_pitching['cg']}</td>
-                  <td class=\"last_row\">{$sel_team_pitching['hbp']}</td>
-                  <td class=\"last_row\">{$sel_team_pitching['opp_pa']}</td>
-                  <td class=\"last_row\">{$sel_team_pitching['opp_ab']}</td>
-                  <td class=\"last_row\">" . $this->convert->k_per_nine($sel_team_pitching['so'], $sel_team_pitching['ip']) . "</td>
-                  <td class=\"last_row\">" . $this->convert->k_per_walk($sel_team_pitching['so'], $sel_team_pitching['walks']) . "</td>";
+        foreach($sel_sum_team_pitching_id as $team_pitching) {
+            echo "<td class=\"last_row\">" . $this->convert->era($team_pitching['er'], $team_pitching['ip']) . "</td>
+                  <td class=\"last_row\">{$team_pitching['save']}</td>
+                  <td class=\"last_row\">{$team_pitching['bs']}</td>
+                  <td class=\"last_row\">{$team_pitching['ip']}</td>
+                  <td class=\"last_row\">{$team_pitching['hits']}</td>
+                  <td class=\"last_row\">{$team_pitching['runs']}</td>
+                  <td class=\"last_row\">{$team_pitching['er']}</td>
+                  <td class=\"last_row\">{$team_pitching['walks']}</td>
+                  <td class=\"last_row\">{$team_pitching['so']}</td>
+                  <td class=\"last_row\">{$team_pitching['qs']}</td>
+                  <td class=\"last_row\">" . $this->convert->opp_avg($team_pitching['hits'], $team_pitching['opp_ab']) . "</td>
+                  <td class=\"last_row\">" . $this->convert->whip($team_pitching['walks'], $team_pitching['hits'], $team_pitching['ip']) . "</td>
+                  <td class=\"last_row\">{$team_pitching['cg']}</td>
+                  <td class=\"last_row\">{$team_pitching['hbp']}</td>
+                  <td class=\"last_row\">{$team_pitching['opp_pa']}</td>
+                  <td class=\"last_row\">{$team_pitching['opp_ab']}</td>
+                  <td class=\"last_row\">" . $this->convert->k_per_nine($team_pitching['so'], $team_pitching['ip']) . "</td>
+                  <td class=\"last_row\">" . $this->convert->k_per_walk($team_pitching['so'], $team_pitching['walks']) . "</td>";
         }
     echo "<tr/>";
 ?>
 </table>
 </div> <!-- end div pitchingWrapper -->
+
+<?php if ( $admin_p ) { echo form_close(); } ?>
+
 <br />
+
 <?php
     } // End check for pitching stats
     if ( ! empty($sel_fielding_game_id) ) { // Begin check for fielding stats
@@ -197,6 +356,21 @@ echo "</table>";
 <br />
 
 <h2 align="center">Fielding</h2>
+
+<?php
+    if ( $admin_p ) {
+        if ( validation_errors() ) {
+            echo "<div style=\"color:red; font-weight:bold\">" . validation_errors(); "</div>";
+        }
+        $attributes = array('name' => 'fielding_update', 'id' => 'fielding_update');
+        $query_string = '&gm=' .urlencode($sel_fielding_game_id[0]['game_id']) . '&type=fielding_update';
+        echo form_open('c=edit&amp;m=game'.htmlentities($query_string), $attributes);
+        echo "<div style=\"padding-left: 290px;\">";
+            echo form_submit('submit', 'Update Fielding Stats');
+            echo "<div id=\"showHideFielding\"><a style=\"cursor: pointer; color: blue;\">Click Here to Edit</a></div>";
+        echo "</div>";
+    }
+?>
 
 <div id="fieldingWrapper">
 <table class="fielding">
@@ -207,31 +381,44 @@ echo "</table>";
         echo "<tr>";
 
         $i = 1;
-        foreach($sel_fielding_game_id as $sel_fielding_game) {
+        foreach($sel_fielding_game_id as $fielding) {
             if ($i % 2 != 0) { # An odd row
                 $rowColor = "#D0D0D0";
             } else { # An even row
                 $rowColor = "";
             }
-                $query_string = '&player_id=' .urlencode($sel_fielding_game['player_id']);
+                $query_string = '&player_id=' .urlencode($fielding['player_id']);
                 echo "<tr bgcolor=" . $rowColor . ">
-                        <td class=\"player_column\"><a href=\"?c=players&amp;m=player" .htmlentities($query_string) . "\">{$sel_fielding_game['first']} {$sel_fielding_game['last']}</a></td>
-                        <td class=\"border\">$sel_fielding_game[tc]</td>
-                        <td class=\"border\">$sel_fielding_game[po]</td>
-                        <td class=\"border\">$sel_fielding_game[a]</td>
-                        <td class=\"border\">$sel_fielding_game[errors]</td>
-                        <td class=\"border\">" . $this->convert->fld($sel_fielding_game['po'], $sel_fielding_game['a'], $sel_fielding_game['tc']) . "</td>
+                        <td class=\"player_column\"><a href=\"?c=players&amp;m=player" .htmlentities($query_string) . "\">{$fielding['first']} {$fielding['last']}</a></td>
+                        <td class=\"border\">$fielding[tc]</td>";
+                if ( $admin_p ) {
+                    echo form_hidden('id[]', $fielding['player_id']);
+                    echo "<td class=\"border\"><span class=\"editToggle\">$fielding[po]</span>"
+                            . form_input(array('id' => 'po', 'name' => 'po[]', 'value' => $fielding['po'], 'class' => 'showHideToggle', 'size' => '2')) .
+                        "</td>
+                        <td class=\"border\"><span class=\"editToggle\">$fielding[a]</span>"
+                            . form_input(array('id' => 'a', 'name' => 'a[]', 'value' => $fielding['a'], 'class' => 'showHideToggle', 'size' => '1')) .
+                        "</td>
+                        <td class=\"border\"><span class=\"editToggle\">$fielding[errors]</span>"
+                            . form_input(array('id' => 'errors', 'name' => 'errors[]', 'value' => $fielding['errors'], 'class' => 'showHideToggle', 'size' => '1')) .
+                        "</td>";
+                } else {
+                    echo "<td class=\"border\">$fielding[po]</td>
+                          <td class=\"border\">$fielding[a]</td>
+                          <td class=\"border\">$fielding[errors]</td>";
+                }
+                    echo "<td class=\"border\">" . $this->convert->fld($fielding['po'], $fielding['a'], $fielding['tc']) . "</td>
                 </tr>";
             $i++;
         }
         echo "<tr>";
             echo "<td class=\"last_row\"><strong>Total</strong></td>";
-            foreach($sel_sum_team_fielding_id as $sel_sum_team_fielding) {
-                echo "<td class=\"last_row\">{$sel_sum_team_fielding['tc']}</td>
-                      <td class=\"last_row\">{$sel_sum_team_fielding['po']}</td>
-                      <td class=\"last_row\">{$sel_sum_team_fielding['a']}</td>
-                      <td class=\"last_row\">{$sel_sum_team_fielding['errors']}
-                      <td class=\"last_row\">" . $this->convert->fld($sel_sum_team_fielding['po'], $sel_sum_team_fielding['a'], $sel_sum_team_fielding['tc']) . "</td>";
+            foreach($sel_sum_team_fielding_id as $team_fielding) {
+                echo "<td class=\"last_row\">{$team_fielding['tc']}</td>
+                      <td class=\"last_row\">{$team_fielding['po']}</td>
+                      <td class=\"last_row\">{$team_fielding['a']}</td>
+                      <td class=\"last_row\">{$team_fielding['errors']}
+                      <td class=\"last_row\">" . $this->convert->fld($team_fielding['po'], $team_fielding['a'], $team_fielding['tc']) . "</td>";
             }
         echo "</tr>";
     ?>
@@ -239,6 +426,8 @@ echo "</table>";
 </div> <!-- div fieldingWrapper -->
 
 <?php } // End check for fielding stats ?>
+
+<?php if ( $admin_p ) { echo form_close(); } ?>
 
 <?php
     if(empty($get_photos)) {

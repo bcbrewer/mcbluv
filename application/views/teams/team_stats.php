@@ -53,9 +53,9 @@
 							  <td class=\"individual_stats\">{$select['hbp']}</td>
 							  <td class=\"individual_stats\">{$select['sac']}</td>
 							  <td class=\"individual_stats\">{$select['roe']}</td>
-							  <td class=\"individual_stats\">{$select['single']}</td>
-							  <td class=\"individual_stats\">{$select['double']}</td>
-							  <td class=\"individual_stats\">{$select['triple']}</td>
+							  <td class=\"individual_stats\">{$select['1b']}</td>
+							  <td class=\"individual_stats\">{$select['2b']}</td>
+							  <td class=\"individual_stats\">{$select['3b']}</td>
 							  <td class=\"individual_stats\">{$select['tb']}</td>
 							  <td class=\"individual_stats\">{$select['so']}</td>
 							  <td class=\"individual_stats\">{$select['gidp']}</td>
@@ -164,9 +164,9 @@
 									<td>{$sum_team_stats_batting['hits']}</td>
 									<td>{$sum_team_stats_batting['bb']}</td>
 									<td>{$sum_team_stats_batting['hbp']}</td>
-									<td>{$sum_team_stats_batting['single']}</td>
-									<td>{$sum_team_stats_batting['double']}</td>
-									<td>{$sum_team_stats_batting['triple']}</td>
+									<td>{$sum_team_stats_batting['1b']}</td>
+									<td>{$sum_team_stats_batting['2b']}</td>
+									<td>{$sum_team_stats_batting['3b']}</td>
 									<td>{$sum_team_stats_batting['hr']}</td>
 								    <td>" . $this->convert->batting_avg($sum_team_stats_batting['hits'], $sum_team_stats_batting['ab']) . "</td>
 								    <td>{$sum_team_stats_batting['tb']}</td>
@@ -192,9 +192,9 @@
 									<td class=\"last_row\">{$sum_team['hits']}</td>
 									<td class=\"last_row\">{$sum_team['bb']}</td>
 									<td class=\"last_row\">{$sum_team['hbp']}</td>
-									<td class=\"last_row\">{$sum_team['single']}</td>
-									<td class=\"last_row\">{$sum_team['double']}</td>
-									<td class=\"last_row\">{$sum_team['triple']}</td>
+									<td class=\"last_row\">{$sum_team['1b']}</td>
+									<td class=\"last_row\">{$sum_team['2b']}</td>
+									<td class=\"last_row\">{$sum_team['3b']}</td>
 									<td class=\"last_row\">{$sum_team['hr']}</td>
 							        <td class=\"last_row\">" . $this->convert->batting_avg($sum_team['hits'], $sum_team['ab']) . "</td>
 							        <td class=\"last_row\">{$sum_team['tb']}</td>

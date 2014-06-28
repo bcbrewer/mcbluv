@@ -8,7 +8,7 @@
 	<h3>Batting Average Leaders</h3>
 <?php
 	foreach($avg_leaders as $avg_leader) {
-		if($avg_leader['pa'] >= 44) {
+		if($avg_leader['pa'] >= 20) {
 		$query_string = '&player_id=' .urlencode($avg_leader['player_id']);
 				echo "<tr class=white>
                         <td class=team_leaders><a href=\"?c=players&m=player" .htmlentities($query_string) ."\">{$avg_leader['first']} {$avg_leader['last']}</a></td>

@@ -10,7 +10,7 @@
 <table>
 <?php
 	foreach($avg_leaders as $avg_leader) {
-		if($avg_leader['pa'] >= 57) {
+		if($avg_leader['pa'] >= 20) {
 		$query_string = '&player_id=' .urlencode($avg_leader['player_id']);
 		echo "<tr class=\"white\">
                 <td class=\"team_leaders\"><a href=\"?c=players&amp;m=player" .htmlentities($query_string) ."\">{$avg_leader['first']} {$avg_leader['last']}</a></td>
@@ -118,7 +118,7 @@
 </tr>
 </table>
 <br />
-* <strong><i>To qualify for AVG leader a player must have atleast 57 plate appearances.</i></strong>
+* <strong><i>To qualify for AVG leader a player must have atleast 20 plate appearances.</i></strong>
 
 <h1 align="center">Pitching Leaders</h1>
 <table>

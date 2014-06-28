@@ -52,23 +52,30 @@ class Players extends CI_Controller {
 	}
 	
 	public function records_season() {
+         if ( isset($_REQUEST['season_id']) ) {
+            $season_id = $_REQUEST['season_id'];
+        } else {
+            $current_season = max($this->mcbluv_model->all_seasons());
+            $season_id = $current_season['season_id'];
+        }
 		$data['rosters'] = $this->mcbluv_model->get_all_players();
 		$data['opponents'] = $this->mcbluv_model->get_all_games();
 		$data['all_seasons'] = $this->mcbluv_model->all_seasons();
 		$data['sel_player_name'] = $this->mcbluv_model->find_selected_player();
-		$data['hr_leaders'] = $this->records_model->season_hr_leaders();
-		$data['avg_leaders'] = $this->records_model->season_avg_leaders();
-		$data['hits_leaders'] = $this->records_model->season_hits_leaders();
-		$data['runs_leaders'] = $this->records_model->season_runs_leaders();
-		$data['rbi_leaders'] = $this->records_model->season_rbi_leaders();
-		$data['sb_leaders'] = $this->records_model->season_sb_leaders();
-		$data['wins_leaders'] = $this->records_model->season_wins_leaders();
-		$data['qs_leaders'] = $this->records_model->season_qs_leaders();
-		$data['saves_leaders'] = $this->records_model->season_saves_leaders();
-		$data['strikeouts_leaders'] = $this->records_model->season_strikeouts_leaders();
-		$data['era_leaders'] = $this->records_model->season_era_leaders();
-		$data['whip_leaders'] = $this->records_model->season_whip_leaders();
 		$data['title'] = "Mcbluv Season Records";
+
+		$data['hr_leaders'] = $this->records_model->hr_leaders($season_id);
+		$data['avg_leaders'] = $this->records_model->avg_leaders($season_id);
+		$data['hits_leaders'] = $this->records_model->hits_leaders($season_id);
+		$data['runs_leaders'] = $this->records_model->runs_leaders($season_id);
+		$data['rbi_leaders'] = $this->records_model->rbi_leaders($season_id);
+		$data['sb_leaders'] = $this->records_model->sb_leaders($season_id);
+		$data['wins_leaders'] = $this->records_model->wins_leaders($season_id);
+		$data['qs_leaders'] = $this->records_model->qs_leaders($season_id);
+		$data['saves_leaders'] = $this->records_model->saves_leaders($season_id);
+		$data['strikeouts_leaders'] = $this->records_model->strikeouts_leaders($season_id);
+		$data['era_leaders'] = $this->records_model->era_leaders($season_id);
+		$data['whip_leaders'] = $this->records_model->whip_leaders($season_id);
 		
         $this->load->view('templates/header', $data);
 		$this->load->view('players/records_season', $data);
@@ -79,19 +86,20 @@ class Players extends CI_Controller {
 		$data['opponents'] = $this->mcbluv_model->get_all_games();
 		$data['rosters'] = $this->mcbluv_model->get_all_players();
 		$data['all_seasons'] = $this->mcbluv_model->all_seasons();
-		$data['career_hr_leaders'] = $this->records_model->career_hr_leaders();
-		$data['career_avg_leaders'] = $this->records_model->career_avg_leaders();
-		$data['career_hits_leaders'] = $this->records_model->career_hits_leaders();
-		$data['career_runs_leaders'] = $this->records_model->career_runs_leaders();
-		$data['career_rbi_leaders'] = $this->records_model->career_rbi_leaders();
-		$data['career_sb_leaders'] = $this->records_model->career_sb_leaders();
-		$data['career_wins_leaders'] = $this->records_model->career_wins_leaders();
-		$data['career_qs_leaders'] = $this->records_model->career_qs_leaders();
-		$data['career_saves_leaders'] = $this->records_model->career_saves_leaders();
-		$data['career_strikeouts_leaders'] = $this->records_model->career_strikeouts_leaders();
-		$data['career_era_leaders'] = $this->records_model->career_era_leaders();
-		$data['career_whip_leaders'] = $this->records_model->career_whip_leaders();
 		$data['title'] = "Mcbluv Career Records";
+
+		$data['career_hr_leaders'] = $this->records_model->hr_leaders();
+		$data['career_avg_leaders'] = $this->records_model->avg_leaders();
+		$data['career_hits_leaders'] = $this->records_model->hits_leaders();
+		$data['career_runs_leaders'] = $this->records_model->runs_leaders();
+		$data['career_rbi_leaders'] = $this->records_model->rbi_leaders();
+		$data['career_sb_leaders'] = $this->records_model->sb_leaders();
+		$data['career_wins_leaders'] = $this->records_model->wins_leaders();
+		$data['career_qs_leaders'] = $this->records_model->qs_leaders();
+		$data['career_saves_leaders'] = $this->records_model->saves_leaders();
+		$data['career_strikeouts_leaders'] = $this->records_model->strikeouts_leaders();
+		$data['career_era_leaders'] = $this->records_model->era_leaders();
+		$data['career_whip_leaders'] = $this->records_model->whip_leaders();
 		
         $this->load->view('templates/header', $data);
 		$this->load->view('players/records_career', $data);

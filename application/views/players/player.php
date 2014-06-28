@@ -64,7 +64,7 @@
     if ( $admin_p ) {
         echo "<div style=\"color:red; font-weight:bold\">" . validation_errors(); "</div>";
         $attributes = array('name' => 'player_update', 'id' => 'player_update');
-        $query_string = '&player_id=' .urlencode($sel_player_name[0]['player_id']);
+        $query_string = '&player_id=' .urlencode($sel_player_name[0]['player_id']) . '&type=player_update';
         echo form_open('c=edit&amp;m=player'.htmlentities($query_string), $attributes);
         echo form_submit('submit', 'Update Players');
         echo "<div id=\"showHide\"><a>Click Here to Edit</a></div>";
@@ -142,13 +142,13 @@
                 'INF' => 'INF',
                 'OF' => 'OF'
             );
-            echo form_hidden('player_id', $sel_player['player_id']);
+            echo form_hidden('id', $sel_player['player_id']);
 
             echo "<td>" . form_dropdown('active_p', $active) . "</td>
                   <td>
                     <span class=\"editToggle\">{$sel_player['first']} {$sel_player['last']}</a><br /></span>"
-                    . form_input(array('id' => 'edit_player', 'name' => 'first_name', 'value' => $sel_player['first'], 'class' => 'showHideToggle', 'size' => '10'))
-                    . form_input(array('id' => 'edit_player', 'name' => 'last_name', 'value' => $sel_player['last'], 'class' => 'showHideToggle', 'size' => '10')) .
+                    . form_input(array('id' => 'edit_player', 'name' => 'first', 'value' => $sel_player['first'], 'class' => 'showHideToggle', 'size' => '10'))
+                    . form_input(array('id' => 'edit_player', 'name' => 'last', 'value' => $sel_player['last'], 'class' => 'showHideToggle', 'size' => '10')) .
                   "</td>
                   <td>
                     <span class=\"editToggle\">{$sel_player['jersey_num']}</span>"
@@ -159,12 +159,12 @@
                   "</td>
                    <td>"
                     . form_dropdown('height_ft', $height, $height[$feet], 'style="width: 40px;"')
-                    . form_dropdown('height_in', $height_in, $height_in[$inch], 'style="width: 45px;"') .
+                    . form_dropdown('ht', $height_in, $height_in[$inch], 'style="width: 45px;"') .
                   "</td>
-                  <td>" . form_dropdown('weight', $weight, $weight[$sel_player['wt']], 'style="width: 60px;"') . "</td>
+                  <td>" . form_dropdown('wt', $weight, $weight[$sel_player['wt']], 'style="width: 60px;"') . "</td>
                   <td>" . form_dropdown('batsthrows', $bats_throws, $sel_player['batsthrows']) . "</td>
                   <td>" . form_dropdown('primary_pos', $primary_pos, $sel_player['primary_pos']) . "</td>
-                  <td>" . form_dropdown('pos_type', $pos_type, $sel_player['pos']) . "</td>";
+                  <td>" . form_dropdown('pos', $pos_type, $sel_player['pos']) . "</td>";
         } else {
             echo "<td>$sel_player[first] $sel_player[last]</td>
                   <td>$sel_player[jersey_num]</td>
