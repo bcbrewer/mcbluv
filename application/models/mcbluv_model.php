@@ -340,7 +340,7 @@ public function career_pitching($player_id = null) {
            sum(bs) as bs, sum(ip) as ip, sum(hits) as hits,
            sum(runs) as runs, sum(er) as er, sum(walks) as walks,
            sum(so) as so, sum(qs) as qs, sum(cg) as cg, sum(hbp) as hbp,
-           sum(opp_pa) as opp_pa, sum(opp_ab) as opp_ab
+           sum(opp_pa) as opp_pa, sum((opp_pa) - walks - hbp) as opp_ab
        from pitching p
        where p.player_id = ?
    ", array($player_id));
@@ -455,7 +455,7 @@ public function select_year_sum_pitching() {
                 sum(bs) as bs, sum(ip) as ip, sum(hits) as hits,
                 sum(runs) as runs, sum(er) as er, sum(walks) as walks, 
                 sum(so) as so, sum(qs) as qs, sum(cg) as cg, sum(hbp) as hbp, 
-                sum(opp_pa) as opp_pa, sum(opp_ab) as opp_ab,
+                sum(opp_pa) as opp_pa, sum((opp_pa) - walks - hbp) as opp_ab,
                 p.player_id, p.game_id, p.season_id,
                 s.year, s.season, o.opponent_id, o.opponent
             from pitching p
@@ -589,7 +589,8 @@ public function select_pitching_year() {
         $query = $this->db->query("
             select p.record, p.loss, p.save, p.bs, p.ip,
                 p.hits, p.runs, p.er, p.walks, p.so,
-                p.qs, p.cg, p.hbp, p.opp_pa, p.opp_ab,
+                p.qs, p.cg, p.hbp, p.opp_pa,
+                sum((p.opp_pa) - p.walks - p.hbp) as opp_ab,
                 p.player_id, p.game_id, p.season_id,
                 s.season, o.opponent_id, o.opponent
             from pitching p
@@ -741,7 +742,7 @@ public function select_pitching() {
         select p.player_id as player_id, sum(p.runs) as runs, sum(p.er) as er, sum(p.walks) as walks,
             sum(p.hbp) as hbp, sum(p.hits) as hits, sum(p.ip) as ip,
             sum(p.so) as so, sum(p.qs) as qs, sum(p.cg) as cg,
-            sum(p.opp_pa) as opp_pa, sum(p.opp_ab) as opp_ab,
+            sum(p.opp_pa) as opp_pa, sum((p.opp_pa) - p.walks - p.hbp) as opp_ab,
             sum(p.record) as record, sum(p.wins) as wins, sum(p.loss) as loss,
             sum(p.save) as save, sum(p.bs) as bs, ply.first, ply.last
         from pitching p

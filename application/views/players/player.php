@@ -297,7 +297,7 @@ if ( $select_by_year) {
 <br />
 
 <?php
-	if ( $select_pitching_year ) {
+	if ( $select_pitching_year[0]['player_id'] != "" ) {
 		$pitch_categories = array( 'Opponent', 'Record', 'ERA', 'SV', 'BS', 'IP', 'H', 'R', 'ER', 'BB',
 							   	   'SO', 'QS', 'AVG', 'WHIP', 'CG', 'HB', 'PA', 'AB', 'K/9', 'K/BB'	
 								 );

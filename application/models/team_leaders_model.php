@@ -201,10 +201,10 @@ class Team_leaders_model extends CI_Model {
 	
 	public function eligible_batters($season) {
          $query = $this->db->query("
-            select sum(b.pa) as pa,
+            select sum(b.pa) as pa
             from batting b
             where b.season_id = ?
-                and sum(b.single + b.double + b.triple + b.hr + b.bb + b.hbp + b.sac + b.roe) > 0
+                and b.pa > 0
         ", array($season));
 
         return $query->result_array();

@@ -36,12 +36,12 @@ class Records_model extends CI_Model {
 			select ply.player_id, ply.first, ply.last,
 				sum(b.single + b.double + b.triple + b.hr) as hits,
                 sum(b.pa) as pa,
-                sum(b.pa - b.bb - b.hbp - b.sac) as ab,
+                sum(b.pa - b.bb - b.hbp - b.sac) as ab
 			from batting b
 				join player ply on (b.player_id = ply.player_id)
 			$where
 			group by ply.first
-			order by sum((b.single + b.double + b.triple + b.hr) / (sum(b.pa - b.bb - b.hbp - b.sac)) desc
+			order by (sum(b.single + b.double + b.triple + b.hr) / sum(b.pa - b.bb - b.hbp - b.sac)) desc
 			limit 3
 		", array($season));
 		
