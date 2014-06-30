@@ -20,7 +20,8 @@ class Photo extends CI_Controller {
 	}
 
 	public function edit_delete() {
-		if($this->session->userdata('id') != 1) { //  same as $this->mcbluv_model->permissions();
+        $data['admin_p'] = $this->mcbluv_model->permissions();
+		if( ! $data['admin_p'] ) { //  same as $this->mcbluv_model->permissions();
 			echo "You are not authorized edit files!";
 			die;
 		} else {

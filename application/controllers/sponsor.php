@@ -8,6 +8,8 @@ class Sponsor extends CI_Controller {
 	}
 	
 	public function sponsors() {
+        $data['admin_p'] = $this->mcbluv_model->permissions();
+
 		$data['schedules'] = $this->mcbluv_model->get_all_games();
 		$data['rosters'] = $this->mcbluv_model->get_all_players();
 		$data['opponents'] = $this->mcbluv_model->get_all_games();

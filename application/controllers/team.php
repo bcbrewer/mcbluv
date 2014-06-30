@@ -11,6 +11,7 @@ class Team extends CI_Controller {
 	
 	public function schedule() {
         $data['admin_p'] = $this->mcbluv_model->permissions();
+
 		$data['schedules'] = $this->mcbluv_model->get_all_games();
 		$data['rosters'] = $this->mcbluv_model->get_all_players();
 		$data['opponents'] = $this->mcbluv_model->get_all_games();
@@ -28,6 +29,7 @@ class Team extends CI_Controller {
 
 	public function roster() {
         $data['admin_p'] = $this->mcbluv_model->permissions();
+
         $data['active_roster'] = $this->mcbluv_model->get_all_players(true);
 		$data['rosters'] = $this->mcbluv_model->get_all_players();
 		$data['opponents'] = $this->mcbluv_model->get_all_games();
@@ -40,6 +42,8 @@ class Team extends CI_Controller {
 	}
 
 	public function team_leaders() {
+        $data['admin_p'] = $this->mcbluv_model->permissions();
+
         $current_season = max($this->mcbluv_model->all_seasons());
         $season_id = $current_season['season_id'];
 
@@ -70,6 +74,8 @@ class Team extends CI_Controller {
 	}
 	
 	public function team_stats() {
+        $data['admin_p'] = $this->mcbluv_model->permissions();
+
         if ( isset($_REQUEST['season_id']) ) {
             $season_id = $_REQUEST['season_id'];
         } else {

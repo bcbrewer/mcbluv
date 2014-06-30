@@ -8,7 +8,9 @@ class Upload extends CI_Controller {
 	}
 	
 	function new_image() {
-		if($this->session->userdata('id') != 1) {
+        $data['admin_p'] = $this->mcbluv_model->permissions();
+	//	if($this->session->userdata('id') != 1) {
+        if ( ! $data['admin_p'] ) {
 			echo "You are not authorized to make uploads!";
 			die;
 		} else {

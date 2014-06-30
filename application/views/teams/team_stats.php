@@ -1,28 +1,28 @@
 <?php
 	echo "<br />";
-	echo"<div style=\"text-align: center\">";
 		$team_p = isset($_REQUEST['season_id']) ? false:true;
 		if($team_p) {
-			echo form_open('c=team&m=team_stats');
+	        echo"<div style=\"text-align: center\">";
+			    echo form_open('c=team&m=team_stats');
 		
-			$current_season = $this->mcbluv_model->all_seasons();
+			    $current_season = $this->mcbluv_model->all_seasons();
 	
-			foreach($current_season as $seasons) {
-				$years[$seasons['year']] = $seasons['year'];
-			}
+			    foreach($current_season as $seasons) {
+				    $years[$seasons['year']] = $seasons['year'];
+			    }
 		
-			$years['career'] = "Career";
+			    $years['career'] = "Career";
 
-			if(isset($_POST['year'])) {
-				$post_year = $_POST['year'];
-			} else {
-				$post_year = $current_season[0]['year'];
-			}
+			    if(isset($_POST['year'])) {
+				    $post_year = $_POST['year'];
+			    } else {
+				    $post_year = $current_season[0]['year'];
+			    }
 
-			echo form_dropdown('year', $years, $post_year);
+			    echo form_dropdown('year', $years, $post_year);
 
-			echo form_submit('mysubmit', 'Search');
-		echo"</div>";
+			    echo form_submit('mysubmit', 'Search');
+		    echo"</div>";
 		
 		$categories = array( 'Name', 'PA', 'AB', 'Hits', 'HR', 'RBI', 'BB', 'Runs', 'HBP', 'SAC', 'ROE',
 							 '1B', '2B', '3B', 'TB', 'SO', 'GIDP', 'SB', 'CS', 'AVG', 'OBP', 'SLG', 'OPS'

@@ -52,6 +52,8 @@ class Players extends CI_Controller {
 	}
 	
 	public function records_season() {
+        $data['admin_p'] = $this->mcbluv_model->permissions();
+
          if ( isset($_REQUEST['season_id']) ) {
             $season_id = $_REQUEST['season_id'];
         } else {
@@ -83,6 +85,8 @@ class Players extends CI_Controller {
 	}
 	
 	public function records_career() {
+        $data['admin_p'] = $this->mcbluv_model->permissions();
+
 		$data['opponents'] = $this->mcbluv_model->get_all_games();
 		$data['rosters'] = $this->mcbluv_model->get_all_players();
 		$data['all_seasons'] = $this->mcbluv_model->all_seasons();

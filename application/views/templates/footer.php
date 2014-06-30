@@ -1,4 +1,9 @@
 			<br />
+            <?php
+                if ($admin_p) {
+                    echo "<div float:left;><a href=\"?c=user&amp;m=logout\">Logout</a></div>";
+                }
+            ?>
 			</div> <!-- end div indexWrapper -->
 			<div id="footer">
 				<div style="line-height: 70px;">

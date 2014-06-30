@@ -19,6 +19,8 @@ class User extends CI_Controller {
 	}
 	
 	 public function login() {
+        $data['admin_p'] = $this->mcbluv_model->permissions();
+
 		$data['schedules'] = $this->mcbluv_model->get_all_games();
 		$data['rosters'] = $this->mcbluv_model->get_all_players();
 		$data['opponents'] = $this->mcbluv_model->get_all_games();
@@ -36,11 +38,7 @@ class User extends CI_Controller {
 			$this->load->view('user/view_login');
 			
 		} else {
-			
 			// process their input and login the user
-			// extract($_POST);
-			// echo $username;
-			// 	echo $password;
 			
 			$username = $this->input->post('username');
 			$password = $this->input->post('password');
