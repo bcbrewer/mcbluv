@@ -33,7 +33,9 @@
 		    </script>
 		    <script src="mcbluv.com/javascript/video.js"></script>
 		    <script>videojs.options.flash.swf = "href="mcbluv.com/media/video-js.swf"</script>
-            <!-- Google Analytics -->
+        </head>
+
+        <body>
             <script>
                 (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
                 (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -44,10 +46,6 @@
                 ga('send', 'pageview');
 
             </script>
-            <!-- End Google Analytics -->
-        </head>
-
-        <body>
 			<div id="content">
 				<div id="header">
 				<!--	<img class="header" src="images/smiley.jpg" alt="" /> --!>
