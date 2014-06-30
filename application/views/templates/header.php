@@ -1,42 +1,38 @@
-<!-- <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> -->
 <!DOCTYPE html>
-      <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+      <html>
         <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        <title>
-			<?php
-				if (!empty($sel_player_name)) {
-					foreach($sel_player_name as $sel_player) {
-						echo "$sel_player[first]  $sel_player[last]";
-					}
-				} elseif (!empty($sel_game_id)) {
-				    echo "{$sel_game_id[0]['opponent']}"; 
-				} else {
-					echo $title;
-				} 
-			?> - Mcbluv</title>
-        <link rel="shortcut icon" type="image/x-icon" href="images/mcbluv_icon.ico" />
-        <link rel="stylesheet" href="css/stats.css">
-        <link rel="stylesheet" href="css/mcbluv-theme/jquery-ui-1.10.4.custom.css" />
-		<link rel="stylesheet" href="css/video-js.css" >
+            <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+            <title>
+			    <?php
+				    if (!empty($sel_player_name)) {
+					    foreach($sel_player_name as $sel_player) {
+						    echo "$sel_player[first]  $sel_player[last]";
+					    }
+				    } elseif (!empty($sel_game_id)) {
+				        echo "{$sel_game_id[0]['opponent']}"; 
+				    } else {
+					    echo $title;
+				    } 
+			    ?> - Mcbluv
+            </title>
+            <link rel="shortcut icon" type="image/x-icon" href="images/mcbluv_icon.ico" />
+            <link rel="stylesheet" href="css/stats.css">
+            <link rel="stylesheet" href="css/mcbluv-theme/jquery-ui-1.10.4.custom.css" />
+		    <link rel="stylesheet" href="css/video-js.css" >
 
-        <script type="text/javascript" src="javascript/jquery-1.10.2.js"></script>
-        <script type="text/javascript" src="javascript/jquery-ui-1.10.4.custom.min.js"></script>
-        <script type="text/javascript" src="javascript/jquery-ui-1.10.4.custom.js"></script>
-		<script type="text/javascript" src="javascript/bw-menu.js"></script>
-		<script type="text/javascript" src="javascript/sorttable.js"></script>
-		<script type="text/javascript" src="javascript/swipe_captions.js"></script>
-		<script type="text/javascript">
-			document.createElement('video');
-			document.createElement('audio');
-			document.createElement('track');
-		</script>
-		<script src="mcbluv.com/javascript/video.js"></script>
-		<script>videojs.options.flash.swf = "href="mcbluv.com/media/video-js.swf"</script>
-        </head>
-
-        <body>
+            <script type="text/javascript" src="javascript/jquery-1.10.2.js"></script>
+            <script type="text/javascript" src="javascript/jquery-ui-1.10.4.custom.min.js"></script>
+            <script type="text/javascript" src="javascript/jquery-ui-1.10.4.custom.js"></script>
+		    <script type="text/javascript" src="javascript/bw-menu.js"></script>
+		    <script type="text/javascript" src="javascript/sorttable.js"></script>
+		    <script type="text/javascript" src="javascript/swipe_captions.js"></script>
+		    <script type="text/javascript">
+			    document.createElement('video');
+			    document.createElement('audio');
+			    document.createElement('track');
+		    </script>
+		    <script src="mcbluv.com/javascript/video.js"></script>
+		    <script>videojs.options.flash.swf = "href="mcbluv.com/media/video-js.swf"</script>
             <!-- Google Analytics -->
             <script>
                 (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -49,7 +45,9 @@
 
             </script>
             <!-- End Google Analytics -->
+        </head>
 
+        <body>
 			<div id="content">
 				<div id="header">
 				<!--	<img class="header" src="images/smiley.jpg" alt="" /> --!>
