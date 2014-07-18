@@ -192,44 +192,32 @@
 	        echo form_open('c=players&m=player'.htmlentities($query_string));
         }
     }
-    $current_season = $this->mcbluv_model->all_seasons();
 
-    foreach($current_season as $seasons) {
-        $years[$seasons['year']] = $seasons['year'];
-        $season[$seasons['season']] = ucwords($seasons['season']);
+    foreach($last_active_season as $seasons) {
+        $years[$seasons['season_id']] = ucwords($seasons['season']) . " {$seasons['year']}";
     }
 
-	if(isset($_POST['year'])) {
-		$post_year = $_POST['year'];
-	} else {
-		$post_year = $current_season[0]['year'];
-	}
+    if(isset($_POST['season'])) {
+        $post_year = $_POST['season'];
+    } else {
+        $post_year = $last_active_season[0]['season_id'];
+    }
 
-	echo "<div style=\"text-align: center;\">";
+    echo "<div style=\"text-align: center;\">";
 
-		echo form_dropdown('year', $years, $post_year);
-	
-		if(isset($_POST['season'])) {
-			$post_season = $_POST['season'];
-		} else {
-			$post_season = $current_season[0]['season'];;
-		}
-	
-		echo form_dropdown('season', $season, $post_season);
-	
-		$playoffs = array(
-						'Regular Season' => 'Regular Season',
-						'Playoffs'		 => 'Playoffs'
-		);
-	
-		$playoff_dd = array('playoffs', 'Regular Season');
-	
-		if(isset($_POST['playoffs'])) {
-			$post_playoff = $_POST['playoffs'];
-		} else {
-			$post_playoff = "Regular Season";
-		}
-	
+        echo form_dropdown('season', $years, $post_year);
+
+        $playoffs = array(
+                        'n' => 'Regular Season',
+                        'y' => 'Playoffs'
+        );
+
+        if(isset($_POST['playoffs'])) {
+            $post_playoff = $_POST['playoffs'];
+        } else {
+            $post_playoff = "n";
+        }
+
 		echo form_dropdown('playoffs', $playoffs, $post_playoff);
 	
 		echo form_submit('mysubmit', 'Search'); 
@@ -297,7 +285,7 @@ if ( $select_by_year) {
 <br />
 
 <?php
-	if ( $select_pitching_year[0]['player_id'] != "" ) {
+	if ( ! empty($select_pitching_year) ) {
 		$pitch_categories = array( 'Opponent', 'Record', 'ERA', 'SV', 'BS', 'IP', 'H', 'R', 'ER', 'BB',
 							   	   'SO', 'QS', 'AVG', 'WHIP', 'CG', 'HB', 'PA', 'AB', 'K/9', 'K/BB'	
 								 );

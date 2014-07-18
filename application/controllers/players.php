@@ -36,14 +36,13 @@ class Players extends CI_Controller {
 		$data['sel_career_batting'] = $this->mcbluv_model->career_batting($player_id);
 		$data['sel_career_pitching'] = $this->mcbluv_model->career_pitching($player_id);
 		$data['sel_career_fielding'] = $this->mcbluv_model->career_fielding($player_id);
-		$data['selects'] = $this->mcbluv_model->select();
-		$data['select_by_year'] = $this->mcbluv_model->select_batting_year();
-		$data['select_pitching_year'] = $this->mcbluv_model->select_pitching_year();
-		$data['select_fielding_year'] = $this->mcbluv_model->select_fielding_year();
-		$data['select_batting_sum_year'] = $this->mcbluv_model->select_year_sum_batting();
-		$data['select_pitching_sum_year'] = $this->mcbluv_model->select_year_sum_pitching();
-		$data['select_fielding_sum_year'] = $this->mcbluv_model->select_year_sum_fielding();
-		$data['last_active_year'] = $this->mcbluv_model->last_active_year($player_id);
+		$data['select_by_year'] = $this->mcbluv_model->select_batting_year($player_id);
+		$data['select_pitching_year'] = $this->mcbluv_model->select_pitching_year($player_id);
+		$data['select_fielding_year'] = $this->mcbluv_model->select_fielding_year($player_id);
+		$data['select_batting_sum_year'] = $this->mcbluv_model->select_year_sum_batting($player_id);
+		$data['select_pitching_sum_year'] = $this->mcbluv_model->select_year_sum_pitching($player_id);
+		$data['select_fielding_sum_year'] = $this->mcbluv_model->select_year_sum_fielding($player_id);
+		$data['last_active_season'] = $this->mcbluv_model->last_active_season($player_id);
 		$data['get_photos'] = $this->mcbluv_model->get_photos();
 
         $this->load->view('templates/header', $data);

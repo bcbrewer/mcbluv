@@ -70,19 +70,20 @@ public function next_game() {
 	return $query->result_array();
 }
 
-public function last_active_season() {
-	$player_id = $_REQUEST['player_id'];
-	
+public function last_active_season($player_id) {
 	$query = $this->db->query("
-		select season_id from batting
-			where player_id = ?
-			order by season_id desc
-			limit 1
+		select distinct s.season_id, s.year, s.season
+            from game g
+            join batting b on (b.game_id = g.game_id)
+            join season s on (s.season_id = g.season_id)
+			where b.player_id = ?
+			order by s.season_id desc
 		", array($player_id));
 			
 		return $query->result_array();
 }
-	
+
+/*
 public function last_active_year() {
 	$season_id = $this->last_active_season();
 	
@@ -95,6 +96,7 @@ public function last_active_year() {
 		return $query->result_array();
 	}
 }
+*/
 	
 public function all_seasons() {
 	$query = $this->db->query("
@@ -247,7 +249,7 @@ public function get_opponent_logo($id) {
 
 public function get_game_by_id($game_id) {
     $query = $this->db->query("
-        select b.player_id, b.game_id, b.season_id, b.playoff,
+        select b.player_id, b.game_id,
             sum(b.pa) as pa,
             sum(b.pa - b.bb - b.hbp - b.sac) as ab,
             sum(b.single + b.double + b.triple + b.hr) as hits,
@@ -268,7 +270,7 @@ public function get_game_by_id($game_id) {
 
 public function get_pitching_by_id($game_id) {
     $query = $this->db->query("
-        select p.player_id, p.game_id, p.season_id, p.playoff,
+        select p.player_id, p.game_id,
             p.runs, p.er, p.walks, p.hbp, p.hits, p.ip, p.so, p.qs,
             p.cg, p.opp_pa, sum(p.opp_pa - p.walks - p.hbp) as opp_ab,
             p.record, p.wins, p.loss, p.save, p.bs,
@@ -285,7 +287,7 @@ public function get_pitching_by_id($game_id) {
 
 public function get_fielding_by_id($game_id) {
     $query = $this->db->query("
-        select f.player_id, f.game_id, f.season_id, f.playoff,
+        select f.player_id, f.game_id,
             f.po, f.a, f.errors, sum(f.po + f.a + f.errors) as tc,
             p.*, g.*
         from fielding f
@@ -380,26 +382,20 @@ public function find_selected_player($player_id = null) {
 
 public function select_year_sum_batting() {
     $player_id = $_REQUEST['player_id'];
-    $last_active_year = $this->last_active_year();
+    $last_active_year = $this->last_active_season($player_id);
 
     if($last_active_year) {
-        foreach($last_active_year as $lay) {
-            if(isset($_POST['year'])) {
-                $year = $_POST['year'];
-            } else {
-                $year = $lay['year'];
-            }
             if(isset($_POST['season'])) {
                 $season = $_POST['season'];
             } else {
-                $season = $lay['season'];
+                $season = $last_active_year[0]['season_id'];
             }
             if(isset($_POST['playoffs'])) {
                 $playoffs = $_POST['playoffs'];
             } else {
-                $playoffs = "Regular Season";
+                $playoffs = "n";
             }
-        }
+
         $query = $this->db->query("
             select sum(b.pa) as pa,
                 sum(b.pa - b.bb - b.hbp - b.sac) as ab,
@@ -409,16 +405,15 @@ public function select_year_sum_batting() {
                 sum(single) as single, sum(`double`) as `double`, sum(triple) as triple,
                 sum((b.single * 1) + (b.double * 2) + (b.triple * 3) + (b.hr * 4))as tb, sum(so) as so,
                 sum(gidp) as gidp, sum(sb) as sb, sum(cs) as cs,
-                b.player_id, b.game_id, b.season_id,
+                b.player_id, b.game_id,
                 s.year, s.season
             from batting b
-                join season s on (s.season_id = b.season_id)
                 join game g on (g.game_id = b.game_id)
+                join season s on (s.season_id = g.season_id)
             where b.player_id = ?
-            and s.year = ?
-            and s.season = ?
-            and b.playoff = ?
-        ", array($player_id, $year, $season, $playoffs));
+            and s.season_id = ?
+            and g.playoff = ?
+        ", array($player_id, $season, $playoffs));
 
         return $query->result_array();
     } else {
@@ -426,47 +421,38 @@ public function select_year_sum_batting() {
     }
 }
 
-public function select_year_sum_pitching() {
-    $player_id = $_REQUEST['player_id'];
-    $last_active_year = $this->last_active_year();
+public function select_year_sum_pitching($player_id) {
+    $last_active_year = $this->last_active_season($player_id);
 
     if($last_active_year) {
-        foreach($last_active_year as $lay) {
-            if(isset($_POST['year'])) {
-                $year = $_POST['year'];
-            } else {
-                $year = $lay['year'];
-            }
-
             if(isset($_POST['season'])) {
                 $season = $_POST['season'];
             } else {
-                $season = $lay['season'];
+                $season = $last_active_year[0]['season_id'];
             }
 
             if(isset($_POST['playoffs'])) {
                 $playoffs = $_POST['playoffs'];
             } else {
-                $playoffs = "Regular Season";
+                $playoffs = "n";
             }
-        }
+
         $query = $this->db->query("
             select sum(wins) as wins, sum(loss) as loss, sum(save) as save, 
                 sum(bs) as bs, sum(ip) as ip, sum(hits) as hits,
                 sum(runs) as runs, sum(er) as er, sum(walks) as walks, 
                 sum(so) as so, sum(qs) as qs, sum(cg) as cg, sum(hbp) as hbp, 
                 sum(opp_pa) as opp_pa, sum((opp_pa) - walks - hbp) as opp_ab,
-                p.player_id, p.game_id, p.season_id,
+                p.player_id, p.game_id,
                 s.year, s.season, o.opponent_id, o.opponent
             from pitching p
-                join season s on (s.season_id = p.season_id)
                 join game g on (g.game_id = p.game_id)
+                join season s on (s.season_id = g.season_id)
                 join opponent o on (o.opponent_id = g.opponent_id)
             where p.player_id = ?
-            and s.year = ?
-            and s.season = ?
-            and p.playoff = ?
-        ", array($player_id, $year, $season, $playoffs));
+            and s.season_id = ?
+            and g.playoff = ?
+        ", array($player_id, $season, $playoffs));
 
         return $query->result_array();
     } else {
@@ -474,42 +460,34 @@ public function select_year_sum_pitching() {
     }
 }
 
-public function select_year_sum_fielding() {
-    $player_id = $_REQUEST['player_id'];
-    $last_active_year = $this->last_active_year();
+public function select_year_sum_fielding($player_id) {
+    $last_active_year = $this->last_active_season($player_id);
 
     if($last_active_year) {
-        foreach($last_active_year as $lay) {
-            if(isset($_POST['year'])) {
-                $year = $_POST['year'];
-            } else {
-                $year = $lay['year'];
-            }
             if(isset($_POST['season'])) {
                 $season = $_POST['season'];
             } else {
-                $season = $lay['season'];
+                $season = $last_active_year[0]['season_id'];
             }
             if(isset($_POST['playoffs'])) {
                 $playoffs = $_POST['playoffs'];
             } else {
-                $playoffs = "Regular Season";
+                $playoffs = "n";
             }
-        }
+
         $query = $this->db->query("
             select sum(f.po + f.a + f.errors) as tc, sum(po) as po, sum(a) as a,
-                sum(errors) as errors,
-                f.player_id, f.game_id, f.season_id,
+                sum(f.errors) as errors,
+                f.player_id, f.game_id,
                 s.season, o.opponent_id, o.opponent
             from fielding f
-                join season s on (s.season_id = f.season_id)
                 join game g on (g.game_id = f.game_id)
+                join season s on (s.season_id = g.season_id)
                 join opponent o on (o.opponent_id = g.opponent_id)
             where f.player_id = ?
-            and s.year = ?
-            and s.season = ?
-            and f.playoff = ?
-        ", array($player_id, $year, $season, $playoffs));
+            and s.season_id = ?
+            and g.playoff = ?
+        ", array($player_id, $season, $playoffs));
 
         return $query->result_array();
     } else {
@@ -517,44 +495,35 @@ public function select_year_sum_fielding() {
    }
 }
 
-public function select_fielding_year() {
-    $player_id = $_REQUEST['player_id'];
-    $last_active_year = $this->last_active_year();
+public function select_fielding_year($player_id) {
+    $last_active_year = $this->last_active_season($player_id);
 
     if($last_active_year) {
-        foreach($last_active_year as $lay) {
-            if(isset($_POST['year'])) {
-                $year = $_POST['year'];
-            } else {
-                $year = $lay['year'];
-            }
-
-            if(isset($_POST['season'])) {
+        if(isset($_POST['season'])) {
                 $season = $_POST['season'];
             } else {
-                $season = $lay['season'];
+                $season = $last_active_year[0]['season_id'];
             }
 
             if(isset($_POST['playoffs'])) {
                 $playoffs = $_POST['playoffs'];
             } else {
-                $playoffs = "Regular Season";
+                $playoffs = "n";
             }
-        }
+
         $query = $this->db->query("
             select sum(f.po + f.a + f.errors) as tc, f.po, f.a, f.errors,
-                f.player_id, f.game_id, f.season_id,
+                f.player_id, f.game_id,
                 s.season, o.opponent_id, o.opponent
             from fielding f
-                join season s on (s.season_id = f.season_id)
                 join game g on (g.game_id = f.game_id)
+                join season s on (s.season_id = g.season_id)
                 join opponent o on (o.opponent_id = g.opponent_id)
             where f.player_id = ?
-            and s.year = ?
-            and s.season = ?
-            and f.playoff = ?
+            and s.season_id = ?
+            and g.playoff = ?
             group by f.game_id
-        ", array($player_id, $year, $season, $playoffs));
+        ", array($player_id, $season, $playoffs));
 
         return $query->result_array();
     } else {
@@ -562,46 +531,38 @@ public function select_fielding_year() {
     }
 }
 
-public function select_pitching_year() {
-    $player_id = $_REQUEST['player_id'];
-    $last_active_year = $this->last_active_year();
+public function select_pitching_year($player_id) {
+    $last_active_year = $this->last_active_season($player_id);
 
     if($last_active_year) {
-        foreach($last_active_year as $lay) {
-            if(isset($_POST['year'])) {
-                $year = $_POST['year'];
-            } else {
-                $year = $lay['year'];
-            }
-
             if(isset($_POST['season'])) {
                 $season = $_POST['season'];
             } else {
-                $season = $lay['season'];
+                $season = $last_active_year[0]['season_id'];
             }
 
             if(isset($_POST['playoffs'])) {
                 $playoffs = $_POST['playoffs'];
             } else {
-                $playoffs = "Regular Season";
+                $playoffs = "n";
             }
-        }
+
         $query = $this->db->query("
             select p.record, p.loss, p.save, p.bs, p.ip,
                 p.hits, p.runs, p.er, p.walks, p.so,
                 p.qs, p.cg, p.hbp, p.opp_pa,
                 sum((p.opp_pa) - p.walks - p.hbp) as opp_ab,
-                p.player_id, p.game_id, p.season_id,
-                s.season, o.opponent_id, o.opponent
+                p.player_id, p.game_id,
+                o.opponent_id, o.opponent
             from pitching p
-                join season s on (s.season_id = p.season_id)
                 join game g on (g.game_id = p.game_id)
+                join season s on (s.season_id = g.season_id)
                 join opponent o on (o.opponent_id = g.opponent_id)
             where p.player_id = ?
-            and s.year = ?
-            and s.season = ?
-            and p.playoff = ?
-        ", array($player_id, $year, $season, $playoffs));
+            and s.season_id = ?
+            and g.playoff = ?
+            group by g.game_id
+        ", array($player_id, $season, $playoffs));
 
         return $query->result_array();
     } else {
@@ -609,30 +570,22 @@ public function select_pitching_year() {
     }
 }
 
-public function select_batting_year() {
-    $player_id = $_REQUEST['player_id'];
-    $last_active_year = $this->last_active_year();
+public function select_batting_year($player_id) {
+    $last_active_year = $this->last_active_season($player_id);
 
     if ( $last_active_year) {
-        foreach($last_active_year as $lay) {
-            if(isset($_POST['year'])) {
-                $year = $_POST['year'];
-            } else {
-                $year = $lay['year'];
-            }
-
             if(isset($_POST['season'])) {
                 $season = $_POST['season'];
             } else {
-                $season = $lay['season'];
+                $season = $last_active_year[0]['season_id'];
             }
 
             if(isset($_POST['playoffs'])) {
                 $playoffs = $_POST['playoffs'];
             } else {
-                $playoffs = "Regular Season";
+                $playoffs = "n";
             }
-        }
+
         $query = $this->db->query("
             select sum(b.pa) as pa,
                 sum(b.pa - b.bb - b.hbp - b.sac) as ab,
@@ -641,18 +594,17 @@ public function select_batting_year() {
                 b.single, b.double, b.triple,
                 sum((b.single * 1) + (b.double * 2) + (b.triple * 3) + (b.hr * 4)) as tb,
                 b.so, b.gidp, b.sb, b.cs, b.player_id,
-                b.game_id, b.season_id, s.season,
+                b.game_id, s.season,
                 o.opponent_id, o.opponent
             from batting b
-                join season s on (s.season_id = b.season_id)
                 join game g on (g.game_id = b.game_id)
+                join season s on (s.season_id = g.season_id)
                 join opponent o on (o.opponent_id = g.opponent_id)
             where b.player_id = ?
-            and s.year = ?
-            and s.season = ?
-            and b.playoff = ?
+            and s.season_id = ?
+            and g.playoff = ?
             group by b.game_id
-        ", array($player_id, $year, $season, $playoffs));
+        ", array($player_id, $season, $playoffs));
 
         return $query->result_array();
     } else {
@@ -689,7 +641,7 @@ public function select() {
     }
 
     $query = $this->db->query("
-        select b.player_id as player_id, sum(b.season_id) as season_id,
+        select b.player_id as player_id, sum(g.season_id) as season_id,
             sum(b.pa) as pa,
             sum(b.pa - b.bb - b.hbp - b.sac) as ab,
             sum(b.single + b.double + b.triple + b.hr) as hits, sum(b.hr) as hr,

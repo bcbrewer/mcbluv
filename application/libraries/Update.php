@@ -141,24 +141,14 @@ class Update extends CI_Model {
         }
     }
 
-    function insert_players($player_id, $game_id, $table = null) {
+    function insert_players($player_id, $game_id, $tables) {
         if ( ! $player_id || ! $game_id) {
             die('What exactly are you trying to update without an ID?');
         } else {
-            for($i=0; $i<count($player_id); $i++) {
-                if ( $table == "pitching" ) {
+            foreach($tables as $table) {
+                for($i=0; $i<count($player_id); $i++) {
                     $query = $this->db->query("
-                        insert into pitching
-                        (player_id, game_id) VALUES (?, ?)
-                    ", array($player_id, $game_id));
-                } else {
-                    $query = $this->db->query("
-                        insert into batting
-                        (player_id, game_id) VALUES (?, ?)
-                    ", array($player_id, $game_id));
-
-                    $query =  $this->db->query("
-                        insert into fielding
+                        insert into $table
                         (player_id, game_id) VALUES (?, ?)
                     ", array($player_id, $game_id));
                 }
@@ -166,32 +156,14 @@ class Update extends CI_Model {
         }
     }
 
-    function remove_players_from_game($game_id, $player_id, $only_p = FALSE) {
+    function remove_players_from_game($game_id, $player_id, $tables) {
         if ( ! $player_id || ! $game_id) {
             die('What exactly are you trying to update without an ID?');
         } else {
-            for($i=0; $i<count($player_id); $i++) {
-                if ( $only_p ) {
+            foreach($tables as $table) {
+                for($i=0; $i<count($player_id); $i++) {
                     $query = $this->db->query("
-                        delete from pitching
-                        where game_id = ?
-                        and player_id = ?
-                    ", array($game_id, $player_id));
-                } else {
-                    $query = $this->db->query("
-                        delete from batting
-                        where game_id = ?
-                        and player_id = ?
-                    ", array($game_id, $player_id));
-
-                    $query = $this->db->query("
-                        delete from fielding
-                        where game_id = ?
-                        and player_id = ?
-                    ", array($game_id, $player_id));
-
-                    $query = $this->db->query("
-                        delete from pitching
+                        delete from $table
                         where game_id = ?
                         and player_id = ?
                     ", array($game_id, $player_id));
@@ -209,12 +181,12 @@ class Update extends CI_Model {
 
             if ( $updates ) {
 
-                if ( isset($_REQUEST['gm']) ) {
-                    $game_id = $_REQUEST['gm'];
-                }
+                $game_id = isset($_REQUEST['gm']) ? $_REQUEST['gm'] : '';
+
+                $pitchers_p = isset($_REQUEST['pitchers_p']) ? TRUE : FALSE;
 
                 $type = $_REQUEST['type'];
-               
+
                  if ( $updates['submit'] ) {
                     unset($updates['submit']);
                 }
@@ -272,19 +244,23 @@ class Update extends CI_Model {
                     foreach($up as $id => $val) {
                         $this->edit_game($val, $id, $game_id, $type);
                     }
-                } elseif ( $type == "add_players" || $type == "add_pitchers") { // We are INSERTING players into a game
-                    if ( $type == "add_pitchers" ) {
-                        $table = "pitching";
+                } elseif ( $type == "add_players" ) { // We are INSERTING players into a game
+                    if ( $pitchers_p ) {
+                        $tables = array("pitching");
+                    } else {
+                        $tables = array("batting", "fielding");
                     }
                     foreach($keys as $id) {
-                        $this->insert_players($id, $game_id, $table);
+                        $this->insert_players($id, $game_id, $tables);
                     }
                 } elseif ( $delete_p ) { // We are DELETING players from a game
                     if ( $type == "pitching_update" ) {
-                        $only_p = TRUE;
+                        $tables = array("pitching");
+                    } else {
+                        $tables = array("batting", "fielding", "pitching");
                     }
                     foreach($up as $player_id => $game_id) {
-                        $this->remove_players_from_game($game_id, $player_id, $only_p);
+                        $this->remove_players_from_game($game_id, $player_id, $tables);
                     }
                 } else {
                     die('There is no type');

@@ -11,7 +11,9 @@ class Team_leaders_model extends CI_Model {
             select p.player_id, p.first, p.last, sum(b.hr) as hr
             from batting b
                 join player p on (p.player_id = b.player_id)
-            where b.season_id = ?
+                join game g on (g.game_id = b.game_id)
+                join season s on (s.season_id = g.season_id)
+            where s.season_id = ?
             group by p.player_id
             order by hr desc
             limit 3;
@@ -28,10 +30,12 @@ class Team_leaders_model extends CI_Model {
                 sum(b.single + b.double + b.triple + b.hr) as hits
             from batting b
                 join player p on (p.player_id = b.player_id)
-            where b.season_id = ?
+                join game g on (g.game_id = b.game_id)
+                join season s on (s.season_id = g.season_id)
+            where s.season_id = ?
             group by p.player_id
-            order by hits desc
-            limit 3;
+            order by (sum(b.single + b.double + b.triple + b.hr) / sum(b.pa - b.bb - b.hbp - b.sac)) desc
+            limit 4;
         ", array($season));
 
         return $query->result_array();
@@ -43,7 +47,9 @@ class Team_leaders_model extends CI_Model {
                 sum(b.single + b.double + b.triple + b.hr) as hits
             from batting b
                 join player p on (p.player_id = b.player_id)
-            where b.season_id = ?
+                join game g on (g.game_id = b.game_id)
+                join season s on (s.season_id = g.season_id)
+            where s.season_id = ?
             group by p.player_id
             order by hits desc
             limit 3;
@@ -58,7 +64,9 @@ class Team_leaders_model extends CI_Model {
                 sum(b.runs) as runs
             from batting b
                 join player p on (p.player_id = b.player_id)
-            where b.season_id = ?
+                join game g on (g.game_id = b.game_id)
+                join season s on (s.season_id = g.season_id)
+            where s.season_id = ?
             group by p.player_id
             order by runs desc
             limit 3;
@@ -73,7 +81,9 @@ class Team_leaders_model extends CI_Model {
                 sum(b.rbi) as rbi
             from batting b
                 join player p on (p.player_id = b.player_id)
-            where b.season_id = ?
+                join game g on (g.game_id = b.game_id)
+                join season s on (s.season_id = g.season_id)
+            where s.season_id = ?
             group by p.player_id
             order by rbi desc
             limit 3;
@@ -89,7 +99,9 @@ class Team_leaders_model extends CI_Model {
                 sum(b.sb) as sb
             from batting b
                 join player p on (p.player_id = b.player_id)
-            where b.season_id = ?
+                join game g on (g.game_id = b.game_id)
+                join season s on (s.season_id = g.season_id)
+            where s.season_id = ?
             group by p.player_id
             order by sb desc
             limit 3;
@@ -104,7 +116,9 @@ class Team_leaders_model extends CI_Model {
                 sum(p.wins) as wins
             from pitching p
                 join player ply on (ply.player_id = p.player_id)
-            where p.season_id = ?
+                join game g on (g.game_id = p.game_id)
+                join season s on (s.season_id = g.season_id)
+            where s.season_id = ?
             group by ply.player_id
             order by wins desc
             limit 3;
@@ -119,7 +133,9 @@ class Team_leaders_model extends CI_Model {
                 sum(p.qs) as qs
             from pitching p
                 join player ply on (ply.player_id = p.player_id)
-            where p.season_id = ?
+                join game g on (g.game_id = p.game_id)
+                join season s on (s.season_id = g.season_id)
+            where s.season_id = ?
             group by ply.player_id
             order by qs desc
             limit 3;
@@ -134,7 +150,9 @@ class Team_leaders_model extends CI_Model {
                 sum(p.save) as save
             from pitching p
                 join player ply on (ply.player_id = p.player_id)
-            where p.season_id = ?
+                join game g on (g.game_id = p.game_id)
+                join season s on (s.season_id = g.season_id)
+            where s.season_id = ?
             group by ply.player_id
             order by save desc
             limit 3;
@@ -149,7 +167,9 @@ class Team_leaders_model extends CI_Model {
                 sum(p.so) as so
             from pitching p
                 join player ply on (ply.player_id = p.player_id)
-            where p.season_id = ?
+                join game g on (g.game_id = p.game_id)
+                join season s on (s.season_id = g.season_id)
+            where s.season_id = ?
             group by ply.player_id
             order by so desc
             limit 3;
@@ -164,9 +184,11 @@ class Team_leaders_model extends CI_Model {
                 sum(p.er) as er, sum(p.ip) as ip
             from pitching p
                 join player ply on (ply.player_id = p.player_id)
-            where p.season_id = ?
+                join game g on (g.game_id = p.game_id)
+                join season s on (s.season_id = g.season_id)
+            where s.season_id = ?
             group by ply.player_id
-            order by ip desc
+            order by (sum(p.er) / sum(p.ip) * 9) asc
             limit 3;
         ", array($season));
 
@@ -179,9 +201,11 @@ class Team_leaders_model extends CI_Model {
                 sum(p.er) as er, sum(p.ip) as ip, sum(p.walks) as walks, sum(p.hits) as hits
             from pitching p
                 join player ply on (ply.player_id = p.player_id)
-            where p.season_id = ?
+                join game g on (g.game_id = p.game_id)
+                join season s on (s.season_id = g.season_id)
+            where s.season_id = ?
             group by ply.player_id
-            order by hits desc
+            order by (sum(p.walks + p.hits) / sum(p.ip)) asc
             limit 3;
         ", array($season));
 
@@ -192,7 +216,9 @@ class Team_leaders_model extends CI_Model {
          $query = $this->db->query("
             select sum(ip) as ip
             from pitching p
-            where p.season_id = ?
+                join game g on (g.game_id = p.game_id)
+                join season s on (s.season_id = g.season_id)
+            where s.season_id = ?
                 and p.ip > 0
         ", array($season));
 
@@ -203,7 +229,9 @@ class Team_leaders_model extends CI_Model {
          $query = $this->db->query("
             select sum(b.pa) as pa
             from batting b
-            where b.season_id = ?
+                join game g on (g.game_id = b.game_id)
+                join season s on (s.season_id = g.season_id)
+            where s.season_id = ?
                 and b.pa > 0
         ", array($season));
 

@@ -9,9 +9,9 @@ class Team_stats_model extends CI_Model {
     // Team totals
      public function team_batting($id, $type = null) {
         if ( $type == 'season' ) {
-            $where = "where season_id = ?";
+            $where = "where g.season_id = ?";
         } else {
-            $where = "where game_id = ?";
+            $where = "where b.game_id = ?";
         }
         $query = $this->db->query("
             select sum(pa) as pa, sum(pa - bb - hbp - sac) as ab,
@@ -21,7 +21,8 @@ class Team_stats_model extends CI_Model {
                 sum(single) as 1b, sum(`double`) as 2b, sum(triple) as 3b,
                 sum((single * 1) + (`double` * 2) + (triple * 3) + (hr * 4)) as tb,
                 sum(so) as so, sum(gidp) as gidp, sum(sb) as sb, sum(cs) as cs
-            from batting
+            from batting b
+                join game g on (g.game_id = b.game_id)
             $where
         ", array($id));
 
@@ -30,9 +31,9 @@ class Team_stats_model extends CI_Model {
 
     public function team_pitching($id, $type = null) {
          if ( $type == 'season' ) {
-            $where = "where season_id = ?";
+            $where = "where g.season_id = ?";
         } else {
-            $where = "where game_id = ?";
+            $where = "where p.game_id = ?";
         }
         $query = $this->db->query("
             select sum(wins) as wins, sum(loss) as loss,
@@ -40,7 +41,8 @@ class Team_stats_model extends CI_Model {
                 sum(runs) as runs, sum(er) as er, sum(walks) as walks, sum(so) as so,
                 sum(qs) as qs, sum(cg) as cg, sum(hbp) as hbp, sum(opp_pa) as opp_pa,
                 sum(opp_pa - walks - hbp) as opp_ab
-            from pitching
+            from pitching p
+                join game g on (g.game_id = p.game_id)
             $where
         ", array($id));
 
@@ -49,14 +51,15 @@ class Team_stats_model extends CI_Model {
 
      public function team_fielding($id, $type = null) {
          if ( $type == 'season' ) {
-            $where = "where season_id = ?";
+            $where = "where g.season_id = ?";
         } else {
-            $where = "where game_id = ?";
+            $where = "where f.game_id = ?";
         }
         $query = $this->db->query("
             select sum(po) as po, sum(a) as a, sum(errors) as errors,
                 sum(po + a + errors) as tc
-            from fielding
+            from fielding f
+                join game g on (g.game_id = f.game_id)
             $where
         ", array($id));
 
@@ -75,8 +78,9 @@ class Team_stats_model extends CI_Model {
                 sum(b.so) as so, sum(b.gidp) as gidp, sum(b.sb) as sb, sum(b.cs) as cs
             from batting b
                 join game g on (g.game_id = b.game_id)
+                join season s on (s.season_id = g.season_id)
                 join opponent o on (o.opponent_id = g.opponent_id)
-            where b.season_id = ?
+            where s.season_id = ?
             group by b.game_id
         ", array($season));
 
@@ -96,8 +100,9 @@ class Team_stats_model extends CI_Model {
                 sum(p.opp_pa - p.walks - p.hbp) as opp_ab
             from pitching p
                 join game g on (g.game_id = p.game_id)
+                join season s on (s.season_id = g.season_id)
                 join opponent o on (o.opponent_id = g.opponent_id)
-            where p.season_id = ?
+            where s.season_id = ?
             group by p.game_id
         ", array($season));
 
@@ -111,8 +116,9 @@ class Team_stats_model extends CI_Model {
                 sum(f.po + f.a + f.errors) as tc
             from fielding f
                 join game g on (g.game_id = f.game_id)
+                join season s on (s.season_id = g.season_id)
                 join opponent o on (o.opponent_id = g.opponent_id)
-            where f.season_id = ?
+            where s.season_id = ?
             group by f.game_id
         ", array($season));
 

@@ -60,29 +60,29 @@
     echo "<h1 class=\"homeTitle\"; align=\"center\">{$sel_game_id[0]['result']}</h1>"; 
 
     if ( $admin_p ) {
-        echo "<div style=\"padding-left: 70px;\">";
+        if ( ! empty($remaining) ) { // Check if there are anymore players that can be added to the game
+            echo "<div style=\"padding-left: 70px;\">";
 
-            $attributes = array('name' => 'add_players', 'id' => 'add_players');
-            $query_string = '&gm=' .urlencode($game_id) . '&type=add_players';
+                $attributes = array('name' => 'add_players', 'id' => 'add_players');
+                $query_string = '&gm=' .urlencode($game_id) . '&type=add_players';
 
-            echo form_open('c=edit&amp;m=game'.htmlentities($query_string), $attributes);
+                echo form_open('c=edit&amp;m=game'.htmlentities($query_string), $attributes);
 
-                $names = array();
+                    $names = array();
+                    foreach ( $remaining as $player_id => $name ) {
+                        $names[$player_id] = $name;
+                    }
 
-                foreach ( $active_roster as $player ) {
-                    $names[$player['player_id']] = "$player[first] $player[last]";
-                }
+                    $select_id = 'id="players"';
+                    echo form_label('Add Players to game', 'players[]', array('style' => 'float: left;'));
+                    echo "<br />";
+                    echo form_multiselect('id[]', $names, '', $select_id);
+                    echo "<br />";
+                    echo form_submit('submit', 'Add Players');
 
-                $select_id = 'id="players"';
-                echo form_label('Add Players to game', 'players[]', array('style' => 'float: left;'));
-                echo "<br />";
-                echo form_multiselect('id[]', $names, '', $select_id);
-                echo "<br />";
-                echo form_submit('submit', 'Add Players');
-
-            echo form_close();
-        echo "</div>";
-        
+                echo form_close();
+            echo "</div>";
+        }
     }
 
     if ( ! empty($sel_batting_game_id) || $admin_p ) { // Check for batting stats
@@ -105,6 +105,8 @@
         }
         
         array_unshift($categories, "Remove");
+
+        $players_in_game = array();
     }
 ?>
 <div id="battingWrapper">
@@ -126,13 +128,18 @@
         $query_string = '&player_id=' .urlencode($batting['player_id']);
         
         echo "<tr bgcolor={$rowColor}>";
+
           if ( $admin_p ) {
+            $players_in_game[$batting['player_id']] = "{$batting['first']} {$batting['last']}";
+
             echo form_hidden('id[]', $batting['player_id']);
             echo "<td class=\"border\">";
                 echo form_checkbox('delete_p[]', $batting['player_id'], FALSE);
             echo "</td>";
-          }
-          echo "<td class=\"player_column\"><a href=\"?c=players&amp;m=player" .htmlentities($query_string) . "\">{$batting['first']} {$batting['last']}</a></td>";
+        }
+
+        echo "<td class=\"player_column\"><a href=\"?c=players&amp;m=player" .htmlentities($query_string) . "\">{$batting['first']} {$batting['last']}</a></td>";
+
         if ( $admin_p ) {
           echo "<td class=\"border\"><span class=\"editToggle\">$batting[pa]</span>"
                     . form_input(array('id' => 'pa', 'name' => 'pa[]', 'value' => $batting['pa'], 'class' => 'showHideToggle', 'size' => '1')) .
@@ -257,32 +264,33 @@
                                 );
 
         if ( $admin_p ) {
-            echo "<div style=\"padding-left: 70px;\">";
+            if ( ! empty($players_in_game) ) {
+                echo "<div style=\"padding-left: 70px;\">";
 
-                $attributes = array('name' => 'add_pitchers', 'id' => 'add_pitchers');
-                $query_string = '&gm=' .urlencode($game_id) . '&type=add_pitchers';
+                    $attributes = array('name' => 'add_players', 'id' => 'add_pitchers');
+                    $query_string = '&gm=' .urlencode($game_id) . '&type=add_players&pitchers_p=1';
                 
-                echo form_open('c=edit&amp;m=game'.htmlentities($query_string), $attributes);
+                    echo form_open('c=edit&amp;m=game'.htmlentities($query_string), $attributes);
                 
-                    $names = array();
+                        $names = array();
                 
-                    foreach ( $active_roster as $player ) {
-                        $names[$player['player_id']] = "$player[first] $player[last]";
-                    }
+                        foreach ( $players_in_game as $id => $name ) {
+                            $names[$id] = $name;
+                        }
                 
-                    $select_id = 'id="pitchers"';
-                    echo form_label('Add Pitchers to game', 'pitchers[]', array('style' => 'float: left;'));
-                    echo "<br />";
-                    echo form_multiselect('id[]', $names, '', $select_id);
-                    echo "<br />";
-                    echo form_submit('submit', 'Add Pitcher');
+                        $select_id = 'id="pitchers"';
+                        echo form_label('Add Pitchers to game', 'pitchers[]', array('style' => 'float: left;'));
+                        echo "<br />";
+                        echo form_multiselect('id[]', $names, '', $select_id);
+                        echo "<br />";
+                        echo form_submit('submit', 'Add Pitcher');
 
-                echo form_close();
-            echo "</div>";
+                    echo form_close();
+                echo "</div>";
 
-            array_unshift($pitch_categories, "Remove");
+                array_unshift($pitch_categories, "Remove");
+            }
         }
-
 ?>
 <br />
 
@@ -573,13 +581,15 @@
             echo "<input type=\"file\" name=\"userfile\" size=\"20\" />";
             echo "<br />";
 
-            $sel_player['0'] = 'Select a player...';
-            foreach($rosters as $player) {
-                $sel_player[$player['player_id']] = "{$player['first']} {$player['last']}";
-            }
+            if ( ! empty($selected) ) {
+                $sel_player['0'] = 'Select a player...';
+                foreach($selected as $player_id => $name) {
+                    $sel_player[$player_id] = $name;
+                }
 
-            echo form_dropdown('player', $sel_player, $sel_player['0']);
-            echo "<br />";
+                echo form_dropdown('player', $sel_player, $sel_player['0']);
+                echo "<br />";
+            }
 
             $pic_caption = array(
                 'name'  => 'caption',

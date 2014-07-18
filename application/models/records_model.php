@@ -7,15 +7,17 @@ class Records_model extends CI_Model {
 	
 	public function hr_leaders($season = null) {
         if ( isset($season) ) {
-            $where = "where season_id = ?";
+            $where = "where s.season_id = ?";
         } else {
             $where = "";
         }
 		$query = $this->db->query("
 			select ply.player_id, ply.first, ply.last,
-				b.season_id, sum(b.hr) as hr
+				sum(b.hr) as hr, s.season_id
 			from batting b
 				join player ply on (b.player_id = ply.player_id)
+                join game g on (g.game_id = b.game_id)
+                join season s on (s.season_id = g.season_id)
 			$where
 			group by ply.first
 			order by sum(b.hr) desc
@@ -27,7 +29,7 @@ class Records_model extends CI_Model {
 	
 	public function avg_leaders($season = null) {
         if ( isset($season) ) {
-            $where = "where season_id = ?";
+            $where = "where s.season_id = ?";
         } else {
             $where = "";
         }
@@ -39,6 +41,8 @@ class Records_model extends CI_Model {
                 sum(b.pa - b.bb - b.hbp - b.sac) as ab
 			from batting b
 				join player ply on (b.player_id = ply.player_id)
+                join game g on (g.game_id = b.game_id)
+                join season s on (s.season_id = g.season_id)
 			$where
 			group by ply.first
 			order by (sum(b.single + b.double + b.triple + b.hr) / sum(b.pa - b.bb - b.hbp - b.sac)) desc
@@ -50,7 +54,7 @@ class Records_model extends CI_Model {
 	
 	public function hits_leaders($season = null) {
         if ( isset($season) ) {
-            $where = "where season_id = ?";
+            $where = "where s.season_id = ?";
         } else {
             $where = "";
         }
@@ -60,6 +64,8 @@ class Records_model extends CI_Model {
 		         sum(b.single + b.double + b.triple + b.hr) as hits
 			from batting b
 				join player ply on (b.player_id = ply.player_id)
+                join game g on (g.game_id = b.game_id)
+                join season s on (s.season_id = g.season_id)
 			$where
 			group by ply.first
 			order by hits desc
@@ -71,16 +77,18 @@ class Records_model extends CI_Model {
 	
 	public function runs_leaders($season = null) {
         if ( isset($season) ) {
-            $where = "where season_id = ?";
+            $where = "where s.season_id = ?";
         } else {
             $where = "";
         }
 
 		$query = $this->db->query("
 			select ply.player_id, ply.first, ply.last,
-				b.season_id, sum(b.runs) as runs
+				sum(b.runs) as runs, s.season_id
 			from batting b
 				join player ply on (b.player_id = ply.player_id)
+                join game g on (g.game_id = b.game_id)
+                join season s on (s.season_id = g.season_id)
 			$where
 			group by ply.first
 			order by sum(b.runs) desc
@@ -92,15 +100,17 @@ class Records_model extends CI_Model {
 	
 	public function rbi_leaders($season = null) {
         if ( isset($season) ) {
-            $where = "where season_id = ?";
+            $where = "where s.season_id = ?";
         } else {
             $where = "";
         }
 		$query = $this->db->query("
 			select ply.player_id, ply.first, ply.last,
-				b.season_id, sum(b.rbi) as rbi
+				sum(b.rbi) as rbi, s.season_id
 			from batting b
 				join player ply on (b.player_id = ply.player_id)
+                join game g on (g.game_id = b.game_id)
+                join season s on (s.season_id = g.season_id)
 			$where
 			group by ply.first
 			order by sum(b.rbi) desc
@@ -112,15 +122,17 @@ class Records_model extends CI_Model {
 	
 	public function sb_leaders($season = null) {
         if ( isset($season) ) {
-            $where = "where season_id = ?";
+            $where = "where s.season_id = ?";
         } else {
             $where = "";
         }
 		$query = $this->db->query("
 			select ply.player_id, ply.first, ply.last,
-				b.season_id, sum(b.sb) as sb
+				sum(b.sb) as sb, s.season_id
 			from batting b
 				join player ply on (b.player_id = ply.player_id)
+                join game g on (g.game_id = b.game_id)
+                join season s on (s.season_id = g.season_id)
 		    $where
 			group by ply.first
 			order by sum(b.sb) desc
@@ -132,15 +144,17 @@ class Records_model extends CI_Model {
 	
 	public function wins_leaders($season = null) {
         if ( isset($season) ) {
-            $where = "where season_id = ?";
+            $where = "where s.season_id = ?";
         } else {
             $where = "";
         }
 		$query = $this->db->query("
 			select ply.player_id, ply.first, ply.last,
-				p.season_id, sum(p.wins) as wins
+				sum(p.wins) as wins, s.season_id
 			from pitching p
 				join player ply on (ply.player_id = p.player_id)
+                join game g on (g.game_id = p.game_id)
+                join season s on (s.season_id = g.season_id)
 		    $where
 			group by ply.first
 			order by sum(p.wins) desc
@@ -152,15 +166,17 @@ class Records_model extends CI_Model {
 	
 	public function qs_leaders($season = null) {
         if ( isset($season) ) {
-            $where = "where season_id = ?";
+            $where = "where s.season_id = ?";
         } else {
             $where = "";
         }
 		$query = $this->db->query("
 			select ply.player_id, ply.first, ply.last,
-				p.season_id, sum(p.qs) as qs
+				sum(p.qs) as qs, s.season_id
 			from pitching p
 				join player ply on (ply.player_id = p.player_id)
+                join game g on (g.game_id = p.game_id)
+                join season s on (s.season_id = g.season_id)
 			$where
 			group by ply.first
 			order by sum(p.qs) desc
@@ -172,15 +188,17 @@ class Records_model extends CI_Model {
 	
 	public function saves_leaders($season = null) {
         if ( isset($season) ) {
-            $where = "where season_id = ?";
+            $where = "where s.season_id = ?";
         } else {
             $where = "";
         }
 		$query = $this->db->query("
 			select ply.player_id, ply.first, ply.last,
-				p.season_id, sum(p.save) as save
+				sum(p.save) as save, s.season_id
 			from pitching p
 				join player ply on (ply.player_id = p.player_id)
+                join game g on (g.game_id = p.game_id)
+                join season s on (s.season_id = g.season_id)
 			$where
 			group by ply.first
 			order by sum(p.save) desc
@@ -192,15 +210,17 @@ class Records_model extends CI_Model {
 	
 	public function strikeouts_leaders($season = null) {
         if ( isset($season) ) {
-            $where = "where season_id = ?";
+            $where = "where s.season_id = ?";
         } else {
             $where = "";
         }
 		$query = $this->db->query("
 			select ply.player_id, ply.first, ply.last,
-				p.season_id, sum(p.so) as so
+				sum(p.so) as so, s.season_id
 			from pitching p
 				join player ply on (ply.player_id = p.player_id)
+                join game g on (g.game_id = p.game_id)
+                join season s on (s.season_id = g.season_id)
 			$where
 			group by ply.first
 			order by sum(p.so) desc
@@ -212,18 +232,20 @@ class Records_model extends CI_Model {
 	
 	public function era_leaders($season = null) {
         if ( isset($season) ) {
-            $where = "where season_id = ?";
+            $where = "where s.season_id = ?";
         } else {
             $where = "";
         }
 		$query = $this->db->query("
 			select ply.player_id, ply.first, ply.last,
-				p.season_id, sum(p.er) as er, sum(p.ip) as ip
+				sum(p.er) as er, sum(p.ip) as ip, s.season_id
 			from pitching p
 				join player ply on (ply.player_id = p.player_id)
+                join game g on (g.game_id = p.game_id)
+                join season s on (s.season_id = g.season_id)
 			$where
 			group by ply.first
-			order by sum(p.ip) desc
+			order by (sum(p.er)/sum(p.ip)* 9) asc
 			limit 3
 		", array($season));
 		
@@ -232,19 +254,21 @@ class Records_model extends CI_Model {
 	
 	public function whip_leaders($season = null) {
         if ( isset($season) ) {
-            $where = "where season_id = ?";
+            $where = "where s.season_id = ?";
         } else {
             $where = "";
         }
 		$query = $this->db->query("
 			select ply.player_id, ply.first, ply.last,
-				p.season_id, sum(p.walks) as walks,
-				sum(p.hits) as hits, sum(p.ip) as ip
+				sum(p.walks) as walks,
+				sum(p.hits) as hits, sum(p.ip) as ip, s.season_id
 			from pitching p
 				join player ply on (ply.player_id = p.player_id)
+                join game g on (g.game_id = p.game_id)
+                join season s on (s.season_id = g.season_id)
 			$where
 			group by ply.first
-			order by sum(p.ip) desc
+			order by (sum(p.walks + p.hits) / sum(p.ip)) asc
 			limit 3
 		", array($season));
 		
