@@ -5,6 +5,10 @@
 * Copyright 2014 jQuery Foundation and other contributors; Licensed MIT */
 
 /* Layout helpers
+Colors:
+#fb1cb6 => Hot Pink
+#0d0c0c => Black
+#efee00 => Yellow
 ----------------------------------*/
 .ui-helper-hidden {
 	display: none;
@@ -802,12 +806,12 @@ body .ui-tooltip {
 	color: #0d0c0c;
 }
 .ui-widget-content a {
-	color: #0d0c0c;
+	color: #0d0c0c; /* Black */
 }
 .ui-widget-header {
 	border: 1px solid #ffffff;
 	background: #fb1cb6 url("images/ui-bg_gloss-wave_35_fb1cb6_500x100.png") 50% 50% repeat-x;
-	color: #efee00;
+	color: #efee00; /* Yellow */
 	font-weight: bold;
 }
 .ui-widget-header a {

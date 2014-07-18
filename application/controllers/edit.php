@@ -109,6 +109,8 @@ class Edit extends CI_Controller {
                 $this->form_validation->set_rules('po[]', 'Putouts', 'trim|max_length[2]|xss_clean');
                 $this->form_validation->set_rules('a[]', 'Assists', 'trim|max_length[2]|xss_clean');
                 $this->form_validation->set_rules('errors[]', 'Errors', 'trim|max_length[1]|xss_clean');
+            } elseif ( $type == "add_players" || $type == "add_pitchers" ) {
+                $this->form_validation->set_rules('id[]', 'Players', 'trim|xss_clean');
             } else {
                 die('Cannot update without a type');
             }

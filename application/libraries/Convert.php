@@ -52,7 +52,7 @@ class Convert extends CI_Model {
     }
 
     public function opp_avg($hits, $opp_ab) {
-        if ( ! isset($opp_ab) ) {
+        if ( ! isset($opp_ab) || $opp_ab == 0 ) {
             $opp_avg = "0.000";
         } else {
             $opp_avg = number_format(($hits/$opp_ab),3);
@@ -79,7 +79,7 @@ class Convert extends CI_Model {
     }
 
     public function era($er, $ip) {
-        if ( ! isset($ip) ) {
+        if ( ! isset($ip) || $ip == 0 ) {
             $era = NULL;
         } else {
             $era = number_format((($er/$ip)*9),2);
@@ -88,7 +88,7 @@ class Convert extends CI_Model {
     }
 
     public function whip($walks, $hits, $ip) {
-        if ( ! isset($ip) ) {
+        if ( ! isset($ip) || $ip == 0 ) {
             $whip = NULL;
         } else {
             $whip = number_format((($walks+$hits)/$ip),2);

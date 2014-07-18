@@ -1,3 +1,8 @@
+<style>
+    #lineup {
+        width: 20%;
+    }
+</style>
 <script>
     $(document).ready(function() {
         $("#showHide").click(function() {
@@ -53,7 +58,34 @@
         echo "<span style=\"text-align: center\"><h1> Stats Not Available </h1></span>";
     }
     echo "<h1 class=\"homeTitle\"; align=\"center\">{$sel_game_id[0]['result']}</h1>"; 
-    if ( ! empty($sel_batting_game_id) ) { // Check for batting stats
+
+    if ( $admin_p ) {
+        echo "<div style=\"padding-left: 70px;\">";
+
+            $attributes = array('name' => 'add_players', 'id' => 'add_players');
+            $query_string = '&gm=' .urlencode($game_id) . '&type=add_players';
+
+            echo form_open('c=edit&amp;m=game'.htmlentities($query_string), $attributes);
+
+                $names = array();
+
+                foreach ( $active_roster as $player ) {
+                    $names[$player['player_id']] = "$player[first] $player[last]";
+                }
+
+                $select_id = 'id="players"';
+                echo form_label('Add Players to game', 'players[]', array('style' => 'float: left;'));
+                echo "<br />";
+                echo form_multiselect('id[]', $names, '', $select_id);
+                echo "<br />";
+                echo form_submit('submit', 'Add Players');
+
+            echo form_close();
+        echo "</div>";
+        
+    }
+
+    if ( ! empty($sel_batting_game_id) || $admin_p ) { // Check for batting stats
 ?>
 
 <h2 align="center">Hitting</h2>
@@ -62,13 +94,17 @@
         if ( validation_errors() ) {
             echo "<div style=\"color:red; font-weight:bold\">" . validation_errors(); "</div>";
         }
-        $attributes = array('name' => 'hitting_update', 'id' => 'hitting_update');
-        $query_string = '&gm=' .urlencode($sel_batting_game_id[0]['game_id']) . '&type=hitting_update';
-        echo form_open('c=edit&amp;m=game'.htmlentities($query_string), $attributes);
-        echo "<div style=\"padding-left: 50px;\">";
-            echo form_submit('submit', 'Update Hitting Stats');
-            echo "<div id=\"showHide\"><a>Click Here to Edit</a></div>";
-        echo "</div>";
+        if ( ! empty($sel_batting_game_id) ) {
+            $attributes = array('name' => 'hitting_update', 'id' => 'hitting_update');
+            $query_string = '&gm=' .urlencode($sel_batting_game_id[0]['game_id']) . '&type=hitting_update';
+            echo form_open('c=edit&amp;m=game'.htmlentities($query_string), $attributes);
+            echo "<div style=\"padding-left: 50px;\">";
+                echo form_submit('submit', 'Update Hitting Stats');
+                echo "<div id=\"showHide\"><a>Click Here to Edit</a></div>";
+            echo "</div>";
+        }
+        
+        array_unshift($categories, "Remove");
     }
 ?>
 <div id="battingWrapper">
@@ -90,9 +126,14 @@
         $query_string = '&player_id=' .urlencode($batting['player_id']);
         
         echo "<tr bgcolor={$rowColor}>";
+          if ( $admin_p ) {
+            echo form_hidden('id[]', $batting['player_id']);
+            echo "<td class=\"border\">";
+                echo form_checkbox('delete_p[]', $batting['player_id'], FALSE);
+            echo "</td>";
+          }
           echo "<td class=\"player_column\"><a href=\"?c=players&amp;m=player" .htmlentities($query_string) . "\">{$batting['first']} {$batting['last']}</a></td>";
         if ( $admin_p ) {
-          echo form_hidden('id[]', $batting['player_id']);
           echo "<td class=\"border\"><span class=\"editToggle\">$batting[pa]</span>"
                     . form_input(array('id' => 'pa', 'name' => 'pa[]', 'value' => $batting['pa'], 'class' => 'showHideToggle', 'size' => '1')) .
                "</td>
@@ -169,6 +210,7 @@
             echo "</tr>";
     }
     echo "<tr>";
+        if ( $admin_p ) { echo "<td class=\"last_row\"></td>"; }
         echo "<td class=\"last_row\"><strong>Total</strong></td>";
         foreach($sel_sum_team_batting_id as $team_batting) {
             echo "<td class=\"last_row\">{$team_batting['pa']}</td>
@@ -199,16 +241,48 @@
 </table>
 </div> <!-- end div battingWrapper -->
 
-<?php if ( $admin_p ) { echo form_close(); } ?>
+<?php 
+    if ( (! empty($sel_batting_game_id)) && $admin_p ) { 
+        echo form_close();
+    } 
+?>
 
 <br />
 
 <?php
     } // End check for batting stats
-    if ( ! empty($sel_pitching_game_id) ) {  // Start check for pitching stats
+    if ( ! empty($sel_pitching_game_id) || $admin_p ) {  // Start check for pitching stats
         $pitch_categories = array( 'Name', 'ERA', 'SV', 'BS', 'IP', 'H', 'R', 'ER', 'BB', 'SO',
                                     'QS', 'AVG', 'WHIP', 'CG', 'HB', 'PA', 'AB', 'K/9', 'K/BB'
                                 );
+
+        if ( $admin_p ) {
+            echo "<div style=\"padding-left: 70px;\">";
+
+                $attributes = array('name' => 'add_pitchers', 'id' => 'add_pitchers');
+                $query_string = '&gm=' .urlencode($game_id) . '&type=add_pitchers';
+                
+                echo form_open('c=edit&amp;m=game'.htmlentities($query_string), $attributes);
+                
+                    $names = array();
+                
+                    foreach ( $active_roster as $player ) {
+                        $names[$player['player_id']] = "$player[first] $player[last]";
+                    }
+                
+                    $select_id = 'id="pitchers"';
+                    echo form_label('Add Pitchers to game', 'pitchers[]', array('style' => 'float: left;'));
+                    echo "<br />";
+                    echo form_multiselect('id[]', $names, '', $select_id);
+                    echo "<br />";
+                    echo form_submit('submit', 'Add Pitcher');
+
+                echo form_close();
+            echo "</div>";
+
+            array_unshift($pitch_categories, "Remove");
+        }
+
 ?>
 <br />
 
@@ -219,13 +293,15 @@
         if ( validation_errors() ) {
             echo "<div style=\"color:red; font-weight:bold\">" . validation_errors(); "</div>";
         }
-        $attributes = array('name' => 'pitching_update', 'id' => 'pitching_update');
-        $query_string = '&gm=' .urlencode($sel_pitching_game_id[0]['game_id']) . '&type=pitching_update';
-        echo form_open('c=edit&amp;m=game'.htmlentities($query_string), $attributes);
-        echo "<div style=\"padding-left: 50px;\">";
-            echo form_submit('submit', 'Update Pitching Stats');
-            echo "<div id=\"showHidePitching\"><a style=\"cursor: pointer; color: blue;\">Click Here to Edit</a></div>";
-        echo "</div>";
+        if ( ! empty($sel_pitching_game_id) ) {
+            $attributes = array('name' => 'pitching_update', 'id' => 'pitching_update');
+            $query_string = '&gm=' .urlencode($sel_pitching_game_id[0]['game_id']) . '&type=pitching_update';
+            echo form_open('c=edit&amp;m=game'.htmlentities($query_string), $attributes);
+            echo "<div style=\"padding-left: 50px;\">";
+                echo form_submit('submit', 'Update Pitching Stats');
+                echo "<div id=\"showHidePitching\"><a style=\"cursor: pointer; color: blue;\">Click Here to Edit</a></div>";
+            echo "</div>";
+        }
     }
 ?>
 
@@ -251,9 +327,14 @@
                 $opp_avg = "0.000";
             }
             echo "<tr bgcolor=" . $rowColor . ">";
+                if ( $admin_p ) {
+                    echo form_hidden('id[]', $pitching['player_id']);
+                    echo "<td class=\"border\">";
+                        echo form_checkbox('delete_p[]', $pitching['player_id'], FALSE);
+                    echo "</td>";
+                }
                 echo "<td class=\"player_column\"><a href=\"?c=players&amp;m=player" .htmlentities($query_string) . "\">{$pitching['first']} {$pitching['last']}</a></td>";
             if ( $admin_p ) {
-                echo form_hidden('id[]', $pitching['player_id']);
                 echo "<td class=\"border\">" . $this->convert->era($pitching['er'], $pitching['ip']) . "</td>
                       <td class=\"border\"><span class=\"editToggle\">$pitching[save]</span>"
                         . form_input(array('id' => 'save', 'name' => 'save[]', 'value' => $pitching['save'], 'class' => 'showHideToggle', 'size' => '1')) .
@@ -318,6 +399,7 @@
             echo "</tr>";
         }
     echo "<tr>";
+        if ( $admin_p ) { echo "<td class=\"last_row\"></td>"; }
         echo "<td class=\"last_row\"><strong>Total</strong></td>";
         foreach($sel_sum_team_pitching_id as $team_pitching) {
             echo "<td class=\"last_row\">" . $this->convert->era($team_pitching['er'], $team_pitching['ip']) . "</td>
@@ -344,13 +426,17 @@
 </table>
 </div> <!-- end div pitchingWrapper -->
 
-<?php if ( $admin_p ) { echo form_close(); } ?>
+<?php
+    if ( (! empty($sel_batting_game_id)) && $admin_p ) {
+        echo form_close();
+    } 
+?>
 
 <br />
 
 <?php
     } // End check for pitching stats
-    if ( ! empty($sel_fielding_game_id) ) { // Begin check for fielding stats
+    if ( ! empty($sel_fielding_game_id) || $admin_p ) { // Begin check for fielding stats
         $field_categories = array('Name', 'TC', 'PO', 'A', 'E', 'FLD%');
 ?>
 <br />
@@ -362,13 +448,15 @@
         if ( validation_errors() ) {
             echo "<div style=\"color:red; font-weight:bold\">" . validation_errors(); "</div>";
         }
-        $attributes = array('name' => 'fielding_update', 'id' => 'fielding_update');
-        $query_string = '&gm=' .urlencode($sel_fielding_game_id[0]['game_id']) . '&type=fielding_update';
-        echo form_open('c=edit&amp;m=game'.htmlentities($query_string), $attributes);
-        echo "<div style=\"padding-left: 290px;\">";
-            echo form_submit('submit', 'Update Fielding Stats');
-            echo "<div id=\"showHideFielding\"><a style=\"cursor: pointer; color: blue;\">Click Here to Edit</a></div>";
-        echo "</div>";
+        if ( ! empty($sel_fielding_game_id) ) {
+            $attributes = array('name' => 'fielding_update', 'id' => 'fielding_update');
+            $query_string = '&gm=' .urlencode($sel_fielding_game_id[0]['game_id']) . '&type=fielding_update';
+            echo form_open('c=edit&amp;m=game'.htmlentities($query_string), $attributes);
+            echo "<div style=\"padding-left: 290px;\">";
+                echo form_submit('submit', 'Update Fielding Stats');
+                echo "<div id=\"showHideFielding\"><a style=\"cursor: pointer; color: blue;\">Click Here to Edit</a></div>";
+            echo "</div>";
+        }
     }
 ?>
 
@@ -427,7 +515,11 @@
 
 <?php } // End check for fielding stats ?>
 
-<?php if ( $admin_p ) { echo form_close(); } ?>
+<?php 
+    if ( (! empty($sel_batting_game_id)) && $admin_p ) {
+        echo form_close();
+    } 
+?>
 
 <?php
     if(empty($get_photos)) {
@@ -469,12 +561,11 @@
 
     if ( $admin_p ) {
         $type_id = $this->mcbluv_model->get_type();
-        $gm_id = $_REQUEST['gm'];
         $opp_id = $sel_logo_id[0]['opponent_id'];
         echo "<div style= \"text-align: center;\">";
             echo form_open_multipart('c=upload&amp;m=new_image'); // Method new_image from controller upload
             echo form_hidden('type_id', $type_id);
-            echo form_hidden('sel_game', $gm_id);
+            echo form_hidden('sel_game', $game_id);
             echo form_hidden('opponent_id', $opp_id);
 
             echo "<br />";

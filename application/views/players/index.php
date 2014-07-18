@@ -113,7 +113,7 @@
 			}
 		?>
 
-<img class="team_photo" src="images/new_mcbluv_jersey.jpg" alt="" />
+<img class="team_photo" src="images/hitting_transition_edited.png" alt="" />
 <!-- <img class="team_photo" src="images/mcbluv_team_photo_summer_2013.jpg" alt="" /> -->
 </table>
 </div>

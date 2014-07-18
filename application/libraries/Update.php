@@ -110,7 +110,7 @@ class Update extends CI_Model {
         if ( ! $player_id || ! $game_id) {
             die('What exactly are you trying to update without an ID?');
         } else {
-            if ( $type == "hitting_update" ) {
+            if ( $type == "hitting_update") {
                 $table = "batting";
             } elseif ( $type == "pitching_update" ) {
                 $table = "pitching";
@@ -141,6 +141,65 @@ class Update extends CI_Model {
         }
     }
 
+    function insert_players($player_id, $game_id, $table = null) {
+        if ( ! $player_id || ! $game_id) {
+            die('What exactly are you trying to update without an ID?');
+        } else {
+            for($i=0; $i<count($player_id); $i++) {
+                if ( $table == "pitching" ) {
+                    $query = $this->db->query("
+                        insert into pitching
+                        (player_id, game_id) VALUES (?, ?)
+                    ", array($player_id, $game_id));
+                } else {
+                    $query = $this->db->query("
+                        insert into batting
+                        (player_id, game_id) VALUES (?, ?)
+                    ", array($player_id, $game_id));
+
+                    $query =  $this->db->query("
+                        insert into fielding
+                        (player_id, game_id) VALUES (?, ?)
+                    ", array($player_id, $game_id));
+                }
+            }
+        }
+    }
+
+    function remove_players_from_game($game_id, $player_id, $only_p = FALSE) {
+        if ( ! $player_id || ! $game_id) {
+            die('What exactly are you trying to update without an ID?');
+        } else {
+            for($i=0; $i<count($player_id); $i++) {
+                if ( $only_p ) {
+                    $query = $this->db->query("
+                        delete from pitching
+                        where game_id = ?
+                        and player_id = ?
+                    ", array($game_id, $player_id));
+                } else {
+                    $query = $this->db->query("
+                        delete from batting
+                        where game_id = ?
+                        and player_id = ?
+                    ", array($game_id, $player_id));
+
+                    $query = $this->db->query("
+                        delete from fielding
+                        where game_id = ?
+                        and player_id = ?
+                    ", array($game_id, $player_id));
+
+                    $query = $this->db->query("
+                        delete from pitching
+                        where game_id = ?
+                        and player_id = ?
+                    ", array($game_id, $player_id));
+                }
+            }
+        }
+    }
+
     function update() {
         if($this->session->userdata('id') != 1) {
             echo "You are not authorized to make changes";
@@ -149,9 +208,11 @@ class Update extends CI_Model {
             $updates = $this->input->post();
 
             if ( $updates ) {
+
                 if ( isset($_REQUEST['gm']) ) {
                     $game_id = $_REQUEST['gm'];
                 }
+
                 $type = $_REQUEST['type'];
                
                  if ( $updates['submit'] ) {
@@ -160,31 +221,42 @@ class Update extends CI_Model {
                 
                 $up = array();
 
-                if ( count($updates['id']) == 1 ) {
-                    if ( in_array('height_ft', array_keys($updates)) ) {
-                        $updates['ht'] = $updates['height_ft']*12 + $updates['ht'];
-                    }
+                if ( empty($updates['delete_p']) ) { $delete_p = FALSE; } else { $delete_p = TRUE; }
 
-                    $key = $updates['id'];
-                    $up[$key] = $updates;
-                } else {
-                    $keys = array_shift($updates);
-                    $cols = array_keys($updates);
+                if ( ! $delete_p ) { // We are UPDATING existing data or INSERTING new data
 
-                    $n = 0;
-                    foreach($keys as $key) {
+                    if ( count($updates['id']) == 1 && ! is_array($updates['id']) ) {
                         if ( in_array('height_ft', array_keys($updates)) ) {
-                            $updates['ht'][$n] = $updates['height_ft'][$n]*12 + $updates['ht'][$n];
+                            $updates['ht'] = $updates['height_ft']*12 + $updates['ht'];
                         }
 
-                        if ( in_array('date', array_keys($updates)) && $type == "schedule_update" ) {
-                            $updates['date'][$n] = $updates['date'][$n] . ' ' . $updates['game_time'][$n] . ':00';
-                        }
+                        $key = $updates['id'];
+                        $up[$key] = $updates;
+                    } else {
+                        $keys = array_shift($updates);
+                        $cols = array_keys($updates);
 
-                        for($i=0; $i<count(array_keys($cols)); $i++) {
-                            $up[$key][$cols[$i]] = $updates[$cols[$i]][$n];
+                        if ( count($cols) > 0  && empty($updates['delete_p']) ) {
+                            $n = 0;
+                            foreach($keys as $key) {
+                                if ( in_array('height_ft', array_keys($updates)) ) {
+                                    $updates['ht'][$n] = $updates['height_ft'][$n]*12 + $updates['ht'][$n];
+                                }
+
+                                if ( in_array('date', array_keys($updates)) && $type == "schedule_update" ) {
+                                    $updates['date'][$n] = $updates['date'][$n] . ' ' . $updates['game_time'][$n] . ':00';
+                                }
+
+                                for($i=0; $i<count(array_keys($cols)); $i++) {
+                                    $up[$key][$cols[$i]] = $updates[$cols[$i]][$n];
+                                }
+                                $n++;
+                            }
                         }
-                        $n++;
+                    }
+                } else { // We are DELETEING existing data
+                    foreach($updates['delete_p'] as $key) {
+                        $up[$key] = $game_id;
                     }
                 }
 
@@ -196,9 +268,23 @@ class Update extends CI_Model {
                     foreach($up as $id => $val) {
                         $this->edit_schedule($val, $id);
                     }
-                } elseif ( $type == "hitting_update" || $type == "pitching_update" || $type == "fielding_update" ) {
+                } elseif ( ($type == "hitting_update" || $type == "pitching_update" || $type == "fielding_update") && ! $delete_p ) {
                     foreach($up as $id => $val) {
                         $this->edit_game($val, $id, $game_id, $type);
+                    }
+                } elseif ( $type == "add_players" || $type == "add_pitchers") { // We are INSERTING players into a game
+                    if ( $type == "add_pitchers" ) {
+                        $table = "pitching";
+                    }
+                    foreach($keys as $id) {
+                        $this->insert_players($id, $game_id, $table);
+                    }
+                } elseif ( $delete_p ) { // We are DELETING players from a game
+                    if ( $type == "pitching_update" ) {
+                        $only_p = TRUE;
+                    }
+                    foreach($up as $player_id => $game_id) {
+                        $this->remove_players_from_game($game_id, $player_id, $only_p);
                     }
                 } else {
                     die('There is no type');
@@ -206,7 +292,6 @@ class Update extends CI_Model {
 
             } else {
                 die('Still Needs Some More Work!');
-            //    $this->new_player($headline);
             }
 
             redirect($_SERVER['HTTP_REFERER']);
