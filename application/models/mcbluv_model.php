@@ -83,21 +83,6 @@ public function last_active_season($player_id) {
 		return $query->result_array();
 }
 
-/*
-public function last_active_year() {
-	$season_id = $this->last_active_season();
-	
-	foreach($season_id as $season) {
-		$query = $this->db->query("
-			select * from season
-			where season_id = ?
-		", array(max($season)));
-				
-		return $query->result_array();
-	}
-}
-*/
-	
 public function all_seasons() {
 	$query = $this->db->query("
 		select *
@@ -113,11 +98,23 @@ public function get_all_games() {
 	
 	foreach($current_season as $cs) {
 		$query = $this->db->query("
-			select * from game g
-			join opponent o on o.opponent_id = g.opponent_id 
-			join field f on f.field_id = g.field_id 
-			join season s on s.season_id = g.season_id 
+			select g.*, o.*, f.*, s.*,
+                floor((sum(b.runs) / count(DISTINCT(p.player_id)))) as runs_for,
+                floor((sum(p.runs) / count(DISTINCT(b.player_id)))) as runs_against,
+                case
+                    when floor((sum(b.runs) / count(DISTINCT(p.player_id)))) > floor((sum(p.runs) / count(DISTINCT(b.player_id)))) then 'Win'
+                    when floor((sum(b.runs) / count(DISTINCT(p.player_id)))) < floor((sum(p.runs) / count(DISTINCT(b.player_id)))) then 'Loss'
+                    when floor((sum(b.runs) / count(DISTINCT(p.player_id)))) = floor((sum(p.runs) / count(DISTINCT(b.player_id)))) then 'Tie'
+                    else null
+                end as record
+            from game g
+			    join opponent o on o.opponent_id = g.opponent_id 
+			    join field f on f.field_id = g.field_id 
+			    join season s on s.season_id = g.season_id 
+                left join batting b on (b.game_id = g.game_id)
+                left join pitching p on (p.game_id = g.game_id)
 			where g.season_id = ?
+            group by game_id
 			order by g.date asc
 			", array($cs['season_id']));
 			
@@ -438,11 +435,11 @@ public function select_year_sum_pitching($player_id) {
             }
 
         $query = $this->db->query("
-            select sum(wins) as wins, sum(loss) as loss, sum(save) as save, 
-                sum(bs) as bs, sum(ip) as ip, sum(hits) as hits,
-                sum(runs) as runs, sum(er) as er, sum(walks) as walks, 
-                sum(so) as so, sum(qs) as qs, sum(cg) as cg, sum(hbp) as hbp, 
-                sum(opp_pa) as opp_pa, sum((opp_pa) - walks - hbp) as opp_ab,
+            select sum(p.wins) as wins, sum(p.loss) as loss, sum(p.save) as save, 
+                sum(p.bs) as bs, sum(p.ip) as ip, sum(p.hits) as hits,
+                sum(p.runs) as runs, sum(p.er) as er, sum(p.walks) as walks, 
+                sum(p.so) as so, sum(p.qs) as qs, sum(p.cg) as cg, sum(p.hbp) as hbp, 
+                sum(p.opp_pa) as opp_pa, sum((p.opp_pa) - p.walks - p.hbp) as opp_ab,
                 p.player_id, p.game_id,
                 s.year, s.season, o.opponent_id, o.opponent
             from pitching p
@@ -764,15 +761,6 @@ public function last_three_games() {
     return $query->result_array();
 }
 
-public function games_back($first, $w) {
-    if($first == $w) {
-        $gb = "-";
-    } else {
-        $gb = $first - $w;
-    }
-    return $gb;
-}
-		
 }
 
 ?>

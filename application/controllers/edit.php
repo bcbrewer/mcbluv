@@ -27,6 +27,27 @@ class Edit extends CI_Controller {
         }
     }
 
+    public function standings() {
+        $admin_p = $this->mcbluv_model->permissions();
+        if ( $admin_p ) {
+           $type = $_REQUEST['type'];
+
+            $this->form_validation->set_rules('win[]', 'Wins', 'max_length[2]|xss_clean');
+            $this->form_validation->set_rules('loss[]', 'Loss', 'max_length[2]|xss_clean');
+            $this->form_validation->set_rules('tie[]', 'Ties', 'max_length[2]|xss_clean');
+
+            if ($this->form_validation->run() == FALSE) {
+               // redirect($_SERVER['HTTP_REFERER']);
+                echo validation_errors();
+                die('Errors have occurred');
+            } else {
+                $this->update->update();
+            } 
+        } else {
+            die('You are not authorized to make changes');
+        }
+    }
+
      public function player() {
         $data['admin_p'] = $this->mcbluv_model->permissions();
         if ( $data['admin_p'] ) {

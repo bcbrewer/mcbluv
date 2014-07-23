@@ -106,6 +106,28 @@ class Update extends CI_Model {
         }
     }
 
+    function edit_standings($value, $opponent_id) {
+        if ( ! $opponent_id ) {
+            die('What exactly are you trying to update without an ID?');
+        } else { 
+            $fields = $this->columns('opponent');
+
+            foreach (array_keys($value) as $field) {
+                if ( in_array( $field, $fields ) ) {
+                    $chosen[] = $field;
+                }
+            }
+
+            $data = array();
+            foreach ( $chosen as $sel ) {
+                $data[$sel] = $value[$sel];
+            }
+
+            $this->db->where('opponent_id', $opponent_id);
+            $this->db->update('opponent', $data);
+        }
+    }
+
     function edit_game($value, $player_id, $game_id, $type) {
         if ( ! $player_id || ! $game_id) {
             die('What exactly are you trying to update without an ID?');
@@ -239,6 +261,10 @@ class Update extends CI_Model {
                 } elseif ( $type == "schedule_update" ) {
                     foreach($up as $id => $val) {
                         $this->edit_schedule($val, $id);
+                    }
+                } elseif ( $type == "standing_update" ) {
+                    foreach($up as $id => $val) {
+                        $this->edit_standings($val, $id);
                     }
                 } elseif ( ($type == "hitting_update" || $type == "pitching_update" || $type == "fielding_update") && ! $delete_p ) {
                     foreach($up as $id => $val) {

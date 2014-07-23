@@ -1,24 +1,11 @@
-<?php
-	function win_percentage($w, $l) {
-		$total = $w+$l;
-		if($w <= 0) {
-			$per = "0.000";
-		} else {
-			$per = number_format(($w/$total),3);
-		}
-		return $per;
-	}
-	
-	function games_back($first, $w) {
-		if($first == $w) {
-			$gb = "-";
-		} else {
-			$gb = $first - $w;
-		}
-		return $gb;
-	}
-?>
-
+<script>
+    $(document).ready(function() {
+        $("#showHide").click(function() {
+            $(".showHideToggle").toggle();
+            $(".editToggle").toggle();
+        });
+    });
+</script>
 <br />
 <?php
     if ($admin_p) {
@@ -59,7 +46,6 @@
     }
 ?>
 <br />
-<!-- <h1 align="center">The Game tomorrow against the Rangers has been CANCELLED.</h1> --!>
 <?php
 	$video_p = FALSE;
 	if($video_p) {
@@ -94,27 +80,26 @@
 	<tr style="border-bottom: solid 2px;">
 	    <h2 align="left">Last Three Games:</h2>
 	</tr>
-		<?php
-			foreach($last_three_games as $last_three) {
-                $game_string = '&gm=' .urlencode($last_three['game_id']);
-                $opp_string = '&opp_id=' .urlencode($last_three['opponent_id']);
-				echo "<tr>
-                        <td style=\"padding-left: 10px; \">
-                            <h4 align=left>
-                                <a href=\"?c=opponents&amp;m=opponent" . htmlentities($opp_string) . "\">{$last_three['opponent']}</a>
-                            </h4>
-                        </td>
-                        <td style=\"padding-left: 10px; padding-right: 30px;\">
-                            <h5 align=left>
-                                <a href=\"?c=opponents&amp;m=game" . htmlentities($game_string) . "\">{$last_three['result']}</a>
-                            </h5>
-                        </td>
-                    </tr>";
-			}
-		?>
+    <?php
+	    foreach($last_three_games as $last_three) {
+            $game_string = '&gm=' .urlencode($last_three['game_id']);
+            $opp_string = '&opp_id=' .urlencode($last_three['opponent_id']);
+			echo "<tr>
+                    <td style=\"padding-left: 10px; \">
+                        <h4 align=left>
+                            <a href=\"?c=opponents&amp;m=opponent" . htmlentities($opp_string) . "\">{$last_three['opponent']}</a>
+                        </h4>
+                    </td>
+                    <td style=\"padding-left: 10px; padding-right: 30px;\">
+                        <h5 align=left>
+                            <a href=\"?c=opponents&amp;m=game" . htmlentities($game_string) . "\">{$last_three['result']}</a>
+                        </h5>
+                    </td>
+                </tr>";
+		}
+	?>
 
 <img class="team_photo" src="images/hitting_transition_edited.png" alt="" />
-<!-- <img class="team_photo" src="images/mcbluv_team_photo_summer_2013.jpg" alt="" /> -->
 </table>
 </div>
 <br />
@@ -122,209 +107,100 @@
 <h1 class="standings_title">Standings</h1>
 
 <div id="standings_westWrapper">
-<h2 class="standings_division">East</h2>
+<h2 style="margin-left: 230px";>East</h2>
 <table class="standings">
-
-	<?php
-		$categories = array(
-			'Team',
-			'W',
-			'L',
-			'T',
-			'PCT',
-			'GB'
-		);
-	?>
 	<tr>
-	<?php
-	foreach($categories as $category) {
-		echo "<td class=\"standings_categories\">$category</td>";
-	}
-	?>
+	    <?php
+            if ( $admin_p ) {
+                if ( validation_errors() ) {
+                    echo "<div style=\"color:red; font-weight:bold\">" . validation_errors(); "</div>";
+                }
+
+                $attributes = array('name' => 'standing_update', 'id' => 'standing_update');
+                $query_string = '&type=standing_update';
+                echo form_open('c=edit&amp;m=standings'.htmlentities($query_string), $attributes);
+                echo "<div>";
+                    echo form_submit('submit', 'Update Standings');
+                    echo "<div id=\"showHide\"><a>Click Here to Edit</a></div>";
+                echo "</div>";
+            }
+
+	        foreach( array('Team', 'W', 'L', 'T', 'PCT', 'GB')  as $category) {
+		        echo "<td class=\"standings_categories\">$category</td>";
+	        }
+	    ?>
 	</tr>
-	<tr class="standings_data">
-	<?php
-		$first="5";
-		$w="5";
-		$l="0";
-		$t="-";
-			echo "<td>Raw Dawgs</td>";
-			echo "<td>$w</td>";
-			echo "<td>$l</td>";
-			echo "<td>$t</td>";
-			echo "<td>"; echo win_percentage($w,$l); echo"</td>";
-			echo "<td>"; echo games_back($first, $w); echo "</td>";
-	?>
-	</tr>
-	<tr class="standings_data">
-	<?php
-		$w="5";
-		$l="1";
-		$t="-";
-			echo "<td>Titans</td>";
-			echo "<td>$w</td>";
-			echo "<td>$l</td>";
-			echo "<td>$t</td>";
-			echo "<td>"; echo win_percentage($w,$l); echo"</td>";
-			echo "<td>"; echo games_back($first, $w); echo "</td>";
-	?>
-	</tr>
-	<tr class="standings_data">
-	<?php
-		$w="4";
-		$l="1";
-		$t="-";
-			echo "<td>McBluv</td>";
-			echo "<td>$w</td>";
-			echo "<td>$l</td>";
-			echo "<td>$t</td>";
-			echo "<td>"; echo win_percentage($w,$l); echo"</td>";
-			echo "<td>"; echo games_back($first, $w); echo "</td>";
-	?>
-	</tr>
-	<tr class="standings_data">
-	<?php
-		$w="2";
-		$l="3";
-		$t="-";
-			echo "<td>Rangers</td>";
-			echo "<td>$w</td>";
-			echo "<td>$l</td>";
-			echo "<td>$t</td>";
-			echo "<td>"; echo win_percentage($w,$l); echo"</td>";
-			echo "<td>"; echo games_back($first, $w); echo "</td>";
-	?>
-	</tr>
-	<tr class="standings_data">
-	<?php
-		$w="2";
-		$l="4";
-		$t="-";
-			echo "<td>Athletics</td>";
-			echo "<td>$w</td>";
-			echo "<td>$l</td>";
-			echo "<td>$t</td>";
-			echo "<td>"; echo win_percentage($w,$l); echo"</td>";
-			echo "<td>"; echo games_back($first, $w); echo "</td>";
-	?>
-	</tr>
-	<tr class="standings_data">
-	<?php
-		$w="1";
-		$l="5";
-		$t="-";
-			echo "<td>Bears</td>";
-			echo "<td>$w</td>";
-			echo "<td>$l</td>";
-			echo "<td>$t</td>";
-			echo "<td>"; echo win_percentage($w,$l); echo"</td>";
-			echo "<td>"; echo games_back($first, $w); echo "</td>";
-	?>
-	</tr>
+
+    <?php
+        $first_east = $east_division[0]['win'];
+        foreach($east_division as $team) {
+	        echo "<tr class=\"standings_data\">
+                    <td>{$team['opponent']}</td>";
+            if ( $admin_p ) {
+                if ( $team['opponent'] != "McBluv" ) {
+                    echo form_hidden('id[]', $team['opponent_id']);
+                    echo "<td><span class=\"editToggle\">$team[win]</span>"
+                        . form_input(array('id' => 'win', 'name' => 'win[]', 'value' => $team['win'], 'class' => 'showHideToggle', 'size' => '1')) .
+                    "</td>
+                    <td><span class=\"editToggle\">$team[loss]</span>"
+                        . form_input(array('id' => 'loss', 'name' => 'loss[]', 'value' => $team['loss'], 'class' => 'showHideToggle', 'size' => '1')) .
+                    "</td>
+                    <td><span class=\"editToggle\">$team[tie]</span>"
+                        . form_input(array('id' => 'tie', 'name' => 'tie[]', 'value' => $team['tie'], 'class' => 'showHideToggle', 'size' => '1')) .
+                    "</td>";
+                } else {
+                    echo "<td>{$team['win']}</td>
+                          <td>{$team['loss']}</td>
+                          <td>{$team['tie']}</td>";
+                }
+            } else {
+                echo "<td>{$team['win']}</td>
+                      <td>{$team['loss']}</td>
+                      <td>{$team['tie']}</td>";
+            }
+                echo "<td>"; echo $this->convert->win_percentage($team['win'], $team['loss']); echo "</td>";
+                echo "<td>"; echo $this->convert->games_back($first_east, $team['win']); echo "</td>";
+            echo "</tr>";
+        }
+    ?>
 </table>
 </div><!-- end div standings_eastWrapper -->
 
 <div id="standings_eastWrapper">
-<h2 class="standings_division">West</h2>
+<h2 style="margin-left: 230px";>West</h2>
 <table class="standings">
-	<?php
-		$categories = array(
-			'Team',
-			'W',
-			'L',
-			'T',
-			'PCT',
-			'GB'
-		);
-	?>
 	<tr>
-	<?php
-	foreach($categories as $category) {
-		echo "<td class=\"standings_categories\">$category</td>";
-	}
-	?>
+        <?php
+            foreach( array('Team', 'W', 'L', 'T', 'PCT', 'GB')  as $category) {
+                echo "<td class=\"standings_categories\">$category</td>";
+            }
+        ?>
 	</tr>
-	<tr class="standings_data">
-	<?php
-		$first="4";
-		$w="4";
-		$l="1";
-		$t="-";
-			echo "<td>Red Bandits</td>";
-			echo "<td>$w</td>";
-			echo "<td>$l</td>";
-			echo "<td>$t</td>";
-			echo "<td>"; echo win_percentage($w,$l); echo"</td>";
-			echo "<td>"; echo games_back($first, $w); echo "</td>";
-	?>
-	</tr>
-	
-	<tr class="standings_data">
-	<?php
-		$w="4";
-		$l="2";
-		$t="-";
-			echo "<td>Angels</td>";
-			echo "<td>$w</td>";
-			echo "<td>$l</td>";
-			echo "<td>$t</td>";
-			echo "<td>"; echo win_percentage($w,$l); echo"</td>";
-			echo "<td>"; echo games_back($first, $w); echo "</td>";
-	?>
-	</tr>
-	
-	<tr class="standings_data">
-	<?php
-		$w="4";
-		$l="2";
-		$t="-";
-			echo "<td>Black Sox</td>";
-			echo "<td>$w</td>";
-			echo "<td>$l</td>";
-			echo "<td>$t</td>";
-			echo "<td>"; echo win_percentage($w,$l); echo"</td>";
-			echo "<td>"; echo games_back($first, $w); echo "</td>";
-	?>
-	</tr>
-	<tr class="standings_data">
-	<?php
-		$w="1";
-		$l="5";
-		$t="-";
-			echo "<td>Wolf Pack</td>";
-			echo "<td>$w</td>";
-			echo "<td>$l</td>";
-			echo "<td>$t</td>";
-			echo "<td>"; echo win_percentage($w,$l); echo"</td>";
-			echo "<td>"; echo games_back($first, $w); echo "</td>";
-	?>
-	</tr>
-	<tr class="standings_data">
-	<?php
-		$w="0";
-		$l="4";
-		$t="-";
-			echo "<td>Cobb Red Sox</td>";
-			echo "<td>$w</td>";
-			echo "<td>$l</td>";
-			echo "<td>$t</td>";
-			echo "<td>"; echo win_percentage($w,$l); echo"</td>";
-			echo "<td>"; echo games_back($first, $w); echo "</td>";
-	?>
-	</tr>
-	
-	<tr class="standings_data">
-	<?php
-		$w="0";
-		$l="5";
-		$t="-";
-			echo "<td>Diamond Pigs</td>";
-			echo "<td>$w</td>";
-			echo "<td>$l</td>";
-			echo "<td>$t</td>";
-			echo "<td>"; echo win_percentage($w,$l); echo"</td>";
-			echo "<td>"; echo games_back($first, $w); echo "</td>";
-	?>
-	</tr>
+    <?php
+        $first_west = $west_division[0]['win'];
+        foreach($west_division as $team) {
+            echo "<tr class=\"standings_data\">
+                    <td>{$team['opponent']}</td>";
+            if ( $admin_p ) {
+                echo form_hidden('id[]', $team['opponent_id']);
+                echo "<td><span class=\"editToggle\">$team[win]</span>"
+                    . form_input(array('id' => 'win', 'name' => 'win[]', 'value' => $team['win'], 'class' => 'showHideToggle', 'size' => '1')) .
+               "</td>
+                <td><span class=\"editToggle\">$team[loss]</span>"
+                    . form_input(array('id' => 'loss', 'name' => 'loss[]', 'value' => $team['loss'], 'class' => 'showHideToggle', 'size' => '1')) .
+                "</td>
+                <td><span class=\"editToggle\">$team[tie]</span>"
+                    . form_input(array('id' => 'tie', 'name' => 'tie[]', 'value' => $team['tie'], 'class' => 'showHideToggle', 'size' => '1')) .
+                "</td>";
+            } else {
+                echo "<td>{$team['win']}</td>
+                      <td>{$team['loss']}</td>
+                      <td>{$team['tie']}</td>";
+            }
+                echo "<td>"; echo $this->convert->win_percentage($team['win'], $team['loss']); echo "</td>";
+                echo "<td>"; echo $this->convert->games_back($first_west, $team['win']); echo "</td>";
+           echo "</tr>";
+        }
+    ?>
 </table>
 </div><!-- end div standings_eastWrapper -->

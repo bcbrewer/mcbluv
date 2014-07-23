@@ -10,15 +10,53 @@ class Players extends CI_Controller {
 	
 	public function index() {
         $data['admin_p'] = $this->mcbluv_model->permissions();
-		
+        $opponents = $data['opponents'] = $this->mcbluv_model->get_all_games();
+
+        $wins = 0;
+        $loss = 0;
+        $tie = 0;
+        foreach($opponents as $result) {
+            if ( $result['record'] === 'Win' ) {
+                $wins++;
+            }
+
+            if ( $result['record'] === 'Loss' ) {
+                $loss++;
+            }
+
+            if ( $result['record'] === 'Tie' ) {
+                $tie++;
+            }
+        }
+
+        $east = array(0 => array('opponent' => 'McBluv', 'win' => $wins, 'loss' => $loss, 'tie' => $tie));
+        $west = array();
+        foreach($opponents as $opponent) {
+           if ( $opponent['division'] == "east" ) {
+                $east[$opponent['opponent_id']] = $opponent;
+            } else {
+                $west[$opponent['opponent_id']] = $opponent;
+            } 
+        }
+
+        usort($east, function($a, $b) {
+            return $a['loss'] - $b['loss'];
+        });
+
+        usort($west, function($a, $b) {
+            return $a['loss'] - $b['loss'];
+        });
+
+		$data['title'] = 'McBluv Baseball'; // Refers to $title on the header
         $data['rosters'] = $this->mcbluv_model->get_all_players();
-		$data['opponents'] = $this->mcbluv_model->get_all_games();
 		$data['all_seasons'] = $this->mcbluv_model->all_seasons();
 		$data['next_games'] = $this->mcbluv_model->next_game();
 		$data['sel_player_name'] = $this->mcbluv_model->find_selected_player();
 		$data['last_three_games'] = $this->mcbluv_model->last_three_games();
         $data['get_headlines'] = $this->mcbluv_model->get_headline();
-		$data['title'] = 'McBluv Baseball'; // Refers to $title on the header
+		$data['opponents'] = $opponents;
+        $data['east_division'] = $east;	
+        $data['west_division'] = $west;	
 		
         $this->load->view('templates/header', $data);
 		$this->load->view('players/index', $data);

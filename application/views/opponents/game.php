@@ -328,7 +328,11 @@
             } else { # An even row
                 $rowColor = "";
             }
+
             $query_string = '&player_id=' .urlencode($pitching['player_id']);
+
+            $style = 'id = "record", class="showHideToggle"';
+
             if($pitching['opp_ab'] > 0) {
                 $opp_avg = $this->convert->opp_avg($pitching['hits'], $pitching['opp_ab']);
             } else {
