@@ -11,7 +11,7 @@ class Players extends CI_Controller {
 	public function index() {
         $data['admin_p'] = $this->mcbluv_model->permissions();
         $opponents = $data['opponents'] = $this->mcbluv_model->get_all_games();
-
+/*
         $wins = 0;
         $loss = 0;
         $tie = 0;
@@ -46,7 +46,7 @@ class Players extends CI_Controller {
         usort($west, function($a, $b) {
             return $a['loss'] - $b['loss'];
         });
-
+*/
 		$data['title'] = 'McBluv Baseball'; // Refers to $title on the header
         $data['rosters'] = $this->mcbluv_model->get_all_players();
 		$data['all_seasons'] = $this->mcbluv_model->all_seasons();
@@ -55,8 +55,8 @@ class Players extends CI_Controller {
 		$data['last_three_games'] = $this->mcbluv_model->last_three_games();
         $data['get_headlines'] = $this->mcbluv_model->get_headline();
 		$data['opponents'] = $opponents;
-        $data['east_division'] = $east;	
-        $data['west_division'] = $west;	
+//        $data['east_division'] = $east;	
+//        $data['west_division'] = $west;	
 		
         $this->load->view('templates/header', $data);
 		$this->load->view('players/index', $data);

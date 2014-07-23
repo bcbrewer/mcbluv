@@ -103,14 +103,15 @@
 </table>
 </div>
 <br />
-
+<!--
 <h1 class="standings_title">Standings</h1>
 
 <div id="standings_westWrapper">
 <h2 style="margin-left: 230px";>East</h2>
 <table class="standings">
-	<tr>
+	<tr> -->
 	    <?php
+            /*
             if ( $admin_p ) {
                 if ( validation_errors() ) {
                     echo "<div style=\"color:red; font-weight:bold\">" . validation_errors(); "</div>";
@@ -204,3 +205,4 @@
     ?>
 </table>
 </div><!-- end div standings_eastWrapper -->
+*/
