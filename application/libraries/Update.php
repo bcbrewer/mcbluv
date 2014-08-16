@@ -56,7 +56,7 @@ class Update extends CI_Model {
                 $dob = date('Y-m-d', strtotime($value['dob']));
             }
 
-            $fields = $this->columns('player');
+            $fields = $this->columns('players');
 
             foreach (array_keys($value) as $field) {
                 if ( in_array( $field, $fields ) ) {
@@ -69,26 +69,28 @@ class Update extends CI_Model {
                 $data[$sel] = $value[$sel];
             }
             
-            $this->db->where('player_id', $player_id);
-            $this->db->update('player', $data); 
+            $this->db->where('id', $player_id);
+            $this->db->update('players', $data); 
         }
 
     }
 
-    function edit_schedule($value, $game_id) {
+    function edit_schedule($value, $game_id, $game_status_p = FALSE) {
         if ( ! $game_id ) {
             die('What exactly are you trying to update without an ID?');
         } else {
-            if ( $value['date'] == "" || $value['date'] == "NA" ) {
-                $value['date'] = '0000-00-00 00:00:00';
-            }
-            if ( ($value['date'] != '0000-00-00 00:00:00') && ! preg_match('/^(19|20)\d\d[\-\/.](0[1-9]|1[012])[\-\/.](0[1-9]|[12][0-9]|3[01]) [0-2][0-9]:[0-5][0-9]:[0-5][0-9]$/', $value['date']) ) {
-                die('One or more of your date entries does not match the YYYY-MM-DD and/or the 24 hour format.');
-            } else {
-                $game_date = date('Y-m-d', strtotime($value['date']));
+            if ( $game_status_p == FALSE ) {
+                if ( $value['date'] == "" || $value['date'] == "NA" ) {
+                    $value['date'] = '0000-00-00 00:00:00';
+                }
+                if ( ($value['date'] != '0000-00-00 00:00:00') && ! preg_match('/^(19|20)\d\d[\-\/.](0[1-9]|1[012])[\-\/.](0[1-9]|[12][0-9]|3[01]) [0-2][0-9]:[0-5][0-9]:[0-5][0-9]$/', $value['date']) ) {
+                    die('One or more of your date entries does not match the YYYY-MM-DD and/or the 24 hour format.');
+                } else {
+                    $game_date = date('Y-m-d', strtotime($value['date']));
+                }
             }
 
-            $fields = $this->columns('game');
+            $fields = $this->columns('games');
 
             foreach (array_keys($value) as $field) {
                 if ( in_array( $field, $fields ) ) {
@@ -101,16 +103,23 @@ class Update extends CI_Model {
                 $data[$sel] = $value[$sel];
             }
 
-            $this->db->where('game_id', $game_id);
-            $this->db->update('game', $data);
+            $this->db->where('id', $game_id);
+            $this->db->update('games', $data);
+
+            if ( $game_status_p == TRUE ) {
+                // Updates corresponding game score in the games table
+                $query = $this->db->query("
+                    select update_scores(?)
+                ", array($game_id));
+            }
         }
     }
 
-    function edit_standings($value, $opponent_id) {
-        if ( ! $opponent_id ) {
-            die('What exactly are you trying to update without an ID?');
+    function edit_standings($value, $team_id, $season_id) {
+        if ( ! $team_id || ! $season_id ) {
+            die('You are missing the team_id or the season_id or both.');
         } else { 
-            $fields = $this->columns('opponent');
+            $fields = $this->columns('standings');
 
             foreach (array_keys($value) as $field) {
                 if ( in_array( $field, $fields ) ) {
@@ -123,8 +132,9 @@ class Update extends CI_Model {
                 $data[$sel] = $value[$sel];
             }
 
-            $this->db->where('opponent_id', $opponent_id);
-            $this->db->update('opponent', $data);
+            $this->db->where('team_id', $team_id);
+            $this->db->where('season_id', $season_id);
+            $this->db->update('standings', $data);
         }
     }
 
@@ -160,6 +170,11 @@ class Update extends CI_Model {
                 $this->db->where('game_id', $game_id);
                 $this->db->update($table, $data);
             }
+
+            // Updates corresponding game score in the games table
+            $query = $this->db->query("
+                select update_scores(?)
+            ", array($game_id));
         }
     }
 
@@ -191,6 +206,11 @@ class Update extends CI_Model {
                     ", array($game_id, $player_id));
                 }
             }
+
+             // Updates corresponding game score in the games table
+            $query = $this->db->query("
+                select update_scores(?)
+            ", array($game_id));
         }
     }
 
@@ -204,18 +224,17 @@ class Update extends CI_Model {
             if ( $updates ) {
 
                 $game_id = isset($_REQUEST['gm']) ? $_REQUEST['gm'] : '';
-
+                $season_id = isset($_REQUEST['season_id']) ? $_REQUEST['season_id'] : '';
                 $pitchers_p = isset($_REQUEST['pitchers_p']) ? TRUE : FALSE;
+                $delete_p = empty($updates['delete_p']) ? FALSE : TRUE;
 
                 $type = $_REQUEST['type'];
 
                  if ( $updates['submit'] ) {
                     unset($updates['submit']);
                 }
-                
-                $up = array();
 
-                if ( empty($updates['delete_p']) ) { $delete_p = FALSE; } else { $delete_p = TRUE; }
+                $up = array();
 
                 if ( ! $delete_p ) { // We are UPDATING existing data or INSERTING new data
 
@@ -226,13 +245,16 @@ class Update extends CI_Model {
 
                         $key = $updates['id'];
                         $up[$key] = $updates;
+
                     } else {
+
                         $keys = array_shift($updates);
                         $cols = array_keys($updates);
 
                         if ( count($cols) > 0  && empty($updates['delete_p']) ) {
                             $n = 0;
                             foreach($keys as $key) {
+
                                 if ( in_array('height_ft', array_keys($updates)) ) {
                                     $updates['ht'][$n] = $updates['height_ft'][$n]*12 + $updates['ht'][$n];
                                 }
@@ -248,12 +270,14 @@ class Update extends CI_Model {
                             }
                         }
                     }
+
                 } else { // We are DELETEING existing data
                     foreach($updates['delete_p'] as $key) {
                         $up[$key] = $game_id;
                     }
                 }
 
+                // Find Update Type
                 if ( $type == "player_update" ) {
                     foreach($up as $id => $val) {
                         $this->edit_player($val, $id);
@@ -264,7 +288,7 @@ class Update extends CI_Model {
                     }
                 } elseif ( $type == "standing_update" ) {
                     foreach($up as $id => $val) {
-                        $this->edit_standings($val, $id);
+                        $this->edit_standings($val, $id, $season_id);
                     }
                 } elseif ( ($type == "hitting_update" || $type == "pitching_update" || $type == "fielding_update") && ! $delete_p ) {
                     foreach($up as $id => $val) {

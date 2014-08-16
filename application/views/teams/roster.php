@@ -113,7 +113,12 @@
     }
 
      if ( $admin_p ) {
-        echo "<div style=\"color:red; font-weight:bold\">" . validation_errors(); "</div>";
+        if ($this->session->flashdata('errors')) {
+            echo "<div style=\"color:red; font-weight:bold\">";
+                echo $this->session->flashdata('errors');
+            echo "</div>";
+        }
+
         $attributes = array('name' => 'player_update', 'id' => 'player_update');
         echo form_open('c=edit&amp;m=player&type=player_update', $attributes);
         echo form_submit('submit', 'Update Players');

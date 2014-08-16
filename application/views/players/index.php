@@ -5,6 +5,28 @@
             $(".editToggle").toggle();
         });
     });
+
+     $(document).ready(function() {
+        $("#showHideHitting").click(function() {
+            $("#showHideHittingToggle").show();
+            $("#showHidePitchingToggle").hide();
+        });
+    });
+
+     $(document).ready(function() {
+        $("#showHidePitching").click(function() {
+            $("#showHidePitchingToggle").show();
+            $("#showHideHittingToggle").hide();
+        });
+    });
+
+    $(document).ready(function() {
+        $( "#tabs-hitting" ).tabs();
+    });
+
+    $(document).ready(function() {
+        $( "#tabs-pitching" ).tabs();
+    });
 </script>
 <br />
 <?php
@@ -48,7 +70,7 @@
 <br />
 <?php
 	$video_p = FALSE;
-	if($video_p) {
+	if ( $video_p ) {
 ?>
 		<div style="text-align:center">
 		<video id="example_video_1" class="video-js vjs-default-skin"
@@ -75,50 +97,227 @@
 	}
 ?>
 
-<div id="last_three">
-<table style="height: 320px;">
-	<tr style="border-bottom: solid 2px;">
-	    <h2 align="left">Last Three Games:</h2>
-	</tr>
-    <?php
-	    foreach($last_three_games as $last_three) {
-            $game_string = '&gm=' .urlencode($last_three['game_id']);
-            $opp_string = '&opp_id=' .urlencode($last_three['opponent_id']);
-			echo "<tr>
-                    <td style=\"padding-left: 10px; \">
-                        <h4 align=left>
-                            <a href=\"?c=opponents&amp;m=opponent" . htmlentities($opp_string) . "\">{$last_three['opponent']}</a>
-                        </h4>
-                    </td>
-                    <td style=\"padding-left: 10px; padding-right: 30px;\">
-                        <h5 align=left>
-                            <a href=\"?c=opponents&amp;m=game" . htmlentities($game_string) . "\">{$last_three['result']}</a>
-                        </h5>
-                    </td>
-                </tr>";
-		}
-	?>
+<div style="padding-bottom: 100px;">
+    <div id="lastThreeGames">
+        <table id="last_three">
+	        <tr style="border-bottom: solid 2px;">
+	            <th>Last Three Games</th>
+	        </tr>
+            <?php
+	            foreach($last_three_games as $last_three) {
+                    $game_string = '&gm=' .urlencode($last_three['game_id']);
+                    $opp_string = '&opp_id=' .urlencode($last_three['opponent_id']);
+			        echo "<tr>
+                        <td style=\"padding-left: 10px; \">
+                            <h4 align=left>
+                                <a href=\"?c=opponents&amp;m=opponent" . htmlentities($opp_string) . "\">{$last_three['opponent']}</a>
+                            </h4>
+                        </td>
+                        <td style=\"padding-left: 10px; padding-right: 30px;\">
+                            <h5 align=right>
+                                <a href=\"?c=opponents&amp;m=game" . htmlentities($game_string) . "\">{$last_three['result']} {$last_three['rf']}-{$last_three['ra']}</a>
+                            </h5>
+                        </td>
+                    </tr>";
+		        }
+	        ?>
+        </table>
+    </div> <!-- END DIV lastThreeGames -->
 
-<img class="team_photo" src="images/hitting_transition_edited.png" alt="" />
-</table>
+        <img class="teamPhoto" src="images/hitting_transition_edited.png" alt="" />
+
+    <div id="teamLeaders">
+            <div id="showHideHitting"><a><b>Batting Leaders</b></a></div>
+            <div id="showHidePitching"><a><b>Pitching Leaders</b></a></div>
+            <br />
+        <div id="showHideHittingToggle">
+
+            <div id="tabs-hitting">
+                <div id="tab-category">
+                    <ul>
+                        <li><a href="#tabs-avg">AVG</a></li>
+                        <li><a href="#tabs-runs">R</a></li>
+                        <li><a href="#tabs-hr">HR</a></li>
+                        <li><a href="#tabs-rbi">RBI</a></li>
+                        <li><a href="#tabs-sb">SB</a></li>
+                    </ul>
+                </div>
+                <div id="tabs-avg">
+                <?php
+                    echo "<table class=\"team_leaders\">";
+                    foreach($avg_leaders as $avg_leader) {
+                        $query_string = '&player_id=' .urlencode($avg_leader['player_id']);
+                        echo "<tr>
+                            <td><div id=\"leaderHeadshot\"><img src=\"{$avg_leader['headshot']}\" alt=\" \" /></div></td>
+                            <td><a href=\"?c=players&amp;m=player" .htmlentities($query_string) ."\">{$avg_leader['first']} {$avg_leader['last']}</a></td>
+                            <td style=\"padding-left: 2em;\"> {$avg_leader['avg']}</td>
+                        </tr>";
+                    }
+                    echo "</table>";
+                ?>
+                </div>
+                <div id="tabs-runs">
+                <?php
+                    echo "<table class=\"team_leaders\">";
+                    foreach($runs_leaders as $run_leader) {
+                        $query_string = '&player_id=' .urlencode($run_leader['player_id']);
+                        echo "<tr>
+                            <td><div id=\"leaderHeadshot\"><img src=\"{$run_leader['headshot']}\" alt=\" \" /></div></td>
+                            <td><a href=\"?c=players&amp;m=player" .htmlentities($query_string) ."\">{$run_leader['first']} {$run_leader['last']}</a></td>
+                            <td style=\"padding-left: 2em;\">{$run_leader['runs']}</td>
+                        </tr>";
+                    }
+                    echo "</table>";
+                ?>
+                </div>
+                <div id="tabs-hr">
+                <?php
+                    echo "<table class=\"team_leaders\">";
+                    foreach($hr_leaders as $hr_leader) {
+                        $query_string = '&player_id=' .urlencode($hr_leader['player_id']);
+                        echo "<tr>
+                            <td><div id=\"leaderHeadshot\"><img src=\"{$hr_leader['headshot']}\" alt=\" \" /></div></td>
+                            <td><a href=\"?c=players&amp;m=player" .htmlentities($query_string) ."\">{$hr_leader['first']} {$hr_leader['last']}</a></td>
+                            <td style=\"padding-left: 2em;\">{$hr_leader['hr']}</td>
+                        </tr>";
+                    }
+                    echo "</table>";
+                ?>
+                </div>
+                <div id="tabs-rbi">
+                <?php 
+                    echo "<table class=\"team_leaders\">";
+                    foreach($rbi_leaders as $rbi_leader) {
+                        $query_string = '&player_id=' .urlencode($rbi_leader['player_id']);
+                        echo "<tr>
+                            <td><div id=\"leaderHeadshot\"><img src=\"{$rbi_leader['headshot']}\" alt=\" \" /></div></td>
+                            <td><a href=\"?c=players&amp;m=player" .htmlentities($query_string) ."\">{$rbi_leader['first']} {$rbi_leader['last']}</a></td>
+                            <td style=\"padding-left: 2em;\">{$rbi_leader['rbi']}</td>
+                        </tr>";
+                    }
+                    echo "</table>";
+                ?>
+                </div>
+                <div id="tabs-sb">
+                <?php
+                    echo "<table class=\"team_leaders\">";
+                    foreach($sb_leaders as $sb_leader) {
+                        $query_string = '&player_id=' .urlencode($sb_leader['player_id']);
+                        echo "<tr>
+                            <td><div id=\"leaderHeadshot\"><img src=\"{$sb_leader['headshot']}\" alt=\" \" /></div></td>
+                            <td><a href=\"?c=players&amp;m=player" .htmlentities($query_string) ."\">{$sb_leader['first']} {$sb_leader['last']}</a></td>
+                            <td style=\"padding-left: 2em;\">{$sb_leader['sb']}</td>
+                        </tr>";
+                    }
+                    echo "</table>";
+                ?>
+                </div>
+            </div> <!-- END tabs-hitting -->
+        </div> <!-- END showHideHittingToggle -->
+
+        <div id="showHidePitchingToggle">
+
+            <div id="tabs-pitching">
+                <div id="tab-category">
+                    <ul>
+                        <li><a href="#tabs-wins">W</a></li>
+                        <li><a href="#tabs-qs">QS</a></li>
+                        <li><a href="#tabs-so">SO</a></li>
+                        <li><a href="#tabs-era">ERA</a></li>
+                        <li><a href="#tabs-whip">WHIP</a></li>
+                    </ul>
+                </div>
+                <div id="tabs-wins">
+                <?php
+                    echo "<table class=\"team_leaders\">";
+                    foreach($wins_leaders as $win_leader) {
+                        $query_string = '&player_id=' .urlencode($win_leader['player_id']);
+                        echo "<tr>
+                            <td><div id=\"leaderHeadshot\"><img src=\"{$win_leader['headshot']}\" alt=\" \" /></div></td>
+                            <td><a href=\"?c=players&amp;m=player" .htmlentities($query_string) ."\">{$win_leader['first']} {$win_leader['last']}</a></td>
+                            <td style=\"padding-left: 2em;\"> {$win_leader['wins']}</td>
+                        </tr>";
+                    }
+                    echo "</table>";
+                ?>
+                </div>
+                <div id="tabs-qs">
+                <?php
+                    echo "<table class=\"team_leaders\">";
+                    foreach($qs_leaders as $qs_leader) {
+                        $query_string = '&player_id=' .urlencode($qs_leader['player_id']);
+                        echo "<tr>
+                            <td><div id=\"leaderHeadshot\"><img src=\"{$qs_leader['headshot']}\" alt=\" \" /></div></td>
+                            <td><a href=\"?c=players&amp;m=player" .htmlentities($query_string) ."\">{$qs_leader['first']} {$qs_leader['last']}</a></td>
+                            <td style=\"padding-left: 2em;\">{$qs_leader['qs']}</td>
+                        </tr>";
+                    }
+                    echo "</table>";
+                ?>
+                </div>
+                <div id="tabs-so">
+                <?php
+                    echo "<table class=\"team_leaders\">";
+                    foreach($strikeouts_leaders as $so_leader) {
+                        $query_string = '&player_id=' .urlencode($so_leader['player_id']);
+                        echo "<tr>
+                            <td><div id=\"leaderHeadshot\"><img src=\"{$so_leader['headshot']}\" alt=\" \" /></div></td>
+                            <td><a href=\"?c=players&amp;m=player" .htmlentities($query_string) ."\">{$so_leader['first']} {$so_leader['last']}</a></td>
+                            <td style=\"padding-left: 2em;\">{$so_leader['so']}</td>
+                        </tr>";
+                    }
+                    echo "</table>";
+                ?>
+                </div>
+                <div id="tabs-era">
+                <?php
+                    echo "<table class=\"team_leaders\">";
+                    foreach($era_leaders as $era_leader) {
+                        $query_string = '&player_id=' .urlencode($era_leader['player_id']);
+                        echo "<tr>
+                            <td><div id=\"leaderHeadshot\"><img src=\"{$era_leader['headshot']}\" alt=\" \" /></div></td>
+                            <td><a href=\"?c=players&amp;m=player" .htmlentities($query_string) ."\">{$era_leader['first']} {$era_leader['last']}</a></td>
+                            <td style=\"padding-left: 2em;\">{$era_leader['era']}</td>
+                        </tr>";
+                    }
+                    echo "</table>";
+                ?>
+                </div>
+                <div id="tabs-whip">
+                <?php
+                    echo "<table class=\"team_leaders\">";
+                    foreach($whip_leaders as $whip_leader) {
+                        $query_string = '&player_id=' .urlencode($whip_leader['player_id']);
+                        echo "<tr>
+                            <td><div id=\"leaderHeadshot\"><img src=\"{$whip_leader['headshot']}\" alt=\" \" /></div></td>
+                            <td><a href=\"?c=players&amp;m=player" .htmlentities($query_string) ."\">{$whip_leader['first']} {$whip_leader['last']}</a></td>
+                            <td style=\"padding-left: 2em;\">{$whip_leader['whip']}</td>
+                        </tr>";
+                    }
+                    echo "</table>";
+                ?>
+                </div>
+            </div> <!-- END tabs-pitching -->
+        </div> <!-- END showHidePitchingToggle -->
+    </div> <!-- END DIV teamLeaders -->
 </div>
-<br />
-<!--
+
 <h1 class="standings_title">Standings</h1>
 
 <div id="standings_westWrapper">
 <h2 style="margin-left: 230px";>East</h2>
 <table class="standings">
-	<tr> -->
+	<tr>
 	    <?php
-            /*
             if ( $admin_p ) {
-                if ( validation_errors() ) {
-                    echo "<div style=\"color:red; font-weight:bold\">" . validation_errors(); "</div>";
+                if ($this->session->flashdata('errors')) {
+                    echo "<div style=\"color:red; font-weight:bold\">";
+                        echo $this->session->flashdata('errors');
+                    echo "</div>";
                 }
-
+               
                 $attributes = array('name' => 'standing_update', 'id' => 'standing_update');
-                $query_string = '&type=standing_update';
+                $query_string = '&type=standing_update&season_id=' . urlencode($all_seasons[0]['season_id']);
                 echo form_open('c=edit&amp;m=standings'.htmlentities($query_string), $attributes);
                 echo "<div>";
                     echo form_submit('submit', 'Update Standings');
@@ -139,7 +338,7 @@
                     <td>{$team['opponent']}</td>";
             if ( $admin_p ) {
                 if ( $team['opponent'] != "McBluv" ) {
-                    echo form_hidden('id[]', $team['opponent_id']);
+                    echo form_hidden('id[]', $team['team_id']);
                     echo "<td><span class=\"editToggle\">$team[win]</span>"
                         . form_input(array('id' => 'win', 'name' => 'win[]', 'value' => $team['win'], 'class' => 'showHideToggle', 'size' => '1')) .
                     "</td>
@@ -183,7 +382,7 @@
             echo "<tr class=\"standings_data\">
                     <td>{$team['opponent']}</td>";
             if ( $admin_p ) {
-                echo form_hidden('id[]', $team['opponent_id']);
+                echo form_hidden('id[]', $team['team_id']);
                 echo "<td><span class=\"editToggle\">$team[win]</span>"
                     . form_input(array('id' => 'win', 'name' => 'win[]', 'value' => $team['win'], 'class' => 'showHideToggle', 'size' => '1')) .
                "</td>
@@ -205,4 +404,3 @@
     ?>
 </table>
 </div><!-- end div standings_eastWrapper -->
-*/

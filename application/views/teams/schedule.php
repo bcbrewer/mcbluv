@@ -5,7 +5,7 @@
             activeHeader: "ui-icon-circle-minus"
         };
         var d = new Date();
-        var n = d.getMonth() - 2;
+        var n = d.getMonth() - 3;
         $( "#accordion" ).accordion({
             heightStyle: "content",
             icons: icons,
@@ -41,14 +41,23 @@
 <br />
 <?php
     if ( $admin_p ) {
-        echo "<div style=\"color:red; font-weight:bold\">" . validation_errors(); "</div>";
+        if ($this->session->flashdata('errors')) {
+            echo "<div style=\"color:red; font-weight:bold\">";
+                echo $this->session->flashdata('errors');
+            echo "</div>";
+        }
+
         $attributes = array('name' => 'schedule_update', 'id' => 'schedule_update');
-       // echo form_open('c=team&amp;m=schedule&type=schedule_update', $attributes);
         echo form_open('c=edit&amp;m=schedule&type=schedule_update', $attributes);
+        
         echo "<div style=\"padding-left: 125px;\">";
-        echo form_submit('submit', 'Update Schedule');
-        echo "<div id=\"showHide\"><a>Click Here to Edit</a></div>";
+        
+            echo form_submit('submit', 'Update Schedule');
+        
+            echo "<div id=\"showHide\"><a>Click Here to Edit</a></div>";
+        
         echo "</div>";
+
         // Get options for opponents
         $opponent_list = array();
         foreach($opponents as $opponent) {
@@ -77,7 +86,7 @@
 <div id="scheduleWrapper">
 <div id="accordion">
 <?php
-    foreach ($schedules as $month_key => &$month_value) {
+    foreach ($opponents as $month_key => &$month_value) {
         $m_key = date('F', strtotime($month_value['date']));
         $month_grouping[$m_key][$month_key] = $month_value;
     }
@@ -124,9 +133,7 @@
                     <td>{$opponent['field_name']}<br />"
                         . form_dropdown('field_id[]', $field_list, $opponent['field_id'], 'class=showHideToggle') .
                     "</td>
-                    <td><a href=\"?c=opponents&amp;m=game" . htmlentities($gm_string) . "\">{$opponent['result']}</a><br />"
-                        . form_input(array('id' => 'result', 'name' => 'result[]', 'value' => $opponent['result'], 'class' => 'showHideToggle', 'size' => '8')) .
-                    "</td>
+                    <td><a href=\"?c=opponents&amp;m=game" . htmlentities($gm_string) . "\">{$opponent['result']}</a></td>
                     <td>{$opponent['location']}</td>
                     <td>" . ucwords($opponent['playoff']) . "<br />"
                         . form_dropdown('playoff[]', $playoff_game, '', 'class=showHideToggle') .

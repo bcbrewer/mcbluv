@@ -46,13 +46,32 @@ class Opponents extends CI_Controller {
 
         $remaining = array_diff($active, $selected);
 
+        $offensive_categories = array('Remove', 'Name', 'PA', 'AB', 'Hits', 'HR', 'RBI', 'BB', 'Runs', 'HBP', 'SAC', 'ROE',
+                                        '1B', '2B', '3B', 'TB', 'SO', 'GIDP', 'SB', 'CS', 'AVG', 'OBP', 'SLG', 'OPS');
+
+        $pitch_categories = array( 'Remove', 'Player', 'Decision', 'ERA', 'SV', 'BS', 'IP', 'H', 'R', 'ER', 'BB', 'SO',
+                                    'QS', 'AVG', 'WHIP', 'CG', 'HB', 'PA', 'AB', 'K/9', 'K/BB');
+
+        $defensive_categories = array('Name', 'TC', 'PO', 'A', 'E', 'FLD%');
+
+        if ( ! $admin_p ) {
+            unset($offensive_categories[0]); // Remove
+            unset($pitch_categories[0]); // Remove
+            unset($pitch_categories[2]); // Decision
+        }
+
         $data['admin_p'] = $admin_p;
         $data['game_id'] = $game_id;
         $data['active_roster'] = $active_roster;
         $data['sel_batting_game_id'] = $sel_batting_game_id;
         $data['selected'] = $selected;
         $data['remaining'] = $remaining;
-        
+
+        $data['offensive_categories'] = $offensive_categories;
+        $data['pitch_categories'] = $pitch_categories;
+        $data['defensive_categories'] = $defensive_categories;
+
+        $data['decision'] = array('W'=>'W', 'L'=>'L', 'ND'=>'ND');        
         $data['sel_game_id'] = $this->mcbluv_model->get_opponent_by_id($game_id);
         $data['rosters'] = $this->mcbluv_model->get_all_players();
         $data['opponents'] = $this->mcbluv_model->get_all_games();

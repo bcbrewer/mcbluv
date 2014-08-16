@@ -55,14 +55,16 @@
 <table class="profile">
 <tr>
 <?php
-	if ( empty($sel_player_name[0]['headshot']) ) {
-		echo "<img style=\"float: right\" src=\"../../images/headshots/player_silhouette.jpg\" alt=\" \" />";
-	} else {
-		echo "<img style=\"float: right\" src=\"{$sel_player_name[0]['headshot']}\" alt=\" \" />";
-	}
-
+    echo "<div id=\"headshot\">";
+             echo "<img style=\"float: right\" src=\"{$sel_player_name[0]['headshot']}\" alt=\" \" />";
+    echo "</div>";
     if ( $admin_p ) {
-        echo "<div style=\"color:red; font-weight:bold\">" . validation_errors(); "</div>";
+        if ($this->session->flashdata('errors')) {
+            echo "<div style=\"color:red; font-weight:bold\">";
+                echo $this->session->flashdata('errors');
+            echo "</div>";
+        }
+
         $attributes = array('name' => 'player_update', 'id' => 'player_update');
         $query_string = '&player_id=' .urlencode($sel_player_name[0]['player_id']) . '&type=player_update';
         echo form_open('c=edit&amp;m=player'.htmlentities($query_string), $attributes);
@@ -77,9 +79,9 @@
 	foreach($profiles as $profile) {
 		echo "<th>$profile</th>";
 	}
+
 ?>
 </tr>
-
 <tr>
 <?php
 	foreach($sel_player_name as $sel_player) {
@@ -312,7 +314,7 @@ if ( $select_by_year) {
 			    }
 			    echo "<tr bgcolor=" . $rowColor . ">
                         <td class=\"player_column\"><a href=\"?c=opponents&amp;m=game" . htmlentities($query_string) . "\">$sel_pitch[opponent]</a></td>
-				        <td class=\"border\">{$sel_pitch['record']}</td>
+				        <td class=\"border\">{$sel_pitch['decision']}</td>
 			            <td class=\"border\">" . $this->convert->era($sel_pitch['er'], $sel_pitch['ip']) . "</td>
 			            <td class=\"border\">{$sel_pitch['save']}</td>
 				        <td class=\"border\">{$sel_pitch['bs']}</td>

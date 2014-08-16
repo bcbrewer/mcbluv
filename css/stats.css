@@ -176,7 +176,7 @@ img {
 }
 
 .profile  { 
-	width:800px; 
+	width: 800px; 
 	margin-right: 140px;
 	}
 
@@ -222,11 +222,9 @@ img {
 	width: 50px;
 }
 
-.team_photo {
-	width: 500px;
-	height: auto;
-	float: right;
-	padding-right: 300px;
+.teamPhoto {
+    width: 500px;
+    padding-left: 5em;
 }
 
 .vs {
@@ -280,8 +278,9 @@ td.greyline {
 	border-bottom: 1px solid #D0D0D0;
 }
 
-td.last_row { 
-	background-color: black; 
+.last_row { 
+	background-color: black;
+    font-weight: bold;
 	color:yellow; 
 	}
 
@@ -320,8 +319,14 @@ td.schedule_category {
 	}
 
 td.team_leaders {
-	width:160px;
+    width:160px;
+    text-align: left;
+}
+
+.team_leaders td {
+    padding: 0.1em;
 	text-align: left;
+    border-bottom: 1px solid #8e9092;
 }
 
 /****Table Rows***********************************************************Table Rows**************************Table Rows***********************************/
@@ -366,17 +371,81 @@ tr.white {
     cursor: pointer;
 }
 
+#showHideHitting {
+    float: left;
+    width: relative;
+    padding-right: 50px;
+}
+
+#showHideHitting a:link {
+    color: black;
+}
+
+#showHideHitting a:hover {
+    color: #FF1493;
+    cursor: pointer;
+}
+
+#showHidePitching {
+    float: left;
+    width: relative;
+}
+
+#showHidePitching a:hover {
+    color: #FF1493;
+    cursor: pointer;
+}
+
+#showHidePitching a:link {
+    color: black;
+}
+
+#showHidePitchingToggle {
+    display:none;
+}
+
+#tabs-hitting {
+    width: 230px;
+    height: relative;
+}
+
+#tabs-pitching {
+    width: 230px;
+    height: relative;
+}
+
+#tab-category {
+    font-size: 70%;
+}
+
+#teamLeaders {
+    float: right;
+    height: 250px;
+    padding-right: 10px;
+}
+
 #careerStats {
 	text-align: center;
 	padding-top: 10px;
 	color: blue;
 	cursor: pointer;
 }
-	
+
+#lastThreeGames {
+    padding-left: 10px;
+    width: relative;
+    float: left;
+}
+
 #last_three {
-	margin-left: 20px;
+    width: relative;
+    height: 250px;
     font-size: 15px;
     font-family: 'Promesh-mesh', Arial, sans-serif;
+}
+
+#last_three th {
+    text-align: left;
 }
 
 #last_three a:link, #last_three a:visited {
@@ -458,10 +527,6 @@ tr.white {
 	margin-left: 440px;
 }
 
-#forum_responderWrapper {
-	margin-left: 25px;
-}
-
 #header {
 	height: 100px; 
 	width: 1100px; 
@@ -482,6 +547,17 @@ tr.white {
 	background-size: 70%;
 	background-repeat: no-repeat;
 /*	background-size: 20px;*/
+}
+
+#headshot {
+    height: 100px; 
+    width: 100px;
+    float: right;
+}
+
+#leaderHeadshot {
+    height: 50px;
+    width: 50px;
 }
 
 #indexWrapper {
@@ -547,10 +623,10 @@ tr.white {
 
 
 #profileWrapper {
-	height: 110px;
+	height: auto;
+    min-height: 100px;
 	width: 950px;
 	margin-left: 75px;
-/*	padding-top: 5px;*/
 	color: white;
 	background-color: black;
 	background-image: url(../images/backgrounds/profile_background.jpg);
@@ -880,7 +956,8 @@ ul.menuHoriz li {
 	font-style:normal;
 	height:55px;
 	line-height:55px;
-	width:135.7px;
+/*	width:135.7px; */
+    width: 155.42px;
 	text-decoration:none;
 	text-align:center;
 	text-shadow:0px 0px 14px #c70067;
@@ -892,14 +969,14 @@ ul.menuVert {
 	background-color:  	#909090;
 	text-align: left;
 	top: 55px;
-	width: 138px;
+	width: 156px;
 	visibility: hidden;
 	z-index: 2;
 }
 
-ul#menuSubOne 	{ left: 137px;  }
-ul#menuSubTwo 	{ left: 274px; }
-ul#menuSubThree { left: 411px; }
+ul#menuSubOne 	{ left: 157px;  }
+ul#menuSubTwo 	{ left: 315px; }
+ul#menuSubThree { left: 472px; }
 ul#menuSubFour  { left: 582px; }
 ul#menuSubFive  { left: 685px; }
 ul#menuSubSix	{ left: 612px; }

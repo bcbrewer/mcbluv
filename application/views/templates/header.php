@@ -58,8 +58,7 @@
 								<li><a href="?c=team&amp;m=roster" onmouseover="setMenu('menuSubOne')" onmouseout="clearMenu('menuSubOne')">Roster</a></li>
 								<li><a href="?c=team&amp;m=schedule" onmouseover="setMenu('menuSubTwo')" onmouseout="clearMenu('menuSubTwo')">Schedule</a></li>
 								<li><a href="?c=team&amp;m=team_stats" onmouseover="setMenu('menuSubThree')" onmouseout="clearMenu('menuSubThree')">Team Stats</a></li>
-								<li><a href="?c=team&amp;m=team_leaders" onmouseover="setMenu('menuSubFour')" onmouseout="clearMenu('menuSubFour')">Team Leaders</a></li>
-								<li><a href="#" onmouseover="setMenu('menuSubFive')" onmouseout="clearMenu('menuSubFive')">Records</a></li>
+								<li><a href="?c=team&amp;m=records" onmouseover="setMenu('menuSubFour')" onmouseout="clearMenu('menuSubFour')">Records</a></li>
 								<li><a href="?c=photo&amp;m=photos">Photos</a></li>
 								<li id="last_button"><a href="?c=sponsor&amp;m=sponsors">Sponsors</a></li>
 							</ul>
@@ -92,14 +91,6 @@
 								   		echo"<li><a href=\"?c=team&amp;m=team_stats" .htmlentities($query_string) ."\">"; echo ucfirst($current['season'])." ".$current['year']; echo"</a></li>";
 									}
 								?>		
-							</ul>
-				
-							<ul id="menuSubFive" class="menuVert" onmouseover="setMenu('menuSubFive')" onmouseout="clearMenu('menuSubFive')">
-                                <li><a href="?c=players&amp;m=records_season&amp;season_id=1">2011</a></li>
-								<li><a href="?c=players&amp;m=records_season&amp;season_id=3">2012</a></li>
-								<li><a href="?c=players&amp;m=records_season&amp;season_id=5">2013</a></li>
-								<li><a href="?c=players&amp;m=records_season&amp;season_id=6">2014</a></li>
-								<li><a href="?c=players&amp;m=records_career">Career</a></li>
 							</ul>
 						</div> <!-- end div menuTop -->
 					</div> <!-- end div navWrapper -->

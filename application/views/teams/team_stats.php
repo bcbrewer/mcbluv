@@ -1,9 +1,8 @@
+<br />
 <?php
-	echo "<br />";
-		$team_p = isset($_REQUEST['season_id']) ? false:true;
-		if($team_p) {
-	        echo"<div style=\"text-align: center\">";
-			    echo form_open('c=team&m=team_stats');
+	if($team_p) {
+	    echo"<div style=\"text-align: center\">";
+	        echo form_open('c=team&m=team_stats');
 		
 			    $current_season = $this->mcbluv_model->all_seasons();
 	
@@ -132,7 +131,7 @@
 		$categories = array( 'Team', 'Result', 'PA', 'AB', 'Runs', 'Hits', 'BB', 'HBP', '1B', '2B', '3B', 'HR', 
 							 'AVG', 'TB', 'RBI', 'SAC', 'ROE', 'SO', 'GIDP', 'SB', 'CS'
 						   );
-		$pitch_categories = array( 'Team', 'Record', 'ERA', 'WHIP', 'SV', 'BS', 'IP', 'R', 'ER', 'Hits', 'BB',
+		$pitch_categories = array( 'Team', 'ERA', 'WHIP', 'SV', 'BS', 'IP', 'R', 'ER', 'Hits', 'BB',
 							 	   'SO', 'QS', 'CG', 'HB', 'PA', 'AB', 'AVG', 'K/9', 'K/BB'
 								 );
 		$fielding_categories = array( 'Team', 'TC', 'PO', 'A', 'Errors', 'FLD%' );
@@ -231,7 +230,6 @@
 									$query_string = '&opp_id=' .urlencode($sum_team_stats_pitching['opponent_id']);
 									echo "<tr bgcolor=\"$rowColor\">
 									        <td class=\"align_left\"><a href=\"?c=opponents&amp;m=opponent" .htmlentities($query_string) ."\">$sum_team_stats_pitching[opponent]</a></td>
-									        <td>{$sum_team_stats_pitching['record']}</td>
 									        <td>" . $this->convert->era($sum_team_stats_pitching['er'], $sum_team_stats_pitching['ip']) . "</td>
 									        <td>" . $this->convert->whip($sum_team_stats_pitching['walks'], $sum_team_stats_pitching['hits'], $sum_team_stats_pitching['ip']) . "</td>
 									        <td>{$sum_team_stats_pitching['save']}</td>
@@ -256,8 +254,7 @@
 
 							echo "<tr><td class=\"last_row\"><strong>Total</strong></td>";
 							foreach($pitching_sum_seasons as $sum_pitching) {
-								echo "<td class=\"last_row\">{$sum_pitching['wins']}-{$sum_pitching['loss']}</td>
-								      <td class=\"last_row\">" . $this->convert->era($sum_pitching['er'], $sum_pitching['ip']) . "</td>
+								echo "<td class=\"last_row\">" . $this->convert->era($sum_pitching['er'], $sum_pitching['ip']) . "</td>
 								      <td class=\"last_row\">" . $this->convert->whip($sum_pitching['walks'], $sum_pitching['hits'], $sum_pitching['ip']) . "</td>
 								      <td class=\"last_row\">{$sum_pitching['save']}</td>
 									  <td class=\"last_row\">{$sum_pitching['bs']}</td>

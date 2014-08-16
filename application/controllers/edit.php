@@ -37,9 +37,8 @@ class Edit extends CI_Controller {
             $this->form_validation->set_rules('tie[]', 'Ties', 'max_length[2]|xss_clean');
 
             if ($this->form_validation->run() == FALSE) {
-               // redirect($_SERVER['HTTP_REFERER']);
-                echo validation_errors();
-                die('Errors have occurred');
+                $this->session->set_flashdata('errors', validation_errors());
+                redirect($_SERVER['HTTP_REFERER']);
             } else {
                 $this->update->update();
             } 
@@ -62,10 +61,8 @@ class Edit extends CI_Controller {
             }
 
             if ($this->form_validation->run() == FALSE) {
-             //   redirect($_SERVER['HTTP_REFERER']);
-                echo validation_errors();
-                die('Errors have occurred');
-             //   $this->load->view('players/player', $data);
+                $this->session->set_flashdata('errors', validation_errors());
+                redirect($_SERVER['HTTP_REFERER']);
             } else {
                 $this->update->update();
             }
@@ -82,9 +79,8 @@ class Edit extends CI_Controller {
             $this->form_validation->set_rules('result[]', 'Result', 'max_length[10]|xss_clean');
 
             if ($this->form_validation->run() == FALSE) {
-               // redirect($_SERVER['HTTP_REFERER']);
-                echo validation_errors();
-                die('Errors have occurred');
+                $this->session->set_flashdata('errors', validation_errors());
+                redirect($_SERVER['HTTP_REFERER']);
             } else {
                 $this->update->update();
             }
@@ -94,8 +90,8 @@ class Edit extends CI_Controller {
     }
 
     public function game() {
-        $data['admin_p'] = $this->mcbluv_model->permissions();
-        if ( $data['admin_p'] ) {
+        $admin_p = $this->mcbluv_model->permissions();
+        if ( $admin_p ) {
             $game_id = $_REQUEST['gm'];
             $type = $_REQUEST['type'];
 
@@ -132,15 +128,26 @@ class Edit extends CI_Controller {
                 $this->form_validation->set_rules('errors[]', 'Errors', 'trim|max_length[1]|xss_clean');
             } elseif ( $type == "add_players" || $type == "add_pitchers" ) {
                 $this->form_validation->set_rules('id[]', 'Players', 'trim|xss_clean');
+            } elseif ( $type == "game_status_update" ) {
+                $id = isset($_POST['id']) ? $_POST['id'] : '';
+                if ( isset($_POST['ppd']) ) {
+                    $game_status = array('ppd' => 1, 'they_forfeit' => 0, 'we_forfeit' => 0);
+                } elseif ( isset($_POST['they_forfeit']) ) {
+                    $game_status = array('ppd' => 0, 'they_forfeit' => 1, 'we_forfeit' => 0);
+                } elseif ( isset($_POST['we_forfeit']) ) {
+                    $game_status = array('ppd' => 0, 'they_forfeit' => 0, 'we_forfeit' => 1);
+                } else {
+                    $game_status = array('ppd' => 0, 'they_forfeit' => 0, 'we_forfeit' => 0);
+                }
+
+                $this->update->edit_schedule($game_status, $id, TRUE);
             } else {
                 die('Cannot update without a type');
             }
 
             if ($this->form_validation->run() == FALSE) {
-               // redirect($_SERVER['HTTP_REFERER']);
-                echo validation_errors();
-                die('Errors have occurred');
-              //   $this->load->view('opponents/game', $data);
+                $this->session->set_flashdata('errors', validation_errors());
+                redirect($_SERVER['HTTP_REFERER']);
             } else {
                 $this->update->update();
             }

@@ -4,59 +4,89 @@ class Players extends CI_Controller {
 	
 	public function __construct() {
 		parent::__construct();
-		$this->load->model('mcbluv_model');
+	//	$this->load->model('mcbluv_model');
         $this->load->library('convert');
 	}
 	
 	public function index() {
         $data['admin_p'] = $this->mcbluv_model->permissions();
-        $opponents = $data['opponents'] = $this->mcbluv_model->get_all_games();
-/*
-        $wins = 0;
-        $loss = 0;
-        $tie = 0;
-        foreach($opponents as $result) {
-            if ( $result['record'] === 'Win' ) {
-                $wins++;
-            }
+       
+        $all_seasons = $this->mcbluv_model->all_seasons();
+        $season_id = $all_seasons[0]['season_id'];
 
-            if ( $result['record'] === 'Loss' ) {
-                $loss++;
-            }
+        $eligible_batter = $this->mcbluv_model->eligible_batters($season_id);
+        $eligible_pitcher = $this->mcbluv_model->eligible_pitchers($season_id);
+        
+        $avg_leaders = $this->team_leaders_model->avg_leaders($season_id, $eligible_batter);
+        $runs_leaders = $this->team_leaders_model->runs_leaders($season_id);
+        $hr_leaders = $this->team_leaders_model->hr_leaders($season_id);
+        $rbi_leaders = $this->team_leaders_model->rbi_leaders($season_id);
+        $sb_leaders = $this->team_leaders_model->sb_leaders($season_id);
+        $wins_leaders = $this->team_leaders_model->wins_leaders($season_id);
+        $qs_leaders = $this->team_leaders_model->qs_leaders($season_id);
+        $strikeouts_leaders = $this->team_leaders_model->strikeouts_leaders($season_id);
+        $whip_leaders = $this->team_leaders_model->whip_leaders($season_id, $eligible_pitcher);
+        $era_leaders = $this->team_leaders_model->era_leaders($season_id, $eligible_pitcher);
 
-            if ( $result['record'] === 'Tie' ) {
-                $tie++;
+        for ( $i=0; $i<=2; $i++ ) {
+            $avg_leaders[$i]['headshot'] = $this->mcbluv_model->find_selected_player($avg_leaders[$i]['player_id'], TRUE);
+            $runs_leaders[$i]['headshot']= $this->mcbluv_model->find_selected_player($runs_leaders[$i]['player_id'], TRUE);
+            $hr_leaders[$i]['headshot'] = $this->mcbluv_model->find_selected_player($hr_leaders[$i]['player_id'], TRUE);
+            $rbi_leaders[$i]['headshot'] = $this->mcbluv_model->find_selected_player($rbi_leaders[$i]['player_id'], TRUE);
+            $sb_leaders[$i]['headshot'] = $this->mcbluv_model->find_selected_player($sb_leaders[$i]['player_id'], TRUE);
+            $wins_leaders[$i]['headshot'] = $this->mcbluv_model->find_selected_player($wins_leaders[$i]['player_id'], TRUE);
+            $qs_leaders[$i]['headshot'] = $this->mcbluv_model->find_selected_player($qs_leaders[$i]['player_id'], TRUE);
+            $strikeouts_leaders[$i]['headshot'] = $this->mcbluv_model->find_selected_player($strikeouts_leaders[$i]['player_id'], TRUE);
+            $whip_leaders[$i]['headshot'] = $this->mcbluv_model->find_selected_player($whip_leaders[$i]['player_id'], TRUE);
+            $era_leaders[$i]['headshot'] = $this->mcbluv_model->find_selected_player($era_leaders[$i]['player_id'], TRUE);
+        }
+
+        $last_three_games = $this->mcbluv_model->last_three_games();
+        foreach ( $last_three_games as &$ltg ) {
+            if ( $ltg['ppd'] ) {
+                $ltg['result'] = 'PPD';
+            } elseif ( $ltg['they_forfeit'] ) {
+                $ltg['result'] = 'Win By Forfeit';
+            } elseif ( $ltg['we_forfeit'] ) {
+                $ltg['result'] = 'Loss By Forfeit';
+            } else {
+                $ltg['result'] = $ltg['result'];
             }
         }
 
-        $east = array(0 => array('opponent' => 'McBluv', 'win' => $wins, 'loss' => $loss, 'tie' => $tie));
+        $standings = $this->mcbluv_model->get_standings();
+
+        $east = array();
         $west = array();
-        foreach($opponents as $opponent) {
-           if ( $opponent['division'] == "east" ) {
-                $east[$opponent['opponent_id']] = $opponent;
+        foreach($standings as $team) {
+           if ( $team['division'] == "East" ) {
+                $east[] = $team;
             } else {
-                $west[$opponent['opponent_id']] = $opponent;
+                $west[] = $team;
             } 
         }
 
-        usort($east, function($a, $b) {
-            return $a['loss'] - $b['loss'];
-        });
-
-        usort($west, function($a, $b) {
-            return $a['loss'] - $b['loss'];
-        });
-*/
 		$data['title'] = 'McBluv Baseball'; // Refers to $title on the header
+        $data['avg_leaders'] = $avg_leaders;
+        $data['runs_leaders'] = $runs_leaders;
+        $data['hr_leaders'] = $hr_leaders;
+        $data['rbi_leaders'] = $rbi_leaders;
+        $data['sb_leaders'] = $sb_leaders;
+        $data['wins_leaders'] = $wins_leaders;
+        $data['qs_leaders'] = $qs_leaders;
+        $data['strikeouts_leaders'] = $strikeouts_leaders;
+        $data['whip_leaders'] = $whip_leaders;
+        $data['era_leaders'] = $era_leaders;
+		$data['all_seasons'] = $all_seasons;
+        $data['standings'] = $standings;
+        $data['east_division'] = $east;	
+        $data['west_division'] = $west;	
         $data['rosters'] = $this->mcbluv_model->get_all_players();
-		$data['all_seasons'] = $this->mcbluv_model->all_seasons();
 		$data['next_games'] = $this->mcbluv_model->next_game();
 		$data['sel_player_name'] = $this->mcbluv_model->find_selected_player();
-		$data['last_three_games'] = $this->mcbluv_model->last_three_games();
+		$data['last_three_games'] = $last_three_games;
         $data['get_headlines'] = $this->mcbluv_model->get_headline();
-		$data['opponents'] = $opponents;
-//        $data['east_division'] = $east;	
-//        $data['west_division'] = $west;	
+        $data['opponents'] = $this->mcbluv_model->get_all_games();
 		
         $this->load->view('templates/header', $data);
 		$this->load->view('players/index', $data);
@@ -102,6 +132,9 @@ class Players extends CI_Controller {
 		$data['all_seasons'] = $this->mcbluv_model->all_seasons();
 		$data['sel_player_name'] = $this->mcbluv_model->find_selected_player();
 		$data['title'] = "Mcbluv Season Records";
+
+        $eligible_batter = $this->mcbluv_model->eligible_batters($season_id);
+        $eligible_pitcher = $this->mcbluv_model->eligible_pitchers($season_id);
 
 		$data['hr_leaders'] = $this->records_model->hr_leaders($season_id);
 		$data['avg_leaders'] = $this->records_model->avg_leaders($season_id);
