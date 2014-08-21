@@ -67,11 +67,7 @@
         }
     }
 ?>
-<br />
-<?php
-	$video_p = FALSE;
-	if ( $video_p ) {
-?>
+<!--
 		<div style="text-align:center">
 		<video id="example_video_1" class="video-js vjs-default-skin"
 		  controls preload="auto" width="640" height="364"
@@ -82,8 +78,8 @@
 		 <source src="http://mcbluv.com/media/Mcbluv 2014.oggtheora.ogv" type='video/ogg' />
 		</video>
 		</div>
+-->
 <?php
-	}
 	foreach($next_games as $next_game) {
 		$dow = date('D', strtotime($next_game['date']));
 		$date = date('n/j/Y', strtotime($next_game['date']));

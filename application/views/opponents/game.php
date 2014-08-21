@@ -24,7 +24,36 @@
         $(".game_status").change(function() {
             $('.game_status').not(this).prop('checked', false); 
         });
-    }); 
+    });
+/*
+    $(document).ready(function() {
+        $('#listToggle').click(function() {
+            $(this).text(function(i, v) {
+               return v === 'Active Players' ? 'All Players' : 'Active Players'
+            })
+        });
+    });
+*/
+    // AJAX for Roster
+    var base_url = '<?php echo site_url(); ?>';
+    function load_data_ajax(type, game, season) {
+        $.ajax ({
+            'url' : base_url + '?c=opponents&m=get_roster_view',
+            'type' : 'POST',
+            'data' : {
+                        'type' : type,
+                        'game' : game,
+                        'season' : season
+                    },
+            'success' : function(data) { //probably this request will return anything, it'll be put in var "data"
+                var container = $('#container'); //jquery selector (get element by id)
+                if ( data ) {
+                    container.html(data);
+                }
+            }
+        });
+    }
+
 </script>
 
 <br />
@@ -41,7 +70,7 @@
     if ( ! empty($sel_logo_id) ) {
         foreach($sel_logo_id as $sel_logo) {
             $query_string = '&opp_id=' . urlencode($sel_logo['opponent_id']);
-            echo "<a href=\"?c=opponents&amp;m=opponent" . htmlentities($query_string) . "\">;<img class=\"opponent_logo\" src=\"{$sel_logo['file_path']}\" alt=\"\" /></a>";
+            echo "<a href=\"?c=opponents&amp;m=opponent" . htmlentities($query_string) . "\"><img class=\"opponent_logo\" src=\"{$sel_logo['file_path']}\" alt=\"\" /></a>";
         }
     } else {
         echo "<img class=\"opponent_logo\" src=\"../../images/logos/tbd.jpg\" alt=\"\" />";
@@ -98,24 +127,16 @@
         // Check if there are anymore players that can be added to the game
         if ( ! empty($remaining) && $sel_game_id[0]['ppd'] == 0 && $sel_game_id[0]['they_forfeit'] == 0 && $sel_game_id[0]['we_forfeit'] == 0 ) {
 
-            echo "<div style=\"padding-left: 70px;\">";
+            echo "<div style=\"padding-left: 50px;\">";
+                    echo "<button onclick=\"load_data_ajax(1, $game_id, {$sel_game_id[0]['season_id']})\" id=\"listToggle\">Active Players</button>";
+                    echo "<button onclick=\"load_data_ajax(2, $game_id, {$sel_game_id[0]['season_id']})\" id=\"listToggle\">All Players</button>";
 
                 $attributes = array('name' => 'add_players', 'id' => 'add_players');
                 $query_string = '&gm=' .urlencode($game_id) . '&type=add_players';
 
                 echo form_open('c=edit&amp;m=game'.htmlentities($query_string), $attributes);
 
-                    $names = array();
-                    foreach ( $remaining as $player_id => $name ) {
-                        $names[$player_id] = $name;
-                    }
-
-                    $select_id = 'id="players"';
-                    echo form_label('Add Players to game', 'players[]', array('style' => 'float: left;'));
-                    echo "<br />";
-                    echo form_multiselect('id[]', $names, '', $select_id);
-                    echo "<br />";
-                    echo form_submit('submit', 'Add Players');
+                    echo "<div id=\"container\"></div>"; // This is where the AJAX result will appear
 
                 echo form_close();
 

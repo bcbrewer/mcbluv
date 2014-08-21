@@ -90,6 +90,32 @@ class Opponents extends CI_Controller {
         $this->load->view('opponents/game', $data);
         $this->load->view('templates/footer');
     }
+
+    function get_roster_view(){
+
+        $this->load->model('ajax_model');
+
+        $players =  $this->ajax_model->get_players();;
+        $player_in_game = $this->mcbluv_model->get_game_by_id($players[0]['game_id']);
+
+        $active = array();
+        $selected = array();
+
+        foreach( $players as $val ) {
+            $active[$val['player_id']] = "{$val['first']} {$val['last']}";
+        }
+
+        foreach( $player_in_game as $val ) {
+            $selected[$val['player_id']] = "{$val['first']} {$val['last']}";
+        }
+
+        $remaining = array_diff($active, $selected);
+
+        $data['list'] = $remaining;
+ 
+        $this->load->view('opponents/roster_ajax', $data);
+ 
+    }
 		
 }
 

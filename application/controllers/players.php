@@ -4,7 +4,6 @@ class Players extends CI_Controller {
 	
 	public function __construct() {
 		parent::__construct();
-	//	$this->load->model('mcbluv_model');
         $this->load->library('convert');
 	}
 	
