@@ -36,23 +36,52 @@
                 echo "<h1>You do not have a headline present in the database</h1>";
             echo "</div>";
             $get_headline = "";
+            $get_link = "";
+            $get_tag = "";
             $headline_id = "";
         } else {
             $get_headline = $get_headlines[0]['headline'];
             $headline_id = $get_headlines[0]['id'];
+            $get_link = $get_headlines[0]['link'];
+            if ( $get_link  == "" ) {
+                $get_tag = "";
+            } else {
+                if ( $get_headlines[0]['tag'] != "" ) {
+                    $get_tag = $get_headlines[0]['tag'];
+                } else {
+                    $get_tag = "Click Here";
+                }
+            }
         }
 
         echo "<h1 class=\"homeTitle\"; align=\"center\">{$get_headline}</h1>";
+        if ( $get_link ) {
+            echo "<h3 align=\"center\"><a href=". htmlentities($get_link) . ">{$get_tag}</a></h3>";
+        }
         echo form_open_multipart('c=edit&amp;m=headline');
             $headline = array(
                 'name'  => 'headline',
                 'value' => $get_headline,
-                'rows'  => '1',
+                'rows'  => '2',
                 'cols'  => '70'
             );
+            $link = array(
+                'name'  => 'headline_link',
+                'value' => $get_link,
+            );
+            if ( ! empty($link) ) {
+                $tag = array(
+                    'name'  => 'headline_tag',
+                    'value' => $get_tag,
+                );
+            }
             echo "<div id=\"headline\"; style=\"text-align: center;\">";
                 echo form_textarea($headline);
                 echo form_hidden('headline_id', $headline_id);
+                echo "<br />";
+                echo "URL: ".form_input($link);
+                echo "<br />";
+                echo "TAG: ".form_input($tag);
                 echo "<br />";
                 echo form_submit('submit', 'Change Headline');
             echo "</div>";
@@ -61,6 +90,9 @@
         if ( ! empty($get_headlines) ) {
             foreach($get_headlines as $headline) {
                 echo "<h1 class=\"homeTitle\"; align=\"center\">{$headline['headline']}</h1>";
+                if ( $headline['link'] != "") {
+                    echo "<h3 align=\"center\"><a href=". htmlentities($headline['link']) . ">{$headline['tag']}</a></h3>";
+                }
             }
         } else {
              echo "<h1 class=\"homeTitle\"; align=\"center\">Welcome to the McBluv Team Website!</h1>";

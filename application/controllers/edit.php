@@ -15,7 +15,14 @@ class Edit extends CI_Controller {
             echo "You are not authorized to make changes";
             die;
         } else {
-            $headline = $_POST['headline'];
+            $url = prep_url($_POST['headline_link']);
+            if ( $url ) {
+                $tag =  $_POST['headline_tag'];
+            } else {
+                $tag = "";
+            }
+            $headline = array('headline' => $_POST['headline'], 'link' => $url, 'tag' => $tag);
+
             if ( $_POST['headline_id'] ) {
                 $id = $_POST['headline_id'];
                 $this->update->edit_headline($headline, $id);

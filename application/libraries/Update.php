@@ -24,11 +24,21 @@ class Update extends CI_Model {
         if ( ! $headline || ! $id ) {
             die('You must include a headline and an ID');
         } else {
-            $query = $this->db->query("
-                update headlines
-                set headline = ?
-                where id = ?
-            ", array($headline, $id));
+             $fields = $this->columns('headlines');
+
+            foreach (array_keys($headline) as $field) {
+                if ( in_array( $field, $fields ) ) {
+                    $chosen[] = $field;
+                }
+            }
+
+            $data = array();
+            foreach ( $chosen as $sel ) {
+                $data[$sel] = $headline[$sel];
+            }
+
+            $this->db->where('id', $id);
+            $this->db->update('headlines', $data);
         }
     }
 
