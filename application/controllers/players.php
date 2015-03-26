@@ -11,7 +11,7 @@ class Players extends CI_Controller {
         $data['admin_p'] = $this->mcbluv_model->permissions();
        
         $all_seasons = $this->mcbluv_model->all_seasons();
-        $season_id = $all_seasons[0]['season_id'];
+        $season_id = $all_seasons[1]['season_id'];
 
         $eligible_batter = $this->mcbluv_model->eligible_batters($season_id);
         $eligible_pitcher = $this->mcbluv_model->eligible_pitchers($season_id);
